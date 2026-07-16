@@ -1,0 +1,47 @@
+<a [routerLink]="['/product', product.slug]" class="product-card group relative bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full cursor-pointer block">
+  
+  <!-- Image Section -->
+  <div class="relative bg-gray-50 aspect-[4/5] flex items-center justify-center overflow-hidden p-4">
+    <img [src]="product.imageUrl || 'assets/placeholder-product.png'" [alt]="product.name" class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500" loading="lazy">
+    
+    <!-- Top left badge -->
+    <div *ngIf="product.badge" class="absolute top-3 left-3 bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide">
+      {{ product.badge }}
+    </div>
+    
+    <!-- Top right wish list icon placeholder (Could be another component later) -->
+    <button class="absolute top-3 right-3 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors shadow-sm z-10" (click)="$event.preventDefault()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+    </button>
+  </div>
+
+  <!-- Content Section -->
+  <div class="p-4 lg:p-5 flex flex-col flex-grow">
+    
+    <!-- Title -->
+    <h3 class="font-bold text-gray-900 text-sm lg:text-base leading-tight mb-2 line-clamp-2 group-hover:text-brand-orange transition-colors">
+      {{ product.name }}
+    </h3>
+
+    <!-- Rating & Reviews -->
+    <div class="flex items-center gap-1.5 mb-2 mt-auto">
+      <app-star-rating [rating]="product.rating" [size]="12"></app-star-rating>
+      <span class="text-[11px] text-gray-500 font-medium">{{ product.rating.toFixed(1) }} ({{ product.reviewCount }})</span>
+    </div>
+
+    <!-- Price -->
+    <div class="font-extrabold text-gray-900 text-lg mb-3">
+      £{{ product.price.toFixed(2) }}
+    </div>
+
+    <!-- Stock Status -->
+    <div *ngIf="product.isInStock" class="flex items-center gap-1 text-[11px] font-bold text-green-700 bg-green-50 px-2 py-1 rounded w-max mt-auto">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      In stock
+    </div>
+    <div *ngIf="!product.isInStock" class="flex items-center gap-1 text-[11px] font-bold text-red-700 bg-red-50 px-2 py-1 rounded w-max mt-auto">
+      Out of stock
+    </div>
+
+  </div>
+</a>

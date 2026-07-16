@@ -1,7 +1,9 @@
-<div class="min-h-screen bg-neutral-50 flex flex-col font-sans text-neutral-900">
+<div class="min-h-screen bg-neutral-50 flex flex-col font-sans text-neutral-900 pb-24 pb-safe lg:pb-0">
   <app-header></app-header>
   <main class="flex-grow">
     <router-outlet></router-outlet>
   </main>
   <app-footer></app-footer>
+  <app-bottom-nav></app-bottom-nav>
+  <app-auth-modal></app-auth-modal>
 </div>

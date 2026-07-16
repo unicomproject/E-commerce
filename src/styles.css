@@ -4,4 +4,29 @@
 
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  
+  --color-brand-orange: #ff5b22;
+  --color-brand-orange-light: #fff3ef;
+  --color-brand-orange-dark: #e04815;
+  --color-brand-black: #111111;
+  --color-brand-gray: #f9fafb;
+}
+
+body {
+  @apply bg-white text-brand-black antialiased;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Safe area padding for mobile notch/home indicator */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
 }

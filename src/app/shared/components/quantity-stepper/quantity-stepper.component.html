@@ -1,0 +1,9 @@
+<div class="flex items-center border border-gray-300 rounded-lg h-10 w-[120px] bg-white overflow-hidden transition-colors focus-within:border-brand-orange">
+  <button (click)="decrement()" class="w-10 h-full flex items-center justify-center text-brand-orange hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="quantity <= 1">
+    <ng-icon name="lucideMinus" size="16" strokeWidth="2"></ng-icon>
+  </button>
+  <div class="flex-1 text-center font-bold text-gray-900 text-sm border-x border-gray-100 flex items-center justify-center h-full">{{ quantity }}</div>
+  <button (click)="increment()" class="w-10 h-full flex items-center justify-center text-brand-orange hover:bg-gray-50 transition-colors">
+    <ng-icon name="lucidePlus" size="16" strokeWidth="2"></ng-icon>
+  </button>
+</div>
