@@ -1,0 +1,43 @@
+<!-- Page Layout for Mobile/Desktop -->
+<div class="min-h-screen bg-gray-50 flex flex-col pb-20">
+  
+  <!-- Promo Banner -->
+  <div class="bg-brand-black text-white text-xs py-2 px-4 flex justify-between items-center text-center">
+    <div class="flex-1">
+      Free delivery on orders over £99<br>
+      <span class="text-neutral-400">Order by 9pm for next day</span>
+    </div>
+    <div class="ml-2 bg-neutral-700/50 p-1.5 rounded text-[10px] cursor-pointer hover:bg-neutral-600 transition-colors">
+      Ts&Cs
+    </div>
+  </div>
+
+  <!-- Page Title -->
+  <div class="px-4 py-4 bg-white border-b border-gray-100">
+    <h1 class="text-2xl font-bold text-brand-black">Shop by Category</h1>
+  </div>
+
+  <!-- Categories List -->
+  <div class="flex-1 p-4 bg-gray-50 space-y-3">
+    
+    <ng-container *ngIf="categories$ | async as categories; else loading">
+      
+      <!-- Category Card -->
+      <app-category-card *ngFor="let category of categories" [category]="category" layout="list"></app-category-card>
+
+    </ng-container>
+
+    <ng-template #loading>
+      <!-- Loading Skeleton -->
+      <div *ngFor="let i of [1, 2, 3, 4, 5]" class="bg-white rounded-xl shadow-sm h-[100px] flex animate-pulse border border-gray-100">
+        <div class="w-[100px] bg-gray-200"></div>
+        <div class="p-4 flex-1 flex flex-col justify-center gap-2">
+          <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+          <div class="h-3 bg-gray-200 rounded w-1/4 mt-1"></div>
+        </div>
+      </div>
+    </ng-template>
+
+  </div>
+</div>

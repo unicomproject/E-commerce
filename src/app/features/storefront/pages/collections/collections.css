@@ -1,0 +1,283 @@
+.collections-page {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.crumb-link {
+  color: #374151;
+  text-decoration: none;
+}
+
+.crumb-link:hover {
+  text-decoration: underline;
+}
+
+.crumb-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.crumb-current {
+  color: #9ca3af;
+}
+
+/* Category Header */
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.category-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+}
+
+.category-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.filter-sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #374151;
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Quick Nav Menu */
+.quick-nav-menu {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.quick-nav-menu::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-pill {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: white;
+  color: #4b5563;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.nav-pill.active {
+  border-color: #f97316; /* Orange border for active */
+  color: #ea580c;
+}
+
+/* List Meta */
+.list-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.sort-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+}
+
+.sort-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Items Grid */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.item-card {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.item-image-wrapper {
+  position: relative;
+  aspect-ratio: 1;
+  background-color: #f9fafb;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.new-badge {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.item-details {
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: #111827;
+}
+
+.item-count {
+  font-size: 0.875rem;
+  color: #ea580c; /* Orange text for item count */
+}
+
+.arrow-icon {
+  width: 20px;
+  height: 20px;
+  color: #9ca3af;
+}
+
+/* Delivery Banner */
+.delivery-banner {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: #fff7ed; /* Light orange background */
+  border-radius: 0.75rem;
+  gap: 1rem;
+}
+
+.banner-icon-bg {
+  flex-shrink: 0;
+  color: #ea580c;
+}
+
+.banner-text {
+  flex: 1;
+}
+
+.banner-title {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.banner-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.banner-arrow {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: #9ca3af;
+}
+
+/* Skeletons */
+.skeleton-header, .skeleton-menu, .skeleton-card {
+  background: #e5e7eb;
+  border-radius: 0.5rem;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.skeleton-header {
+  height: 60px;
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-menu {
+  height: 40px;
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.skeleton-card {
+  aspect-ratio: 4/5;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+@media (min-width: 768px) {
+  .items-grid, .skeleton-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

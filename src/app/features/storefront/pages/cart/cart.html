@@ -1,0 +1,185 @@
+<div class="max-w-4xl mx-auto px-4 py-6 lg:py-8 bg-neutral-50 min-h-[80vh]">
+  
+  <!-- Breadcrumb -->
+  <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+    <a routerLink="/" class="hover:text-gray-900">Home</a>
+    <span class="mx-2">&gt;</span>
+    <span class="text-gray-900 font-medium">Cart</span>
+  </nav>
+
+  <ng-container *ngIf="(cart$ | async) as cart; else emptyState">
+    
+    <!-- Header -->
+    <div class="mb-6 flex items-baseline gap-3">
+      <h1 class="text-3xl font-bold text-gray-900">Your Cart</h1>
+      <span class="text-gray-500 text-lg">({{cart.totalQuantity}} items)</span>
+    </div>
+
+    <div *ngIf="cart.items.length === 0" class="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-200">
+      <div class="text-gray-400 mb-4 flex justify-center">
+        <ng-icon name="lucideShoppingBag" size="48"></ng-icon>
+      </div>
+      <h2 class="text-xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
+      <p class="text-gray-500 mb-6">Looks like you haven't added anything yet.</p>
+      <a routerLink="/" class="inline-block px-8 py-3 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark transition-colors">
+        Start Shopping
+      </a>
+    </div>
+
+    <div *ngIf="cart.items.length > 0" class="space-y-4">
+      
+      <!-- Cart Items List -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+        
+        <div *ngFor="let item of cart.items" class="p-4 lg:p-6 flex flex-col lg:flex-row gap-4 lg:gap-6 relative group">
+          
+          <!-- Delete Button (Top Right) -->
+          <button (click)="removeItem(item)" class="absolute top-4 lg:top-6 right-4 lg:right-6 text-gray-400 hover:text-red-500 transition-colors bg-white rounded-full p-1 z-10">
+            <ng-icon name="lucideTrash2" size="20"></ng-icon>
+          </button>
+          
+          <!-- Product Image -->
+          <div class="w-full lg:w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center p-2 flex-shrink-0">
+            <img *ngIf="item.imageUrl" [src]="item.imageUrl" [alt]="item.name" class="w-full h-full object-contain mix-blend-multiply">
+          </div>
+          
+          <!-- Details -->
+          <div class="flex-1 flex flex-col">
+            
+            <div class="pr-10 mb-2">
+              <h3 class="text-lg font-bold text-gray-900 leading-tight">{{item.name}}</h3>
+              <p *ngIf="item.variantName" class="text-gray-600 text-sm mt-0.5">{{item.variantName}}</p>
+            </div>
+            
+            <!-- Variants -->
+            <div *ngIf="item.options.length" class="text-sm text-gray-600 mb-2 flex flex-wrap items-center gap-2">
+              <ng-container *ngFor="let opt of item.options; let last = last">
+                <span>{{opt.name}}: {{opt.value}}</span>
+                <span *ngIf="!last" class="text-gray-300">|</span>
+              </ng-container>
+            </div>
+            
+            <!-- Price -->
+            <div class="text-red-600 font-bold text-lg mb-1">
+              £{{item.unitPrice | number:'1.2-2'}}
+            </div>
+            
+            <!-- Stock Status -->
+            <div *ngIf="item.isInStock" class="flex items-center text-green-600 text-sm font-medium mb-4">
+              <ng-icon name="lucideCheckCircle2" size="16" class="mr-1.5"></ng-icon>
+              In stock
+            </div>
+            <div *ngIf="!item.isInStock" class="text-red-500 text-sm font-medium mb-4">
+              Out of stock
+            </div>
+            
+            <!-- Bottom Row: Stepper and Item Total -->
+            <div class="mt-auto flex items-center justify-between border-t border-gray-100 pt-4">
+              <app-quantity-stepper 
+                [quantity]="item.quantity" 
+                (quantityChange)="updateQuantity(item.id, $event)">
+              </app-quantity-stepper>
+              
+              <div class="font-bold text-gray-900 text-lg">
+                £{{item.lineTotal | number:'1.2-2'}}
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      
+      <!-- Checkout Sticky Bar (Mobile) or Summary Block -->
+      <div class="mt-6 flex flex-col lg:flex-row items-center justify-between bg-white p-4 lg:p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="w-full lg:w-auto mb-4 lg:mb-0">
+          <div class="text-gray-600 text-sm">Estimated Total</div>
+          <div class="text-3xl font-extrabold text-gray-900">£{{cart.grandTotal | number:'1.2-2'}}</div>
+        </div>
+        <button class="w-full lg:w-auto px-10 py-4 bg-brand-orange text-white font-bold rounded-xl shadow-sm hover:bg-brand-orange-dark transition-colors text-lg">
+          Checkout securely
+        </button>
+      </div>
+
+    </div>
+  </ng-container>
+
+  <ng-template #emptyState>
+    <!-- Header -->
+    <div class="mb-6 flex items-baseline gap-3">
+      <h1 class="text-3xl font-bold text-gray-900">Your Cart</h1>
+    </div>
+    <div class="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-200">
+      <div class="text-gray-400 mb-4 flex justify-center">
+        <ng-icon name="lucideShoppingBag" size="48"></ng-icon>
+      </div>
+      <h2 class="text-xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
+      <p class="text-gray-500 mb-6">Looks like you haven't added anything yet.</p>
+      <a routerLink="/" class="inline-block px-8 py-3 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark transition-colors">
+        Start Shopping
+      </a>
+    </div>
+  </ng-template>
+
+  <!-- Remove Item Confirmation Modal -->
+  <div *ngIf="itemToRemove" class="fixed inset-0 z-50 flex items-end lg:items-center justify-center">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/50 transition-opacity" (click)="cancelRemove()"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative bg-white w-full lg:w-auto lg:min-w-[400px] max-w-md max-h-[90vh] overflow-y-auto rounded-t-3xl lg:rounded-2xl p-6 shadow-xl animate-in slide-in-from-bottom-full lg:slide-in-from-bottom-0 lg:fade-in-0 duration-300">
+      
+      <!-- Drag handle (Mobile only) -->
+      <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6 lg:hidden"></div>
+      
+      <!-- Close Button (Desktop) -->
+      <button (click)="cancelRemove()" class="hidden lg:flex absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors">
+        <ng-icon name="lucideX" size="20"></ng-icon>
+      </button>
+
+      <!-- Header -->
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">Remove item?</h2>
+      <p class="text-gray-500 mb-6">Are you sure you want to remove this item from your cart?</p>
+
+      <!-- Item Summary Card -->
+      <div class="flex gap-4 p-4 rounded-xl border border-gray-100 bg-gray-50/50 mb-6">
+        <div class="w-20 h-20 bg-white rounded-lg border border-gray-100 p-1 flex-shrink-0 flex items-center justify-center">
+          <img *ngIf="itemToRemove.imageUrl" [src]="itemToRemove.imageUrl" [alt]="itemToRemove.name" class="w-full h-full object-contain mix-blend-multiply">
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-bold text-gray-900 truncate">{{itemToRemove.name}}</h3>
+          <div *ngIf="itemToRemove.options?.length" class="text-sm text-gray-500 mt-1">
+            Colour: {{ itemToRemove.options[0]?.value }}
+          </div>
+          <div class="text-sm text-gray-500 mt-0.5">
+            Qty: {{itemToRemove.quantity}}
+          </div>
+          <div class="font-bold text-gray-900 text-lg mt-2 text-right">
+            £{{itemToRemove.lineTotal | number:'1.2-2'}}
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Alert -->
+      <div class="flex items-start gap-2 text-gray-600 text-sm mb-6 px-1">
+        <ng-icon name="lucideInfo" size="18" class="flex-shrink-0 mt-0.5"></ng-icon>
+        <p>This item will be removed from your basket.</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="space-y-3">
+        <button (click)="confirmRemove()" class="w-full py-3.5 bg-red-500 text-white font-bold rounded-xl shadow-sm hover:bg-red-600 transition-colors text-lg">
+          Remove Item
+        </button>
+        <button (click)="cancelRemove()" class="w-full py-3.5 bg-white text-red-500 border border-red-500 font-bold rounded-xl hover:bg-red-50 transition-colors text-lg">
+          Cancel
+        </button>
+        <button (click)="moveToWishlist()" class="w-full py-3 text-gray-600 hover:text-gray-900 font-medium flex items-center justify-center gap-2 transition-colors mt-2">
+          <ng-icon name="lucideHeart" size="18"></ng-icon>
+          <span class="underline">Move to wishlist instead</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,115 @@
+<div class="max-w-[500px] mx-auto px-4 py-8">
+  
+  <!-- Header -->
+  <h1 class="text-3xl font-bold text-gray-900 mb-2">Verify your email</h1>
+  <p class="text-gray-600 mb-8">We sent a 6-digit code to your email address to complete your registration.</p>
+
+  <!-- Readonly Email Box -->
+  <div class="border border-gray-300 rounded-lg p-4 flex items-center justify-between mb-8">
+    <div class="flex items-center space-x-3 text-gray-900">
+      <ng-icon name="lucideMail" size="20" class="text-gray-500"></ng-icon>
+      <span class="font-medium">{{ email }}</span>
+    </div>
+    <button class="text-gray-900 font-bold hover:underline text-sm">
+      Change email
+    </button>
+  </div>
+
+  <!-- OTP Form -->
+  <form [formGroup]="verificationForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    
+    <div formArrayName="digits" class="flex justify-between space-x-2">
+      <input 
+        *ngFor="let ctrl of digits.controls; let i = index"
+        [formControlName]="i"
+        [id]="'digit-' + i"
+        type="text" 
+        inputmode="numeric" 
+        maxlength="1"
+        (input)="onInput($event, i)"
+        (keydown)="onKeyDown($event, i)"
+        class="w-14 h-16 text-center text-2xl font-bold border-2 rounded-lg outline-none transition-colors"
+        [ngClass]="{
+          'border-brand-orange text-brand-orange': ctrl.value,
+          'border-gray-200 focus:border-gray-900 focus:ring-1 focus:ring-gray-900': !ctrl.value
+        }"
+      >
+    </div>
+    <div class="text-center text-gray-500 text-sm">
+      Enter the 6-digit verification code
+    </div>
+
+    <div class="space-y-3 pt-2">
+      <button 
+        type="submit" 
+        [disabled]="verificationForm.invalid || isLoading"
+        class="w-full py-4 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+      >
+        <span *ngIf="isLoading" class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></span>
+        Verify Email
+      </button>
+      
+      <button 
+        type="button" 
+        (click)="resendCode()"
+        [disabled]="timer > 0"
+        class="w-full py-4 bg-white text-brand-orange border border-brand-orange font-bold rounded-lg hover:bg-brand-orange-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Resend Code
+      </button>
+      
+      <div class="text-center text-sm font-medium" [ngClass]="timer > 0 ? 'text-brand-orange' : 'text-gray-500'">
+        <span *ngIf="timer > 0">Resend available in 00:{{ timer < 10 ? '0' + timer : timer }}</span>
+        <span *ngIf="timer === 0">You can now resend the code</span>
+      </div>
+    </div>
+  </form>
+
+  <!-- Help Box -->
+  <div class="mt-6 border border-gray-200 rounded-lg p-4 flex items-start space-x-3 bg-gray-50/50">
+    <div class="text-brand-orange mt-1">
+      <ng-icon name="lucideHelpCircle" size="24"></ng-icon>
+    </div>
+    <div class="flex-1">
+      <h4 class="text-gray-900 font-bold">Didn't receive the code?</h4>
+      <p class="text-gray-500 text-sm">Check your spam folder or contact support.</p>
+    </div>
+    <a href="#" class="text-gray-900 font-bold hover:underline text-sm self-center whitespace-nowrap">
+      Contact Support
+    </a>
+  </div>
+
+  <!-- Benefits Section -->
+  <div class="mt-8 border border-gray-200 rounded-lg overflow-hidden bg-white">
+    <div class="flex items-center space-x-4 p-4 border-b border-gray-200">
+      <div class="text-brand-orange">
+        <ng-icon name="lucideShieldCheck" size="24"></ng-icon>
+      </div>
+      <div class="text-gray-700">Secure account setup</div>
+    </div>
+    <div class="flex items-center space-x-4 p-4 border-b border-gray-200">
+      <div class="text-brand-orange">
+        <ng-icon name="lucideZap" size="24"></ng-icon>
+      </div>
+      <div class="text-gray-700">Faster checkout</div>
+    </div>
+    <div class="flex items-center space-x-4 p-4">
+      <div class="text-brand-orange">
+        <ng-icon name="lucidePackage" size="24"></ng-icon>
+      </div>
+      <div class="text-gray-700">Track your orders</div>
+    </div>
+  </div>
+
+  <!-- Footer Action -->
+  <div class="mt-8 border border-gray-200 rounded-lg p-6 flex items-center justify-between bg-gray-50/50">
+    <div>
+      <h3 class="text-lg font-bold text-gray-900">Already verified?</h3>
+      <p class="text-gray-500 text-sm mt-1">Sign in to continue shopping.</p>
+    </div>
+    <button type="button" (click)="switchView.emit('login')" class="px-6 py-3 border border-brand-orange text-brand-orange font-bold bg-white rounded-lg hover:bg-brand-orange-light transition-colors">
+      Sign In
+    </button>
+  </div>
+
+</div>

@@ -1,0 +1,24 @@
+<div *ngIf="isOpen" 
+     class="fixed inset-0 z-[100] flex lg:items-center lg:justify-center bg-white lg:bg-gray-900/40 lg:backdrop-blur-sm transition-opacity duration-200"
+     (click)="close()">
+  
+  <!-- Modal Container -->
+  <div class="relative w-full h-full lg:h-auto lg:max-h-[90vh] lg:max-w-md bg-white lg:rounded-2xl lg:shadow-2xl overflow-y-auto transition-transform duration-300"
+       (click)="onModalClick($event)">
+    
+    <!-- Close Button (Desktop Only, since Mobile has its own flow or can just use the X) -->
+    <button (click)="close()" class="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors z-10">
+      <ng-icon name="lucideX" size="20"></ng-icon>
+    </button>
+
+    <!-- Content Views -->
+    <div class="w-full">
+      <app-login *ngIf="currentView === 'login'" (switchView)="switchView($event)"></app-login>
+      <app-register *ngIf="currentView === 'register'" (switchView)="switchView($event)"></app-register>
+      <app-forgot-password *ngIf="currentView === 'forgot-password'" (switchView)="switchView($event)"></app-forgot-password>
+      <app-email-verification *ngIf="currentView === 'verify'" (switchView)="switchView($event)"></app-email-verification>
+      <app-reset-password *ngIf="currentView === 'reset-password'" (switchView)="switchView($event)"></app-reset-password>
+    </div>
+
+  </div>
+</div>
