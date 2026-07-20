@@ -57,6 +57,7 @@ export interface StorefrontCheckoutReadModel {
   chargeTotal: number;
   grandTotal: number;
   totalQuantity: number;
+  isTaxInclusive: boolean;
   expiresAt?: string;
   items: StorefrontCheckoutLineReadModel[];
   order?: StorefrontCheckoutOrderReadModel;

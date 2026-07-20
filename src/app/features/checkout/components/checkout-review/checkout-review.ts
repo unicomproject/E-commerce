@@ -94,7 +94,7 @@ import { CheckoutService } from '../../../../core/services/checkout.service';
               </div>
             }
             <div class="flex justify-between text-gray-600">
-              <span>VAT (included)</span>
+              <span>VAT {{ checkoutService.checkoutSession()!.isTaxInclusive ? '(included)' : '' }}</span>
               <span>\${{ checkoutService.checkoutSession()!.taxTotal | number:'1.2-2' }}</span>
             </div>
           </div>

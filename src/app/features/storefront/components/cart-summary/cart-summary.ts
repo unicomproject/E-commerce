@@ -16,7 +16,7 @@ import { RouterLink } from '@angular/router';
       
       @if (cart().taxTotal > 0) {
         <div class="flex justify-between items-center mb-3 lg:mb-4">
-          <div class="text-gray-500 text-sm">VAT</div>
+          <div class="text-gray-500 text-sm">VAT {{ cart().isTaxInclusive ? '(Included)' : '' }}</div>
           <div class="text-gray-500 text-sm">\${{cart().taxTotal | number:'1.2-2'}}</div>
         </div>
       }
