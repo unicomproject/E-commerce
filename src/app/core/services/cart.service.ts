@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { StorefrontCartReadModel, AddStorefrontCartItemRequest, UpdateStorefrontCartItemRequest } from '../models/cart.model';
 import { environment } from '../../../environments/environment';
+import { ToastService } from './toast.service';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -15,9 +16,13 @@ export interface ApiResponse<T> {
 })
 export class CartService {
   private http = inject(HttpClient);
+  private toastService = inject(ToastService);
   private cartSubject = new BehaviorSubject<StorefrontCartReadModel | null>(null);
   
   cart$ = this.cartSubject.asObservable();
+  totalItems$: Observable<number> = this.cart$.pipe(
+    map(cart => cart?.totalQuantity || 0)
+  );
   
   private readonly baseUrl = `${environment.apiUrl}/ecommerce/storefront/cart`;
 
@@ -46,9 +51,13 @@ export class CartService {
       next: (response) => {
         if (response.success) {
           this.cartSubject.next(response.data);
+          this.toastService.success('Item added to cart');
         }
       },
-      error: (err) => console.error('Failed to add item to cart', err)
+      error: (err) => {
+        console.error('Failed to add item to cart', err);
+        this.toastService.error(err.error?.message || 'Failed to add item to cart');
+      }
     });
   }
 
@@ -58,9 +67,13 @@ export class CartService {
       next: (response) => {
         if (response.success) {
           this.cartSubject.next(response.data);
+          this.toastService.success('Cart updated');
         }
       },
-      error: (err) => console.error('Failed to update cart item', err)
+      error: (err) => {
+        console.error('Failed to update cart item', err);
+        this.toastService.error(err.error?.message || 'Failed to update cart');
+      }
     });
   }
 
@@ -69,9 +82,13 @@ export class CartService {
       next: (response) => {
         if (response.success) {
           this.cartSubject.next(response.data);
+          this.toastService.info('Item removed from cart');
         }
       },
-      error: (err) => console.error('Failed to remove cart item', err)
+      error: (err) => {
+        console.error('Failed to remove cart item', err);
+        this.toastService.error(err.error?.message || 'Failed to remove item');
+      }
     });
   }
 
@@ -84,5 +101,10 @@ export class CartService {
       },
       error: (err) => console.error('Failed to clear cart', err)
     });
+  }
+
+  clearLocalState(): void {
+    localStorage.removeItem('cartSessionId');
+    this.cartSubject.next(null);
   }
 }

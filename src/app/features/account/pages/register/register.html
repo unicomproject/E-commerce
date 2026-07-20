@@ -1,54 +1,21 @@
-<div class="max-w-[500px] mx-auto px-4 py-8">
+<div class="max-w-[500px] mx-auto px-4 py-6">
   
   <!-- Header -->
-  <h1 class="text-3xl font-bold text-gray-900 mb-2">Create account</h1>
-  <p class="text-gray-600 mb-8">Join Arena Store for faster checkout, order tracking and rewards.</p>
+  <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Create account</h1>
+  <p class="text-gray-600 mb-5 text-sm md:text-base">Join Arena Store for faster checkout, order tracking and rewards.</p>
 
   <!-- Register Form -->
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-3">
     
-    <!-- First Name -->
-    <div>
-      <div class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow">
-        <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
-          <ng-icon name="lucideUser" size="20"></ng-icon>
-        </div>
-        <input type="text" formControlName="firstName" placeholder="First name" class="w-full py-3.5 pr-4 outline-none text-gray-900 placeholder-gray-500 bg-transparent">
-      </div>
-      <div *ngIf="registerForm.get('firstName')?.touched && registerForm.get('firstName')?.invalid" class="text-red-500 text-sm mt-1">First name is required.</div>
-    </div>
-
-    <!-- Last Name -->
-    <div>
-      <div class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow">
-        <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
-          <ng-icon name="lucideUser" size="20"></ng-icon>
-        </div>
-        <input type="text" formControlName="lastName" placeholder="Last name" class="w-full py-3.5 pr-4 outline-none text-gray-900 placeholder-gray-500 bg-transparent">
-      </div>
-      <div *ngIf="registerForm.get('lastName')?.touched && registerForm.get('lastName')?.invalid" class="text-red-500 text-sm mt-1">Last name is required.</div>
-    </div>
-
     <!-- Email -->
     <div>
       <div class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow">
         <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
           <ng-icon name="lucideMail" size="20"></ng-icon>
         </div>
-        <input type="email" formControlName="email" placeholder="Email address" class="w-full py-3.5 pr-4 outline-none text-gray-900 placeholder-gray-500 bg-transparent">
+        <input type="email" formControlName="email" placeholder="Email address" class="w-full py-3 pr-4 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base">
       </div>
       <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid" class="text-red-500 text-sm mt-1">Valid email address is required.</div>
-    </div>
-
-    <!-- Mobile -->
-    <div>
-      <div class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow">
-        <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
-          <ng-icon name="lucideSmartphone" size="20"></ng-icon>
-        </div>
-        <input type="tel" formControlName="mobile" placeholder="Mobile number" class="w-full py-3.5 pr-4 outline-none text-gray-900 placeholder-gray-500 bg-transparent">
-      </div>
-      <div *ngIf="registerForm.get('mobile')?.touched && registerForm.get('mobile')?.invalid" class="text-red-500 text-sm mt-1">Mobile number is required.</div>
     </div>
 
     <!-- Password -->
@@ -57,49 +24,35 @@
         <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
           <ng-icon name="lucideLock" size="20"></ng-icon>
         </div>
-        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Password" class="w-full py-3.5 pr-12 outline-none text-gray-900 placeholder-gray-500 bg-transparent">
+        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Password" class="w-full py-3 pr-12 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base">
         <button type="button" (click)="togglePasswordVisibility()" class="absolute right-4 text-gray-500 hover:text-gray-700 flex items-center justify-center">
           <ng-icon [name]="showPassword ? 'lucideEyeOff' : 'lucideEye'" size="20"></ng-icon>
         </button>
       </div>
       <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid" class="text-red-500 text-sm mt-1">Password must be at least 8 characters.</div>
-    </div>
-
-    <!-- Confirm Password -->
-    <div>
-      <div class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow">
-        <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
-          <ng-icon name="lucideLock" size="20"></ng-icon>
-        </div>
-        <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword" placeholder="Confirm password" class="w-full py-3.5 pr-12 outline-none text-gray-900 placeholder-gray-500 bg-transparent">
-        <button type="button" (click)="toggleConfirmPasswordVisibility()" class="absolute right-4 text-gray-500 hover:text-gray-700 flex items-center justify-center">
-          <ng-icon [name]="showConfirmPassword ? 'lucideEyeOff' : 'lucideEye'" size="20"></ng-icon>
-        </button>
-      </div>
-      <div *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched" class="text-red-500 text-sm mt-1">Passwords do not match.</div>
-      <p class="text-gray-500 text-sm mt-2">Use 8+ characters with letters and numbers.</p>
+      <p class="text-gray-500 text-xs mt-1.5">Use 8+ characters with letters and numbers.</p>
     </div>
 
     <!-- Checkboxes -->
-    <div class="space-y-3 pt-2">
+    <div class="space-y-2 pt-2">
       <label class="flex items-start space-x-3 cursor-pointer">
-        <input type="checkbox" formControlName="agreeTerms" class="mt-1 w-5 h-5 rounded border-gray-300 text-brand-orange focus:ring-brand-orange">
-        <span class="text-gray-600 text-sm">I agree to the <a href="#" class="text-gray-900 font-bold hover:underline">Terms & Conditions</a> and <a href="#" class="text-gray-900 font-bold hover:underline">Privacy Policy</a></span>
+        <input type="checkbox" formControlName="agreeTerms" class="mt-1 w-4 h-4 rounded border-gray-300 text-brand-orange focus:ring-brand-orange">
+        <span class="text-gray-600 text-xs md:text-sm">I agree to the <a href="#" class="text-gray-900 font-bold hover:underline">Terms & Conditions</a> and <a href="#" class="text-gray-900 font-bold hover:underline">Privacy Policy</a></span>
       </label>
-      <div *ngIf="registerForm.get('agreeTerms')?.touched && registerForm.get('agreeTerms')?.invalid" class="text-red-500 text-xs ml-8">You must agree to the terms.</div>
+      <div *ngIf="registerForm.get('agreeTerms')?.touched && registerForm.get('agreeTerms')?.invalid" class="text-red-500 text-xs ml-7">You must agree to the terms.</div>
       
       <label class="flex items-center space-x-3 cursor-pointer">
-        <input type="checkbox" formControlName="sendOffers" class="w-5 h-5 rounded border-gray-300 text-brand-orange focus:ring-brand-orange">
-        <span class="text-gray-600 text-sm">Send me offers, rewards and store updates</span>
+        <input type="checkbox" formControlName="sendOffers" class="w-4 h-4 rounded border-gray-300 text-brand-orange focus:ring-brand-orange">
+        <span class="text-gray-600 text-xs md:text-sm">Send me offers, rewards and store updates</span>
       </label>
     </div>
 
     <!-- Submit Button -->
-    <div class="pt-2">
+    <div class="pt-1">
       <button 
         type="submit" 
         [disabled]="isLoading"
-        class="w-full py-4 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+        class="w-full py-3 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed text-sm md:text-base"
       >
         <span *ngIf="isLoading" class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></span>
         Create Account
@@ -108,9 +61,9 @@
   </form>
 
   <!-- OR Divider -->
-  <div class="flex items-center my-6 text-gray-400">
+  <div class="flex items-center my-4 text-gray-400">
     <div class="flex-1 border-t border-gray-200"></div>
-    <span class="mx-4 text-sm font-medium">or</span>
+    <span class="mx-4 text-xs md:text-sm font-medium">or</span>
     <div class="flex-1 border-t border-gray-200"></div>
   </div>
 
@@ -125,27 +78,7 @@
     <span>Continue with Google</span>
   </button>
 
-  <!-- Benefits Section -->
-  <div class="mt-8 border border-gray-200 rounded-lg overflow-hidden bg-gray-50/50">
-    <div class="flex items-center space-x-4 p-4 border-b border-gray-200">
-      <div class="text-brand-orange">
-        <ng-icon name="lucideGauge" size="24"></ng-icon>
-      </div>
-      <div class="text-gray-700">Faster checkout</div>
-    </div>
-    <div class="flex items-center space-x-4 p-4 border-b border-gray-200">
-      <div class="text-brand-orange">
-        <ng-icon name="lucideShoppingBag" size="24"></ng-icon>
-      </div>
-      <div class="text-gray-700">Track click & collect orders</div>
-    </div>
-    <div class="flex items-center space-x-4 p-4">
-      <div class="text-brand-orange">
-        <ng-icon name="lucideStar" size="24"></ng-icon>
-      </div>
-      <div class="text-gray-700">Earn loyalty rewards</div>
-    </div>
-  </div>
+
 
   <!-- Footer Action -->
   <div class="mt-8 border border-gray-200 rounded-lg p-6 flex items-center justify-between bg-white">

@@ -10,6 +10,12 @@
   --color-brand-orange-dark: #e04815;
   --color-brand-black: #111111;
   --color-brand-gray: #f9fafb;
+  
+  /* Secondary / Accent Colors */
+  --color-brand-navy: #0f172a;       /* Deep Navy Blue */
+  --color-brand-navy-light: #1e293b; 
+  --color-brand-teal: #0d9488;       /* Teal */
+  --color-brand-teal-light: #f0fdfa;
 }
 
 body {

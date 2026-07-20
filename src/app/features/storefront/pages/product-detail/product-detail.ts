@@ -80,7 +80,6 @@ export class ProductDetail implements OnInit {
         this.productTabs = [
           { id: 'overview', label: 'Overview' },
           { id: 'details', label: 'Details' },
-          { id: 'delivery', label: 'Delivery' },
           { id: 'returns', label: 'Returns & Refunds' },
           { id: 'reviews', label: 'Reviews', count: product.reviewCount }
         ];
@@ -111,6 +110,40 @@ export class ProductDetail implements OnInit {
     if (!this.product || !this.selectedColorId) return '';
     const col = this.product.colours.find(c => c.id === this.selectedColorId);
     return col ? col.displayName || col.name : '';
+  }
+
+  get displayPrice(): number {
+    if (!this.product) return 0;
+    
+    // Find matching variant if size/color are selected
+    if (this.product.variants?.length > 0) {
+      const selectedColorName = this.selectedColorId 
+        ? this.product.colours?.find(c => c.id === this.selectedColorId)?.name 
+        : undefined;
+      const selectedSizeName = this.selectedSizeId 
+        ? this.product.sizes?.find(s => s.id === this.selectedSizeId)?.name 
+        : undefined;
+        
+      const match = this.product.variants.find(v => {
+        let colorMatch = true;
+        let sizeMatch = true;
+        
+        if (selectedColorName) {
+          colorMatch = v.colour === selectedColorName;
+        }
+        if (selectedSizeName) {
+          sizeMatch = v.size === selectedSizeName;
+        }
+        
+        return colorMatch && sizeMatch;
+      });
+      
+      if (match) {
+        return match.price;
+      }
+    }
+    
+    return this.product.price;
   }
 
   // Actions

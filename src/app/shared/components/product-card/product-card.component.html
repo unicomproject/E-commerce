@@ -1,47 +1,46 @@
-<a [routerLink]="['/product', product.slug]" class="product-card group relative bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full cursor-pointer block">
-  
-  <!-- Image Section -->
-  <div class="relative bg-gray-50 aspect-[4/5] flex items-center justify-center overflow-hidden p-4">
-    <img [src]="product.imageUrl || 'assets/placeholder-product.png'" [alt]="product.name" class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500" loading="lazy">
+<a [routerLink]="['/product', product.slug]" class="group flex flex-col cursor-pointer block h-full">
+  <!-- Image Container -->
+  <div class="relative bg-neutral-100 rounded-xl overflow-hidden aspect-square mb-3">
     
     <!-- Top left badge -->
-    <div *ngIf="product.badge" class="absolute top-3 left-3 bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide">
+    <div *ngIf="product.badge" class="absolute top-3 left-3 z-20 bg-brand-orange text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide">
       {{ product.badge }}
     </div>
-    
-    <!-- Top right wish list icon placeholder (Could be another component later) -->
-    <button class="absolute top-3 right-3 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors shadow-sm z-10" (click)="$event.preventDefault()">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+
+    <!-- Wishlist Button -->
+    <button class="absolute top-3 right-3 z-20 w-8 h-8 lg:w-10 lg:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-neutral-500 hover:text-red-500 hover:bg-white transition-colors shadow-sm" (click)="$event.preventDefault()">
+      <ng-icon name="lucideHeart" class="text-[18px] lg:text-[20px]"></ng-icon>
     </button>
+    
+    <!-- Product Image -->
+    <img [src]="product.imageUrl || 'assets/placeholder-product.png'" [alt]="product.name" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+    
+    <!-- Add to Cart Overlay (Desktop Only) -->
+    <div class="hidden lg:flex absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10 bg-gradient-to-t from-black/50 to-transparent">
+      <button class="w-full bg-brand-orange hover:bg-brand-orange-dark text-white font-bold py-2.5 rounded-lg shadow-lg transform active:scale-95 transition-all" (click)="$event.preventDefault()">
+        Add to Cart
+      </button>
+    </div>
   </div>
 
-  <!-- Content Section -->
-  <div class="p-4 lg:p-5 flex flex-col flex-grow">
-    
-    <!-- Title -->
-    <h3 class="font-bold text-gray-900 text-sm lg:text-base leading-tight mb-2 line-clamp-2 group-hover:text-brand-orange transition-colors">
+  <!-- Product Details -->
+  <div class="flex flex-col flex-grow">
+    <h4 class="text-sm font-semibold text-brand-black mb-1 line-clamp-2 group-hover:text-brand-orange transition-colors">
       {{ product.name }}
-    </h3>
+    </h4>
+    <p class="text-sm font-bold text-brand-black mb-2">
+      ${{ product.price.toFixed(2) }}
+    </p>
 
-    <!-- Rating & Reviews -->
-    <div class="flex items-center gap-1.5 mb-2 mt-auto">
+    <!-- Ratings -->
+    <div class="flex items-center gap-1.5 mt-auto mb-2">
       <app-star-rating [rating]="product.rating" [size]="12"></app-star-rating>
-      <span class="text-[11px] text-gray-500 font-medium">{{ product.rating.toFixed(1) }} ({{ product.reviewCount }})</span>
+      <span class="text-xs text-neutral-500 font-medium">({{ product.reviewCount }})</span>
     </div>
 
-    <!-- Price -->
-    <div class="font-extrabold text-gray-900 text-lg mb-3">
-      £{{ product.price.toFixed(2) }}
-    </div>
-
-    <!-- Stock Status -->
-    <div *ngIf="product.isInStock" class="flex items-center gap-1 text-[11px] font-bold text-green-700 bg-green-50 px-2 py-1 rounded w-max mt-auto">
-      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      In stock
-    </div>
-    <div *ngIf="!product.isInStock" class="flex items-center gap-1 text-[11px] font-bold text-red-700 bg-red-50 px-2 py-1 rounded w-max mt-auto">
+    <!-- Stock Status (Optional, keeping it subtle) -->
+    <div *ngIf="!product.isInStock" class="text-[10px] font-bold text-red-600 mt-1">
       Out of stock
     </div>
-
   </div>
 </a>

@@ -4,17 +4,22 @@ import { RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideTrash2, lucideCheckCircle2, lucideShoppingBag, lucideHeart, lucideX, lucideInfo } from '@ng-icons/lucide';
 import { CartService } from '../../../../core/services/cart.service';
-import { QuantityStepperComponent } from '../../../../shared/components/quantity-stepper/quantity-stepper.component';
+import { CheckoutService } from '../../../../core/services/checkout.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { AuthModalService } from '../../../../core/services/auth-modal.service';
+import { CartItem } from '../../components/cart-item/cart-item';
+import { CartSummary } from '../../components/cart-summary/cart-summary';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgIconComponent, QuantityStepperComponent],
+  imports: [CommonModule, RouterLink, NgIconComponent, CartItem, CartSummary],
   templateUrl: './cart.html',
   viewProviders: [provideIcons({ lucideTrash2, lucideCheckCircle2, lucideShoppingBag, lucideHeart, lucideX, lucideInfo })]
 })
 export class Cart implements OnInit {
   private cartService = inject(CartService);
+  private checkoutService = inject(CheckoutService);
 
   cart$ = this.cartService.cart$;
   itemToRemove: any | null = null;
@@ -56,5 +61,16 @@ export class Cart implements OnInit {
   private closeModal() {
     this.itemToRemove = null;
     document.body.style.overflow = 'auto';
+  }
+
+  private authService = inject(AuthService);
+  private authModalService = inject(AuthModalService);
+
+  startCheckout() {
+    if (this.authService.isAuthenticated) {
+      this.checkoutService.openCheckout();
+    } else {
+      this.authModalService.open('login');
+    }
   }
 }

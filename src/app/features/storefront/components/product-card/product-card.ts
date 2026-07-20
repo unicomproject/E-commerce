@@ -1,16 +1,17 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideHeart, lucideStar } from '@ng-icons/lucide';
 import { Product } from '../../../../core/models/product.model';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CurrencyPipe, NgIcon],
+  imports: [CurrencyPipe, NgIcon, RouterModule],
   viewProviders: [provideIcons({ lucideHeart, lucideStar })],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="group flex flex-col cursor-pointer">
+    <a [routerLink]="['/product', product.slug]" class="group flex flex-col cursor-pointer block h-full">
       <!-- Image Container -->
       <div class="relative bg-neutral-100 rounded-xl overflow-hidden aspect-square mb-3">
         <!-- Wishlist Button -->
@@ -48,7 +49,7 @@ import { Product } from '../../../../core/models/product.model';
         </div>
         <span class="text-xs text-neutral-500 font-medium">({{ product.rating ? 12 : 0 }})</span>
       </div>
-    </div>
+    </a>
   `
 })
 export class ProductCard {

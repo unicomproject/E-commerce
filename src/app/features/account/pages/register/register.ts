@@ -42,31 +42,17 @@ export class RegisterComponent {
   private router = inject(Router);
 
   registerForm = this.fb.group({
-    firstName: ['', Validators.required],
-    lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    mobile: ['', Validators.required],
     password: ['', [Validators.required, Validators.minLength(8)]],
-    confirmPassword: ['', Validators.required],
     agreeTerms: [false, Validators.requiredTrue],
     sendOffers: [false]
-  }, { validators: this.passwordMatchValidator });
+  });
 
   showPassword = false;
-  showConfirmPassword = false;
   isLoading = false;
-
-  passwordMatchValidator(g: any) {
-    return g.get('password').value === g.get('confirmPassword').value
-      ? null : { 'mismatch': true };
-  }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
-  }
-
-  toggleConfirmPasswordVisibility() {
-    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   onSubmit() {
@@ -76,13 +62,10 @@ export class RegisterComponent {
     }
 
     this.isLoading = true;
-    const { firstName, lastName, email, mobile, password, agreeTerms, sendOffers } = this.registerForm.value;
+    const { email, password, agreeTerms, sendOffers } = this.registerForm.value;
 
     this.authService.register({ 
-      firstName: firstName!, 
-      lastName: lastName!, 
       email: email!, 
-      mobile: mobile!, 
       password: password!, 
       agreeTerms: agreeTerms!, 
       sendOffers: sendOffers! 

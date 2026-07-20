@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, tap, catchError, map } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { 
   LoginRequest, 
@@ -12,32 +12,41 @@ import {
   CustomerLoginRequest,
   CustomerLoginCustomerDto
 } from '../models';
+import {
+  clearCustomerAuthStorage,
+  getValidCustomerAccessToken,
+  setCustomerAccessToken
+} from './customer-auth-token';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private http = inject(HttpClient);
+  private toastService = inject(ToastService);
   private baseUrl = `${environment.apiUrl}/ecommerce/storefront/auth`;
 
   private currentUserSubject = new BehaviorSubject<CustomerLoginCustomerDto | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor() {
-    this.loadUserFromStorage();
+  constructor() {}
+
+  get isAuthenticated(): boolean {
+    return getValidCustomerAccessToken() !== null;
   }
 
-  private loadUserFromStorage() {
-    const userJson = localStorage.getItem('current_user');
-    if (userJson) {
-      try {
-        const user = JSON.parse(userJson);
-        this.currentUserSubject.next(user);
-      } catch (e) {
-        console.error('Failed to parse user from storage');
-        localStorage.removeItem('current_user');
-      }
-    }
+  get accessToken(): string | null {
+    return getValidCustomerAccessToken();
+  }
+
+  get currentUserSnapshot(): CustomerLoginCustomerDto | null {
+    return this.currentUserSubject.value;
+  }
+
+  clearLocalSession(): void {
+    clearCustomerAuthStorage();
+    this.currentUserSubject.next(null);
   }
 
   login(data: LoginRequest): Observable<AuthResponse> {
@@ -46,15 +55,16 @@ export class AuthService {
       password: data.password || ''
     };
 
-    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, request).pipe(
+    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, request, { withCredentials: true }).pipe(
       tap(response => {
         if (response.success && response.data) {
-          localStorage.setItem('access_token', response.data.accessToken);
-          localStorage.setItem('current_user', JSON.stringify(response.data.customer));
+          setCustomerAccessToken(response.data.accessToken);
           this.currentUserSubject.next(response.data.customer);
+          this.toastService.success(`Welcome back, ${response.data.customer.displayName || 'User'}!`);
         }
       }),
       catchError(err => {
+        this.toastService.error(err.error?.message || 'Login failed');
         return of({
           success: false,
           message: err.error?.message || 'Login failed'
@@ -63,18 +73,33 @@ export class AuthService {
     );
   }
 
+  refreshSession(): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/refresh`, {}, { withCredentials: true }).pipe(
+      tap(response => {
+        if (response.success && response.data) {
+          setCustomerAccessToken(response.data.accessToken);
+          this.currentUserSubject.next(response.data.customer);
+        }
+      }),
+      catchError(err => {
+        this.clearLocalSession();
+        return of({
+          success: false,
+          message: err.error?.message || 'Session expired'
+        });
+      })
+    );
+  }
+
   logout(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/logout`, {}).pipe(
+    return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true }).pipe(
       tap(() => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('current_user');
-        this.currentUserSubject.next(null);
+        this.clearLocalSession();
+        this.toastService.info('Logged out successfully');
       }),
       catchError(() => {
         // Even if server fails, clear local state
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('current_user');
-        this.currentUserSubject.next(null);
+        this.clearLocalSession();
         return of(null);
       })
     );
@@ -83,21 +108,25 @@ export class AuthService {
   // Mocks for now until backend is ready
   register(data: RegisterRequest): Observable<AuthResponse> {
     console.log('Mock Register Request:', data);
+    this.toastService.success('Registration successful. Please verify your email.');
     return of({ success: true, message: 'Registration successful. Please verify your email.' });
   }
 
   verifyEmail(data: VerifyEmailRequest): Observable<AuthResponse> {
     console.log('Mock Verify Email Request:', data);
+    this.toastService.success('Email verified successfully.');
     return of({ success: true, message: 'Email verified successfully.' });
   }
 
   forgotPassword(data: ForgotPasswordRequest): Observable<AuthResponse> {
     console.log('Mock Forgot Password Request:', data);
+    this.toastService.success('Password reset link sent to your email.');
     return of({ success: true, message: 'Password reset link sent to your email.' });
   }
 
   resetPassword(data: ResetPasswordRequest): Observable<AuthResponse> {
     console.log('Mock Reset Password Request:', data);
+    this.toastService.success('Password has been reset successfully.');
     return of({ success: true, message: 'Password has been reset successfully.' });
   }
 }

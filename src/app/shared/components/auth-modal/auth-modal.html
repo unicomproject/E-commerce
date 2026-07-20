@@ -1,18 +1,25 @@
 <div *ngIf="isOpen" 
-     class="fixed inset-0 z-[100] flex lg:items-center lg:justify-center bg-white lg:bg-gray-900/40 lg:backdrop-blur-sm transition-opacity duration-200"
+     class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-gray-900/40 backdrop-blur-sm transition-opacity duration-200"
      (click)="close()">
   
-  <!-- Modal Container -->
-  <div class="relative w-full h-full lg:h-auto lg:max-h-[90vh] lg:max-w-md bg-white lg:rounded-2xl lg:shadow-2xl overflow-y-auto transition-transform duration-300"
+  <!-- Modal Container (Bottom Sheet on Mobile) -->
+  <div class="relative w-full max-h-[90dvh] md:h-auto md:max-h-[90vh] md:max-w-md bg-white rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col animate-in slide-in-from-bottom duration-300 md:slide-in-from-bottom-0 md:zoom-in-95"
        (click)="onModalClick($event)">
     
-    <!-- Close Button (Desktop Only, since Mobile has its own flow or can just use the X) -->
-    <button (click)="close()" class="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors z-10">
-      <ng-icon name="lucideX" size="20"></ng-icon>
-    </button>
+    <!-- Mobile Drag Handle -->
+    <div class="w-full flex justify-center pt-3 pb-1 md:hidden">
+      <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+    </div>
 
-    <!-- Content Views -->
-    <div class="w-full">
+    <!-- Close Button (Fixed at top) -->
+    <div class="absolute top-4 right-4 z-20">
+      <button (click)="close()" class="p-2 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors">
+        <ng-icon name="lucideX" size="20"></ng-icon>
+      </button>
+    </div>
+
+    <!-- Scrollable Content Views -->
+    <div class="w-full flex-1 overflow-y-auto pb-safe">
       <app-login *ngIf="currentView === 'login'" (switchView)="switchView($event)"></app-login>
       <app-register *ngIf="currentView === 'register'" (switchView)="switchView($event)"></app-register>
       <app-forgot-password *ngIf="currentView === 'forgot-password'" (switchView)="switchView($event)"></app-forgot-password>

@@ -66,11 +66,8 @@ export class StorefrontDataService {
         imageUrl: index === 0 
           ? 'https://images.unsplash.com/photo-1555529733-0e670560f4e1?w=400&h=300&fit=crop'
           : 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop',
-        distance: `${(index + 2) * 1.5 + 0.2} miles`,
         statusText: index === 3 ? 'Busy' : 'Open',
         closingTime: `Closes ${9 + index}:00 PM`,
-        collectionTime: `Collect in as little as ${30 + (index * 5)} mins`,
-        parkingInfo: index % 2 === 0 ? 'Free parking' : 'Paid parking',
         isRecommended: index === 0
       })))
     );
