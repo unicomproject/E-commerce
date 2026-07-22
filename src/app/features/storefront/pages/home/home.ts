@@ -23,7 +23,7 @@ import { LoadingSpinnerComponent } from '../../../../shared/components/loading-s
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="flex flex-col min-h-screen bg-white">
+    <div class="flex flex-col min-h-screen bg-page-bg">
       
       <app-fulfillment-selector></app-fulfillment-selector>
       

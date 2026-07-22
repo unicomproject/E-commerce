@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideMapPin, lucideCalendar, lucideEdit2, lucideShieldCheck } from '@ng-icons/lucide';
 import { CheckoutService } from '../../../../core/services/checkout.service';
+import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 
 @Component({
   selector: 'app-checkout-review',
   standalone: true,
-  imports: [CommonModule, NgIconComponent],
+  imports: [CommonModule, NgIconComponent, TenantCurrencyPipe],
   viewProviders: [provideIcons({ lucideMapPin, lucideCalendar, lucideEdit2, lucideShieldCheck })],
   template: `
     <div class="animate-in fade-in duration-300">
@@ -40,7 +41,7 @@ import { CheckoutService } from '../../../../core/services/checkout.service';
                   
                   <div class="flex items-center justify-between mt-2">
                     <span class="text-sm font-medium text-gray-600">Qty: {{ item.quantity }}</span>
-                    <span class="font-bold text-gray-900">\${{ item.lineTotal | number:'1.2-2' }}</span>
+                    <span class="font-bold text-gray-900">{{ item.lineTotal | tenantCurrency:'symbol':'1.2-2' }}</span>
                   </div>
                 </div>
               </div>
@@ -85,23 +86,23 @@ import { CheckoutService } from '../../../../core/services/checkout.service';
           <div class="space-y-3 mb-4">
             <div class="flex justify-between text-gray-600">
               <span>Subtotal</span>
-              <span>\${{ checkoutService.checkoutSession()!.subtotal | number:'1.2-2' }}</span>
+              <span>{{ checkoutService.checkoutSession()!.subtotal | tenantCurrency:'symbol':'1.2-2' }}</span>
             </div>
             @if (checkoutService.checkoutSession()!.discountTotal > 0) {
               <div class="flex justify-between text-green-600">
                 <span>Discount</span>
-                <span>-\${{ checkoutService.checkoutSession()!.discountTotal | number:'1.2-2' }}</span>
+                <span>-{{ checkoutService.checkoutSession()!.discountTotal | tenantCurrency:'symbol':'1.2-2' }}</span>
               </div>
             }
             <div class="flex justify-between text-gray-600">
               <span>VAT {{ checkoutService.checkoutSession()!.isTaxInclusive ? '(included)' : '' }}</span>
-              <span>\${{ checkoutService.checkoutSession()!.taxTotal | number:'1.2-2' }}</span>
+              <span>{{ checkoutService.checkoutSession()!.taxTotal | tenantCurrency:'symbol':'1.2-2' }}</span>
             </div>
           </div>
           
           <div class="border-t border-gray-200 pt-4 flex justify-between items-end">
             <span class="font-bold text-gray-900 text-lg">Total to Pay</span>
-            <span class="font-bold text-gray-900 text-2xl">\${{ checkoutService.checkoutSession()!.grandTotal | number:'1.2-2' }}</span>
+            <span class="font-bold text-gray-900 text-2xl">{{ checkoutService.checkoutSession()!.grandTotal | tenantCurrency:'symbol':'1.2-2' }}</span>
           </div>
         </div>
 

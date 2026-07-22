@@ -3,21 +3,22 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideHeart, lucideMapPin, lucideShoppingCart, lucideSlidersHorizontal, lucideCheckCircle2, lucideSearch, lucideXCircle } from '@ng-icons/lucide';
+import { lucideHeart, lucideMapPin, lucideShoppingCart, lucideSlidersHorizontal, lucideCheckCircle2, lucideSearch, lucideX, lucideArrowLeft } from '@ng-icons/lucide';
 import { StorefrontDataService } from '../../services/storefront-data.service';
+import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 import { StorefrontSearchMatchReadModel, StorefrontProductListReadModel } from '../../../../core/models';
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
-import { FulfillmentSelector } from '../../components/fulfillment-selector/fulfillment-selector';
-import { BreadcrumbsComponent, BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 import { FilterSortButtonComponent } from '../../../../shared/components/filter-sort-button/filter-sort-button.component';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { DEMO_SNEAKER } from '../../../../core/mocks/demo-product.mock';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent, ProductCardComponent, FulfillmentSelector, BreadcrumbsComponent, FilterSortButtonComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent, ProductCardComponent, PageHeaderComponent],
   templateUrl: './search.html',
   styleUrl: './search.css',
-  viewProviders: [provideIcons({ lucideHeart, lucideMapPin, lucideShoppingCart, lucideSlidersHorizontal, lucideCheckCircle2, lucideSearch, lucideXCircle })]
+  viewProviders: [provideIcons({ lucideHeart, lucideMapPin, lucideShoppingCart, lucideSlidersHorizontal, lucideCheckCircle2, lucideSearch, lucideX, lucideArrowLeft })]
 })
 export class Search implements OnInit {
   private route = inject(ActivatedRoute);
@@ -52,9 +53,9 @@ export class Search implements OnInit {
           next: (cat) => {
             if (cat && cat.id) {
                this.categoryId = cat.id;
-               this.breadcrumbItems = [{ label: 'Home', link: '/' }, { label: 'Shop', link: '/categories' }, { label: cat.name }];
+               this.breadcrumbItems = [{ label: 'Home', link: '/' }, { label: 'Shop', link: '/categories' }];
             } else {
-               this.breadcrumbItems = [{ label: 'Home', link: '/' }, { label: this.query ? 'Search Results' : 'Products' }];
+               this.breadcrumbItems = [{ label: 'Home', link: '/' }, { label: this.query ? 'Search Results' : 'Shop' }];
             }
             this.performSearch();
           },
@@ -78,12 +79,15 @@ export class Search implements OnInit {
 
     this.dataService.searchProducts(request).subscribe({
       next: (res) => {
-        this.products = res.products?.items || [];
-        this.categories = res.categories || [];
-        this.collections = res.collections || [];
-        this.totalCount = res.totalCount || 0;
-
         setTimeout(() => {
+          const mockListItem: any = {
+            ...DEMO_SNEAKER,
+            imageUrl: DEMO_SNEAKER.images[0]?.url || ''
+          };
+          this.products = [mockListItem, ...(res.products?.items || [])];
+          this.categories = res.categories || [];
+          this.collections = res.collections || [];
+          this.totalCount = res.totalCount || 0;
           this.loading = false;
           this.cdr.detectChanges();
         }, 600);

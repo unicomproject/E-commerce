@@ -1,0 +1,68 @@
+<div *ngIf="modalService.isOpen()" class="fixed inset-0 z-[60] flex flex-col justify-end lg:hidden">
+  <!-- Backdrop -->
+  <div 
+    class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" 
+    (click)="close()">
+  </div>
+
+  <!-- Bottom Sheet -->
+  <div class="relative bg-white w-full rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom duration-300">
+    <!-- Drag Handle -->
+    <div class="w-full flex justify-center py-3 shrink-0" (click)="close()">
+      <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="px-6 py-4 flex justify-between items-center shrink-0 border-b border-gray-100">
+      
+      <div class="flex items-center gap-3">
+        <!-- Back Button if drilled down -->
+        <button *ngIf="currentParentCategory()" (click)="goBack()" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
+          <ng-icon name="lucideArrowLeft" size="18"></ng-icon>
+        </button>
+        <h2 class="text-xl font-bold text-gray-900">
+          {{ currentParentCategory() ? currentParentCategory()?.name : 'Shop by Category' }}
+        </h2>
+      </div>
+
+      <button (click)="close()" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors">
+        <ng-icon name="lucideX" size="18"></ng-icon>
+      </button>
+    </div>
+
+    <!-- Scrollable Body -->
+    <div class="flex-1 overflow-y-auto p-4 px-4 sm:px-6 pb-12 sm:pb-16 bg-gray-50/50">
+      
+      <!-- Loading State -->
+      <div *ngIf="isLoading() || isNavigatingSub()" class="flex justify-center py-10">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+
+      <!-- Category Grid -->
+      <div *ngIf="!isLoading() && !isNavigatingSub()" class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+        
+        <!-- Grid Item -->
+        <div *ngFor="let category of displayCategories()" 
+             (click)="onCategoryClick(category)"
+             class="bg-white rounded-xl border border-gray-200/60 shadow-sm overflow-hidden flex flex-col cursor-pointer active:scale-95 transition-transform h-full">
+          
+          <!-- Image Container -->
+          <div class="w-full aspect-square bg-gray-100 shrink-0 relative overflow-hidden">
+            <img *ngIf="category.imageUrl" [src]="category.imageUrl" 
+                 [alt]="category.name"
+                 class="absolute inset-0 w-full h-full object-cover">
+            <ng-icon *ngIf="!category.imageUrl" name="lucideImage" class="absolute inset-0 m-auto text-gray-300 text-3xl"></ng-icon>
+          </div>
+          
+          <!-- Bottom Text Container -->
+          <div class="p-2 sm:p-3 flex flex-col justify-center items-center bg-white flex-1 gap-1">
+            <span class="font-bold text-gray-900 text-[12px] sm:text-[13px] leading-tight truncate w-full text-center">{{ category.name }}</span>
+            <span class="text-[10px] text-gray-500 font-medium">{{ category.itemCount || 0 }} Items</span>
+          </div>
+
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>

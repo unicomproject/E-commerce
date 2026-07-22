@@ -7,11 +7,12 @@ import { CheckoutService } from '../../../../core/services/checkout.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthModalService } from '../../../../core/services/auth-modal.service';
+import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 
 @Component({
   selector: 'app-checkout-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, TenantCurrencyPipe],
   viewProviders: [provideIcons({ lucideShield, lucideShoppingBag, lucideChevronDown, lucideLock })],
   template: `
     <div class="animate-in fade-in duration-300">
@@ -102,7 +103,7 @@ import { AuthModalService } from '../../../../core/services/auth-modal.service';
             </div>
             <div>
               <h4 class="font-bold text-gray-900 leading-tight">Order Summary</h4>
-              <p class="text-gray-600 text-sm">{{ cart.items.length }} items • \${{ cart.grandTotal | number:'1.2-2' }}</p>
+              <p class="text-gray-600 text-sm">{{ cart.items.length }} items • {{ cart.grandTotal | tenantCurrency:'symbol':'1.2-2' }}</p>
             </div>
           </div>
           <button type="button" (click)="checkoutService.closeCheckout()" class="text-brand-orange text-sm font-bold hover:underline">

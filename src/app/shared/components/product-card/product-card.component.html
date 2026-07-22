@@ -1,46 +1,51 @@
-<a [routerLink]="['/product', product.slug]" class="group flex flex-col cursor-pointer block h-full">
+<a [routerLink]="['/product', product.slug]" class="group flex flex-col cursor-pointer block h-full bg-card-bg rounded-2xl border border-card-border p-2 lg:p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
   <!-- Image Container -->
-  <div class="relative bg-neutral-100 rounded-xl overflow-hidden aspect-square mb-3">
+  <div class="relative bg-neutral-50 rounded-xl overflow-hidden aspect-square mb-3">
     
-    <!-- Top left badge -->
-    <div *ngIf="product.badge" class="absolute top-3 left-3 z-20 bg-brand-orange text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide">
-      {{ product.badge }}
+    <!-- Top left badges -->
+    <div class="absolute top-2 left-2 lg:top-3 lg:left-3 z-20 flex flex-col gap-1.5 items-start">
+      <div *ngIf="product.isInStock === false" class="bg-[#FF4D4F] text-white text-[11px] lg:text-xs font-bold px-2 py-1 rounded-md tracking-wide shadow-sm">
+        Out of Stock
+      </div>
+      <div *ngIf="product.badge && product.isInStock !== false" class="bg-red-500 text-white text-[10px] lg:text-xs font-bold px-2 py-0.5 rounded-full tracking-wide">
+        {{ product.badge }}
+      </div>
     </div>
 
     <!-- Wishlist Button -->
-    <button class="absolute top-3 right-3 z-20 w-8 h-8 lg:w-10 lg:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-neutral-500 hover:text-red-500 hover:bg-white transition-colors shadow-sm" (click)="$event.preventDefault()">
-      <ng-icon name="lucideHeart" class="text-[18px] lg:text-[20px]"></ng-icon>
+    <button 
+      [class]="'absolute top-2 right-2 lg:top-3 lg:right-3 z-20 w-8 h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center transition-all shadow-sm border ' + (isInWishlist() ? 'border-brand-orange-light text-brand-orange' : 'border-neutral-100 text-neutral-800 hover:border-neutral-200')" 
+      (click)="toggleWishlist($event)">
+      <ng-icon name="lucideHeart" class="text-[16px] lg:text-[18px]" [attr.fill]="isInWishlist() ? 'currentColor' : 'none'"></ng-icon>
     </button>
     
     <!-- Product Image -->
     <img [src]="product.imageUrl || 'assets/placeholder-product.png'" [alt]="product.name" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-    
-    <!-- Add to Cart Overlay (Desktop Only) -->
-    <div class="hidden lg:flex absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10 bg-gradient-to-t from-black/50 to-transparent">
-      <button class="w-full bg-brand-orange hover:bg-brand-orange-dark text-white font-bold py-2.5 rounded-lg shadow-lg transform active:scale-95 transition-all" (click)="$event.preventDefault()">
-        Add to Cart
-      </button>
-    </div>
   </div>
 
   <!-- Product Details -->
-  <div class="flex flex-col flex-grow">
-    <h4 class="text-sm font-semibold text-brand-black mb-1 line-clamp-2 group-hover:text-brand-orange transition-colors">
+  <div class="flex flex-col flex-grow px-1">
+    <h4 class="text-[15px] font-semibold text-neutral-900 mb-1 line-clamp-2 group-hover:text-brand-orange transition-colors">
       {{ product.name }}
     </h4>
-    <p class="text-sm font-bold text-brand-black mb-2">
-      ${{ product.price.toFixed(2) }}
-    </p>
-
-    <!-- Ratings -->
-    <div class="flex items-center gap-1.5 mt-auto mb-2">
-      <app-star-rating [rating]="product.rating" [size]="12"></app-star-rating>
-      <span class="text-xs text-neutral-500 font-medium">({{ product.reviewCount }})</span>
+    
+    <!-- Price Row -->
+    <div class="flex items-center gap-2 mb-3">
+      <span class="text-lg font-bold text-neutral-900">
+        {{ product.price | tenantCurrency:'symbol':'1.0-0' }}
+      </span>
+      <span *ngIf="product.originalPrice" class="text-sm font-medium text-neutral-400 line-through">
+        {{ product.originalPrice | tenantCurrency:'symbol':'1.0-0' }}
+      </span>
     </div>
 
-    <!-- Stock Status (Optional, keeping it subtle) -->
-    <div *ngIf="!product.isInStock" class="text-[10px] font-bold text-red-600 mt-1">
-      Out of stock
+    <!-- Footer Row: Rating -->
+    <div class="flex items-center mt-auto">
+      <div class="flex items-center gap-1.5">
+        <ng-icon name="lucideStar" class="text-[#FFC107] text-[16px]" fill="currentColor"></ng-icon>
+        <span class="text-sm font-bold text-neutral-900">{{ product.rating || '0.0' }}</span>
+        <span class="text-sm font-medium text-neutral-500">({{ product.reviewCount || 0 }})</span>
+      </div>
     </div>
   </div>
 </a>

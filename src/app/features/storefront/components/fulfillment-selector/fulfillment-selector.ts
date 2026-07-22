@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideStore, lucideClock, lucideChevronDown } from '@ng-icons/lucide';
@@ -27,8 +27,8 @@ import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-se
             <!-- Text Content -->
             <div class="flex flex-col text-left justify-center">
               <span class="text-[9px] lg:text-[10px] text-neutral-500 font-bold uppercase tracking-widest leading-none mb-1">Pickup Store</span>
-              <span class="text-xs lg:text-sm font-extrabold text-brand-black leading-none truncate max-w-[140px] lg:max-w-[200px]">
-                {{selectedStore?.name || 'Select Outlet'}}
+              <span class="text-xs lg:text-sm font-extrabold text-brand-black leading-tight">
+                {{ selectedStore()?.name || 'Select Outlet' }}
               </span>
             </div>
 
@@ -40,10 +40,10 @@ import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-se
     </div>
 
     <app-outlet-selector-modal
-      [isOpen]="isOutletModalOpen"
-      [stores]="stores"
-      [selectedStoreId]="selectedStore?.id || null"
-      (close)="isOutletModalOpen = false"
+      [isOpen]="isOutletModalOpen()"
+      [stores]="stores()"
+      [selectedStoreId]="selectedStore()?.id || null"
+      (close)="isOutletModalOpen.set(false)"
       (selectStore)="onStoreSelected($event)"
     ></app-outlet-selector-modal>
   `
@@ -51,16 +51,16 @@ import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-se
 export class FulfillmentSelector implements OnInit {
   private storefrontData = inject(StorefrontDataService);
   
-  stores: Store[] = [];
-  selectedStore: Store | null = null;
-  isOutletModalOpen = false;
+  stores = signal<Store[]>([]);
+  selectedStore = signal<Store | null>(null);
+  isOutletModalOpen = signal<boolean>(false);
 
   ngOnInit() {
     this.storefrontData.getStores().subscribe({
       next: (data) => {
-        this.stores = data;
-        if (this.stores.length > 0) {
-          this.selectedStore = this.stores[0];
+        this.stores.set(data);
+        if (data.length > 0 && !this.selectedStore()) {
+          this.selectedStore.set(data[0]);
         }
       },
       error: (err) => console.error('Failed to fetch stores', err)
@@ -68,11 +68,11 @@ export class FulfillmentSelector implements OnInit {
   }
 
   openOutletModal() {
-    this.isOutletModalOpen = true;
+    this.isOutletModalOpen.set(true);
   }
 
   onStoreSelected(store: Store) {
-    this.selectedStore = store;
-    this.isOutletModalOpen = false;
+    this.selectedStore.set(store);
+    this.isOutletModalOpen.set(false);
   }
 }

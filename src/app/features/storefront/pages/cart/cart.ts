@@ -1,28 +1,35 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideTrash2, lucideCheckCircle2, lucideShoppingBag, lucideHeart, lucideX, lucideInfo } from '@ng-icons/lucide';
+import { lucideTrash2, lucideCheckCircle2, lucideShoppingBag, lucideHeart, lucideX, lucideInfo, lucideArrowLeft } from '@ng-icons/lucide';
 import { CartService } from '../../../../core/services/cart.service';
 import { CheckoutService } from '../../../../core/services/checkout.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthModalService } from '../../../../core/services/auth-modal.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { WishlistService } from '../../../../core/services/wishlist.service';
 import { CartItem } from '../../components/cart-item/cart-item';
 import { CartSummary } from '../../components/cart-summary/cart-summary';
+import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgIconComponent, CartItem, CartSummary],
+  imports: [CommonModule, RouterLink, NgIconComponent, CartItem, CartSummary, TenantCurrencyPipe],
   templateUrl: './cart.html',
-  viewProviders: [provideIcons({ lucideTrash2, lucideCheckCircle2, lucideShoppingBag, lucideHeart, lucideX, lucideInfo })]
+  viewProviders: [provideIcons({ lucideTrash2, lucideCheckCircle2, lucideShoppingBag, lucideHeart, lucideX, lucideInfo, lucideArrowLeft })]
 })
 export class Cart implements OnInit {
   private cartService = inject(CartService);
   private checkoutService = inject(CheckoutService);
+  private toastService = inject(ToastService);
+  private authService = inject(AuthService);
+  private authModalService = inject(AuthModalService);
+  private wishlistService = inject(WishlistService);
 
   cart$ = this.cartService.cart$;
-  itemToRemove: any | null = null;
+  itemToRemove = signal<any | null>(null);
 
   ngOnInit() {
     this.cartService.loadCart();
@@ -33,14 +40,14 @@ export class Cart implements OnInit {
   }
 
   removeItem(item: any) {
-    this.itemToRemove = item;
-    // Prevent body scrolling on mobile when modal is open
+    this.itemToRemove.set(item);
     document.body.style.overflow = 'hidden';
   }
 
   confirmRemove() {
-    if (this.itemToRemove) {
-      this.cartService.removeItem(this.itemToRemove.id);
+    const item = this.itemToRemove();
+    if (item) {
+      this.cartService.removeItem(item.id);
       this.closeModal();
     }
   }
@@ -50,21 +57,21 @@ export class Cart implements OnInit {
   }
 
   moveToWishlist() {
-    // Placeholder for wishlist logic
-    if (this.itemToRemove) {
-      this.cartService.removeItem(this.itemToRemove.id);
-      console.log('Moved to wishlist:', this.itemToRemove);
+    const item = this.itemToRemove();
+    if (item) {
+      this.wishlistService.addItem({
+        productId: item.productId,
+        productVariantId: item.productVariantId
+      });
+      this.cartService.removeItem(item.id);
       this.closeModal();
     }
   }
 
   private closeModal() {
-    this.itemToRemove = null;
+    this.itemToRemove.set(null);
     document.body.style.overflow = 'auto';
   }
-
-  private authService = inject(AuthService);
-  private authModalService = inject(AuthModalService);
 
   startCheckout() {
     if (this.authService.isAuthenticated) {

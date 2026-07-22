@@ -11,7 +11,7 @@ import { Banner } from '../../../../core/models';
   viewProviders: [provideIcons({ lucideChevronLeft, lucideChevronRight })],
   template: `
     <div class="px-4 py-6 w-full mx-auto" *ngIf="banners && banners.length > 0">
-      <div class="relative bg-brand-black rounded-2xl overflow-hidden shadow-2xl aspect-square md:aspect-[16/9] lg:aspect-[24/9] flex items-center group cursor-pointer">
+      <div class="relative bg-brand-black rounded-2xl overflow-hidden shadow-2xl aspect-[4/3] md:aspect-[16/9] lg:aspect-[24/9] flex items-center group cursor-pointer">
         <!-- Background Image -->
         <div class="absolute inset-0 w-full h-full opacity-60 mix-blend-screen bg-right bg-no-repeat bg-cover lg:bg-contain" [style.background-image]="'url(' + banners[activeIndex].imageUrl + ')'"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-brand-black via-brand-black/90 to-transparent"></div>

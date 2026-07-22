@@ -38,6 +38,9 @@ export function initializeTenant(http: HttpClient, tenantCtx: TenantContextServi
       firstValueFrom(http.get<any>(url)).then(
         (res) => {
           tenantCtx.tenantId = res.tenantId;
+          if (res.currencyCode) {
+            tenantCtx.currencyCode = res.currencyCode;
+          }
           firstValueFrom(authService.refreshSession()).then(
             () => resolve(true),
             () => resolve(true)

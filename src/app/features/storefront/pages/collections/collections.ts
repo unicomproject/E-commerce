@@ -1,17 +1,20 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { lucideArrowLeft } from '@ng-icons/lucide';
 import { StorefrontDataService } from '../../services/storefront-data.service';
 import { StorefrontProductListReadModel, Category } from '../../../../core/models';
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
 import { CategoryCardComponent } from '../../../../shared/components/category-card/category-card.component';
-import { BreadcrumbsComponent, BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 import { FilterSortButtonComponent } from '../../../../shared/components/filter-sort-button/filter-sort-button.component';
+import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-collections',
   standalone: true,
-  imports: [CommonModule, RouterModule, ProductCardComponent, CategoryCardComponent, BreadcrumbsComponent, FilterSortButtonComponent],
+  imports: [CommonModule, RouterModule, ProductCardComponent, CategoryCardComponent, FilterSortButtonComponent, PageHeaderComponent],
   templateUrl: './collections.html',
   styleUrl: './collections.css'
 })
@@ -26,7 +29,6 @@ export class Collections implements OnInit {
   childCategories: Category[] = [];
   products: StorefrontProductListReadModel[] = [];
   loading = true;
-  breadcrumbItems: BreadcrumbItem[] = [];
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -50,11 +52,6 @@ export class Collections implements OnInit {
             return;
         }
         this.category = cat;
-        this.breadcrumbItems = [
-          { label: 'Home', link: '/' },
-          { label: 'Shop', link: '/categories' },
-          { label: cat.name }
-        ];
         this.loadChildren(cat.id);
       },
       error: (err) => {

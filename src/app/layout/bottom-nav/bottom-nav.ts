@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideHome, lucideLayoutGrid, lucideSearch, lucidePackage, lucideUser } from '@ng-icons/lucide';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { CategoryModalService } from '../../core/services/category-modal.service';
 
 @Component({
   selector: 'app-bottom-nav',
@@ -10,7 +11,7 @@ import { RouterModule } from '@angular/router';
   viewProviders: [provideIcons({ lucideHome, lucideLayoutGrid, lucideSearch, lucidePackage, lucideUser })],
   template: `
     <!-- Mobile Bottom Navigation (Hidden on md and up) -->
-    <div class="lg:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-neutral-200 z-50 px-4 py-2 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] transition-transform duration-300 pb-safe">
+    <div class="lg:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-neutral-200 z-[49] px-4 py-2 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] transition-transform duration-300 pb-safe">
       <div class="flex justify-between items-center h-14">
         
         <!-- Home -->
@@ -47,4 +48,10 @@ import { RouterModule } from '@angular/router';
     </div>
   `
 })
-export class BottomNav {}
+export class BottomNav {
+  private categoryModalService = inject(CategoryModalService);
+
+  openCategories() {
+    this.categoryModalService.open();
+  }
+}

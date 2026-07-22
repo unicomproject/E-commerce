@@ -9,9 +9,9 @@
 
 <!-- Bottom Sheet Container -->
 <div 
-  class="fixed bottom-0 left-0 right-0 lg:left-1/2 lg:-translate-x-1/2 lg:w-[600px] z-[101] bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 ease-out flex flex-col max-h-[90vh]"
-  [class.translate-y-full]="!isOpen"
-  [class.translate-y-0]="isOpen"
+  class="fixed bottom-0 left-0 right-0 lg:left-1/2 lg:-translate-x-1/2 lg:w-[600px] z-[101] bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[90vh] translate-y-full transition-transform duration-300 ease-out"
+  [class.!translate-y-0]="isOpen"
+  [class.pointer-events-none]="!isOpen"
 >
   <!-- Handle bar -->
   <div class="w-full flex justify-center pt-3 pb-1">

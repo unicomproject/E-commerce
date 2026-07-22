@@ -1,41 +1,27 @@
-<div class="search-page pb-24 lg:pb-12 bg-white min-h-screen">
+<div class="search-page pb-24 lg:pb-12 bg-page-bg min-h-screen">
   
-  <!-- Location Banner -->
-  <app-fulfillment-selector></app-fulfillment-selector>
-
-  <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8 py-6">
-    
-    <!-- Breadcrumbs -->
-    <app-breadcrumbs [items]="breadcrumbItems" class="mb-4 block"></app-breadcrumbs>
-
-    <!-- Search Bar -->
-    <div class="relative mb-6">
-      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-        <ng-icon name="lucideSearch" class="text-gray-400" size="20"></ng-icon>
-      </div>
-      <input type="text" [(ngModel)]="searchInput" (keyup.enter)="onSearchSubmit()"
-        placeholder="Search for products..." 
-        class="block w-full pl-11 pr-11 py-3.5 border border-gray-200 rounded-2xl leading-5 bg-gray-50/50 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 text-base transition-all shadow-sm">
-      <button *ngIf="searchInput" (click)="onClearSearch()" class="absolute inset-y-0 right-0 pr-4 flex items-center">
-        <ng-icon name="lucideXCircle" class="text-gray-400 hover:text-gray-600 transition-colors" size="20"></ng-icon>
-      </button>
-    </div>
+  <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8 pt-2 pb-6">
 
     <!-- Header Section -->
-    <div class="flex flex-row items-center justify-between mb-6 gap-2">
-      <div>
-        <h1 class="text-2xl lg:text-3xl font-extrabold text-brand-navy mb-1 tracking-tight flex items-center gap-2">
-          <ng-container *ngIf="query">Search Results</ng-container>
-          <ng-container *ngIf="!query && !categoryId">Products</ng-container>
-          <ng-container *ngIf="!query && categoryId">{{ breadcrumbItems.length > 2 ? breadcrumbItems[2].label : 'Products' }}</ng-container>
-        </h1>
-        <p class="text-sm lg:text-base text-gray-600">
-          <ng-container *ngIf="query">Results for "{{ query }}" ({{ totalCount }} results)</ng-container>
-          <ng-container *ngIf="!query">{{ totalCount }} items</ng-container>
-        </p>
+    <app-page-header customClasses="!px-0 !pt-4 !pb-4 !border-b-0 mb-2">
+      <!-- Search Input -->
+      <div class="relative flex-grow">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <ng-icon name="lucideSearch" class="text-neutral-500" size="18" strokeWidth="2"></ng-icon>
+        </div>
+        <input type="text" [(ngModel)]="searchInput" (keyup.enter)="onSearchSubmit()"
+          placeholder="Search for products..." 
+          class="block w-full pl-10 pr-10 py-2.5 rounded-xl bg-white border border-neutral-300 text-neutral-900 placeholder-neutral-500 focus:outline-none focus:bg-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/30 text-[15px] shadow-sm transition-all">
+        <button type="button" *ngIf="searchInput" (click)="onClearSearch()" class="absolute inset-y-0 right-0 pr-3 flex items-center z-10">
+          <div class="bg-neutral-400 rounded-full w-5 h-5 flex items-center justify-center hover:bg-neutral-500 transition-colors">
+            <ng-icon name="lucideX" class="text-white" size="14" strokeWidth="2.5"></ng-icon>
+          </div>
+        </button>
       </div>
-      <app-filter-sort-button></app-filter-sort-button>
-    </div>
+
+    </app-page-header>
+    
+
 
 
     <!-- Loading State -->
@@ -61,9 +47,8 @@
       </div>
     </ng-container>
 
-    <!-- Products Grid -->
     <ng-container *ngIf="!loading && products.length > 0">
-      <div class="grid grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-6">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-6">
         <app-product-card *ngFor="let product of products" [product]="product"></app-product-card>
       </div>
     </ng-container>

@@ -8,3 +8,4 @@ export * from './auth.model';
 export * from './cart.model';
 export * from './checkout.model';
 export * from './customer-profile.model';
+export * from './wishlist.models';

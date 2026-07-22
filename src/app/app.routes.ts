@@ -27,6 +27,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/storefront/pages/cart/cart').then(m => m.Cart)
   },
   {
+    path: 'wishlist',
+    loadComponent: () => import('./features/storefront/pages/wishlist/wishlist').then(m => m.Wishlist)
+  },
+  {
     path: 'orders',
     loadComponent: () => import('./features/storefront/pages/orders/orders').then(m => m.Orders),
     canActivate: [authGuard]

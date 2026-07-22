@@ -22,6 +22,7 @@ export interface StorefrontProductVariantReadModel {
   colour?: string;
   size?: string;
   price: number;
+  currencyCode?: string;
   isDefault: boolean;
   isInStock: boolean;
 }
@@ -33,6 +34,7 @@ export interface StorefrontProductDetailReadModel {
   shortDescription: string;
   longDescription: string;
   price: number;
+  currencyCode?: string;
   rating: number;
   reviewCount: number;
   isInStock: boolean;

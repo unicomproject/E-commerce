@@ -42,6 +42,7 @@ export interface StorefrontProductListReadModel {
   slug: string;
   shortDescription: string;
   price: number;
+  currencyCode?: string;
   imageUrl: string;
   rating: number;
   reviewCount: number;

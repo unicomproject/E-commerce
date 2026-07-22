@@ -2,11 +2,12 @@ import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucidePackage } from '@ng-icons/lucide';
+import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 
 @Component({
   selector: 'app-order-item',
   standalone: true,
-  imports: [CommonModule, NgIconComponent],
+  imports: [CommonModule, NgIconComponent, TenantCurrencyPipe],
   template: `
     <div class="flex items-center gap-4 py-2" [class.border-b]="!isLast()" [class.border-neutral-100]="!isLast()">
       <!-- Image -->
@@ -29,7 +30,7 @@ import { lucidePackage } from '@ng-icons/lucide';
       <!-- Qty & Price -->
       <div class="text-right flex items-center gap-4 md:gap-8 flex-shrink-0">
         <div class="text-sm text-neutral-500">Qty: {{ item().quantity }}</div>
-        <div class="font-bold text-brand-navy min-w-fit whitespace-nowrap text-right">{{ currencyCode() === 'GBP' ? '£' : '$' }}{{ item().lineTotal | number:'1.2-2' }}</div>
+        <div class="font-bold text-brand-navy min-w-fit whitespace-nowrap text-right">{{ item().lineTotal | tenantCurrency:'symbol':'1.2-2' }}</div>
       </div>
     </div>
   `,

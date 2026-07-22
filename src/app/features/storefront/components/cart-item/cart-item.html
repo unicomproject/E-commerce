@@ -27,7 +27,7 @@
     
     <!-- Price -->
     <div class="text-[#DD4A24] font-bold text-[14px] lg:text-base mb-1">
-      ${{item().unitPrice | number:'1.2-2'}}
+      {{ item().unitPrice | tenantCurrency:'symbol':'1.2-2' }}
     </div>
     
     <!-- Stock Status -->
@@ -47,7 +47,7 @@
       </app-quantity-stepper>
       
       <div class="font-bold text-gray-900 text-[14px] lg:text-base">
-        ${{item().lineTotal | number:'1.2-2'}}
+        {{ item().lineTotal | tenantCurrency:'symbol':'1.2-2' }}
       </div>
     </div>
     

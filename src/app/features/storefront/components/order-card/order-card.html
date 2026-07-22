@@ -51,7 +51,7 @@
       <!-- Price & Payment -->
       <div class="text-left md:text-right">
         <div class="text-[18px] md:text-[20px] font-extrabold text-brand-navy leading-none mb-1">
-          {{ order().currencyCode === 'GBP' ? '£' : '$' }}{{ order().grandTotal | number:'1.2-2' }}
+          {{ order().grandTotal | tenantCurrency:'symbol':'1.2-2' }}
         </div>
         <div class="text-[12px] md:text-[13px] text-neutral-500 font-medium mb-0 md:mb-4">
           {{ order().paymentLabel }}

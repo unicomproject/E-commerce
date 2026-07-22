@@ -1,19 +1,8 @@
-<div class="w-full px-4 md:px-8 pt-6 pb-20">
+<div class="w-full px-4 md:px-8 pt-2 pb-20">
   
-  <!-- Breadcrumbs & Header -->
-  <div class="mb-6">
-    <div class="flex items-center text-sm text-neutral-500 mb-4 font-medium">
-      <a routerLink="/" class="hover:text-brand-orange transition-colors">Home</a>
-      <ng-icon name="lucideChevronRight" class="mx-1 text-[16px]"></ng-icon>
-      <a routerLink="/account" class="hover:text-brand-orange transition-colors">Account</a>
-      <ng-icon name="lucideChevronRight" class="mx-1 text-[16px]"></ng-icon>
-      <a routerLink="/orders" class="hover:text-brand-orange transition-colors">My Orders</a>
-      <ng-icon name="lucideChevronRight" class="mx-1 text-[16px]"></ng-icon>
-      <span class="text-brand-orange">Order Details</span>
-    </div>
-    <h1 class="text-3xl font-extrabold text-brand-navy tracking-tight mb-2">Order Details</h1>
-    <p class="text-neutral-500 text-sm">Review your click & collect order information. </p>
-  </div>
+  <!-- Header Section -->
+  <app-page-header title="Order Details" customClasses="!px-0 !pt-4 !pb-0 !border-b-0"></app-page-header>
+  <p class="text-neutral-500 text-sm lg:ml-[56px] mt-0 mb-6">Review your click & collect order information.</p>
 
   @if (isLoading()) {
     <div class="flex justify-center items-center py-20">
@@ -160,13 +149,13 @@
           <div class="space-y-3 text-sm">
             <div class="flex justify-between text-neutral-600">
               <span>Subtotal ({{ order.itemCount }} items)</span>
-              <span>{{ order.currencyCode === 'GBP' ? '£' : '$' }}{{ order.subtotalAmount | number:'1.2-2' }}</span>
+              <span>{{ order.subtotalAmount | tenantCurrency:'symbol':'1.2-2' }}</span>
             </div>
             
             @if (order.discountAmount > 0) {
               <div class="flex justify-between text-brand-orange">
                 <span>Discount</span>
-                <span>-{{ order.currencyCode === 'GBP' ? '£' : '$' }}{{ order.discountAmount | number:'1.2-2' }}</span>
+                <span>-{{ order.discountAmount | tenantCurrency:'symbol':'1.2-2' }}</span>
               </div>
             }
             
@@ -175,21 +164,21 @@
               @if (order.collectionChargeAmount === 0) {
                 <span class="text-green-600 font-semibold">Free</span>
               } @else {
-                <span>{{ order.currencyCode === 'GBP' ? '£' : '$' }}{{ order.collectionChargeAmount | number:'1.2-2' }}</span>
+                <span>{{ order.collectionChargeAmount | tenantCurrency:'symbol':'1.2-2' }}</span>
               }
             </div>
             
             @if (order.taxAmount > 0) {
               <div class="flex justify-between text-neutral-600 border-b border-neutral-100 pb-3">
                 <span>{{ order.isTaxInclusive ? 'Includes VAT' : 'VAT' }}</span>
-                <span>{{ order.currencyCode === 'GBP' ? '£' : '$' }}{{ order.taxAmount | number:'1.2-2' }}</span>
+                <span>{{ order.taxAmount | tenantCurrency:'symbol':'1.2-2' }}</span>
               </div>
             } @else {
               <div class="border-b border-neutral-100 pb-2"></div>
             }            
             <div class="flex justify-between pt-1">
               <span class="font-bold text-brand-navy text-lg">Total</span>
-              <span class="font-extrabold text-brand-navy text-xl">{{ order.currencyCode === 'GBP' ? '£' : '$' }}{{ order.grandTotal | number:'1.2-2' }}</span>
+              <span class="font-extrabold text-brand-navy text-xl">{{ order.grandTotal | tenantCurrency:'symbol':'1.2-2' }}</span>
             </div>
           </div>
         </div>

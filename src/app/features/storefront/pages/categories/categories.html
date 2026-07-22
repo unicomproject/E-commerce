@@ -1,16 +1,11 @@
 <!-- Page Layout for Mobile/Desktop -->
-<div class="min-h-screen bg-gray-50 flex flex-col pb-20">
+<div class="min-h-screen bg-page-bg flex flex-col pb-20">
   
-  <!-- Location Banner -->
-  <app-fulfillment-selector></app-fulfillment-selector>
-
   <!-- Page Title -->
-  <div class="px-4 lg:px-8 py-4 bg-white border-b border-gray-100 w-full max-w-[1600px] mx-auto">
-    <h1 class="text-2xl font-bold text-brand-black">Shop by Category</h1>
-  </div>
+  <app-page-header title="Shop by Category"></app-page-header>
 
   <!-- Categories Grid -->
-  <div class="flex-1 px-4 lg:px-8 py-6 bg-white lg:bg-gray-50 w-full max-w-[1600px] mx-auto">
+  <div class="flex-1 px-4 lg:px-8 py-6 w-full max-w-[1600px] mx-auto">
     <ng-container *ngIf="categories$ | async as categories; else loading">
       <div class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-4 lg:gap-6">
         <!-- Category Card -->

@@ -2,20 +2,22 @@ import { Component, OnInit, inject, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCopy, lucideDownload, lucideHelpCircle, lucideTruck, lucideCalendar, lucideMapPin, lucideCreditCard, lucideFileText, lucideChevronDown, lucideChevronUp, lucideArrowLeft } from '@ng-icons/lucide';
+import { lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCopy, lucideDownload, lucideHelpCircle, lucideTruck, lucideCalendar, lucideMapPin, lucideCreditCard, lucideFileText, lucideChevronDown, lucideChevronUp, lucideArrowLeft, lucideChevronRight } from '@ng-icons/lucide';
 import { OrderService } from '../../../../core/services/order.service';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { OrderItem } from '../../components/order-item/order-item';
 import { OrderTimeline } from '../../components/order-timeline/order-timeline';
+import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-order-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgIconComponent, QRCodeComponent, OrderItem, OrderTimeline],
-  viewProviders: [provideIcons({ lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCopy, lucideDownload, lucideHelpCircle, lucideTruck, lucideCalendar, lucideMapPin, lucideCreditCard, lucideFileText, lucideChevronDown, lucideChevronUp, lucideArrowLeft })],
+  imports: [CommonModule, RouterModule, NgIconComponent, QRCodeComponent, OrderItem, OrderTimeline, TenantCurrencyPipe, PageHeaderComponent],
+  viewProviders: [provideIcons({ lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCopy, lucideDownload, lucideHelpCircle, lucideTruck, lucideCalendar, lucideMapPin, lucideCreditCard, lucideFileText, lucideChevronDown, lucideChevronUp, lucideArrowLeft, lucideChevronRight })],
   templateUrl: './order-details.html',
   styleUrl: './order-details.css',
-  host: { class: 'block w-full min-h-screen bg-brand-gray pb-20' }
+  host: { class: 'block w-full min-h-screen bg-page-bg pb-20' }
 })
 export class OrderDetails implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);

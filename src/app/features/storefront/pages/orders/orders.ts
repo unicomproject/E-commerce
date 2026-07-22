@@ -2,9 +2,10 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideChevronRight } from '@ng-icons/lucide';
+import { lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideChevronRight, lucideArrowLeft } from '@ng-icons/lucide';
 import { OrderService } from '../../../../core/services/order.service';
 import { OrderCard } from '../../components/order-card/order-card';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 export interface OrderTab {
   id: string;
@@ -16,11 +17,11 @@ export interface OrderTab {
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgIconComponent, OrderCard],
-  viewProviders: [provideIcons({ lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideChevronRight })],
+  imports: [CommonModule, RouterModule, NgIconComponent, OrderCard, PageHeaderComponent],
+  viewProviders: [provideIcons({ lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideChevronRight, lucideArrowLeft })],
   templateUrl: './orders.html',
   styleUrl: './orders.css',
-  host: { class: 'block w-full min-h-screen bg-brand-gray pb-20' }
+  host: { class: 'block w-full min-h-screen bg-page-bg pb-20' }
 })
 export class Orders implements OnInit {
   private orderService = inject(OrderService);

@@ -8,13 +8,14 @@
           <div class="flex h-6 w-6 items-center justify-center">
             <div class="flex items-center justify-center rounded-full"
                  [ngClass]="{
-                   'h-[18px] w-[18px] bg-green-500 text-white': isCompleted(step.state),
-                   'h-[18px] w-[18px] border-2 border-[#ff5b22] bg-white': isCurrent(step.state),
-                   'h-[18px] w-[18px] border-2 border-red-500 bg-white': isError(step.state),
-                   'h-[18px] w-[18px] border-2 border-gray-300 bg-white': isPending(step.state)
-                 }">
+                   'h-5 w-5 bg-green-500 text-white': isCompleted(step.state),
+                   'h-5 w-5 border-2 bg-white': isCurrent(step.state) || isError(step.state) || isPending(step.state),
+                   'border-red-500': isError(step.state),
+                   'border-gray-300': isPending(step.state)
+                 }"
+                 [style.borderColor]="isCurrent(step.state) ? '#ff5b22' : null">
               @if (isCompleted(step.state)) {
-                <ng-icon name="lucideCheck" size="11" strokeWidth="4"></ng-icon>
+                <ng-icon name="lucideCheck" size="14" strokeWidth="3"></ng-icon>
               }
               @if (isError(step.state)) {
                 <div class="h-2 w-2 rounded-full bg-red-500"></div>

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideTrash2 } from '@ng-icons/lucide';
 import { QuantityStepperComponent } from '../../../../shared/components/quantity-stepper/quantity-stepper.component';
+import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 
 @Component({
   selector: 'app-cart-item',
   standalone: true,
-  imports: [CommonModule, NgIconComponent, QuantityStepperComponent],
+  imports: [CommonModule, NgIconComponent, QuantityStepperComponent, TenantCurrencyPipe],
   templateUrl: './cart-item.html',
   viewProviders: [provideIcons({ lucideTrash2 })]
 })
