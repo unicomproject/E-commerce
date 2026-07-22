@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideStore, lucideClock, lucideChevronDown } from '@ng-icons/lucide';
@@ -12,47 +12,38 @@ import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-se
   imports: [CommonModule, NgIcon, OutletSelectorModalComponent],
   viewProviders: [provideIcons({ lucideStore, lucideClock, lucideChevronDown })],
   template: `
-    <div class="bg-white border-b border-neutral-200 relative z-40">
-      <div class="py-2 px-3 lg:py-3 lg:px-4 max-w-7xl mx-auto">
-        <!-- Single Box Container -->
-        <div class="flex items-center bg-white border border-neutral-200 rounded-xl p-1.5 lg:p-2 shadow-sm">
-          
-          <!-- Store Selector -->
-          <button (click)="openOutletModal()" class="flex-1 flex items-center justify-between group cursor-pointer text-left px-1 lg:px-2 overflow-hidden hover:bg-gray-50 rounded-lg py-1 transition-colors">
-            <div class="flex items-center gap-1.5 lg:gap-2 overflow-hidden">
-              <ng-icon name="lucideStore" class="text-lg lg:text-xl text-brand-orange flex-shrink-0"></ng-icon>
-              <div class="overflow-hidden">
-                <div class="text-[9px] lg:text-[10px] text-neutral-500 font-medium leading-none mb-1">Collect from</div>
-                <div class="text-[10px] lg:text-xs font-bold text-brand-black leading-none truncate w-full">{{selectedStore?.name || 'Select Outlet'}}</div>
-              </div>
+    <div class="bg-white relative z-40">
+      <div class="py-2 px-3 lg:py-3 lg:px-4 w-full mx-auto">
+        <div class="flex items-center">
+          <button 
+            (click)="openOutletModal()" 
+            class="flex items-center gap-2.5 lg:gap-3 pr-4 pl-1.5 py-1.5 bg-neutral-100 hover:bg-neutral-200 rounded-full transition-all duration-300 active:scale-95 group border border-transparent hover:border-neutral-300"
+          >
+            <!-- Circular Icon Container -->
+            <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-white flex items-center justify-center shadow-sm text-brand-orange group-hover:scale-110 transition-transform duration-300">
+              <ng-icon name="lucideStore" class="text-sm lg:text-base"></ng-icon>
             </div>
-            <ng-icon name="lucideChevronDown" class="text-neutral-400 group-hover:text-neutral-600 text-sm ml-1 flex-shrink-0"></ng-icon>
-          </button>
-
-          <!-- Divider -->
-          <div class="h-6 lg:h-8 w-px bg-neutral-200 mx-1 flex-shrink-0"></div>
-
-          <!-- Time Selector -->
-          <button class="flex-1 flex items-center justify-between group cursor-pointer text-left px-1 lg:px-2 overflow-hidden hover:bg-gray-50 rounded-lg py-1 transition-colors">
-            <div class="flex items-center gap-1.5 lg:gap-2 overflow-hidden">
-              <ng-icon name="lucideClock" class="text-lg lg:text-xl text-neutral-700 flex-shrink-0"></ng-icon>
-              <div class="overflow-hidden">
-                <div class="text-[9px] lg:text-[10px] text-neutral-500 font-medium leading-none mb-1">Collection</div>
-                <div class="text-[10px] lg:text-xs font-bold text-brand-black leading-none truncate w-full">As soon as possible</div>
-              </div>
+            
+            <!-- Text Content -->
+            <div class="flex flex-col text-left justify-center">
+              <span class="text-[9px] lg:text-[10px] text-neutral-500 font-bold uppercase tracking-widest leading-none mb-1">Pickup Store</span>
+              <span class="text-xs lg:text-sm font-extrabold text-brand-black leading-tight">
+                {{ selectedStore()?.name || 'Select Outlet' }}
+              </span>
             </div>
-            <ng-icon name="lucideChevronDown" class="text-neutral-400 group-hover:text-neutral-600 text-sm ml-1 flex-shrink-0"></ng-icon>
-          </button>
 
+            <!-- Arrow -->
+            <ng-icon name="lucideChevronDown" class="text-neutral-400 group-hover:text-neutral-800 transition-colors ml-1 lg:ml-2 text-sm"></ng-icon>
+          </button>
         </div>
       </div>
     </div>
 
     <app-outlet-selector-modal
-      [isOpen]="isOutletModalOpen"
-      [stores]="stores"
-      [selectedStoreId]="selectedStore?.id || null"
-      (close)="isOutletModalOpen = false"
+      [isOpen]="isOutletModalOpen()"
+      [stores]="stores()"
+      [selectedStoreId]="selectedStore()?.id || null"
+      (close)="isOutletModalOpen.set(false)"
       (selectStore)="onStoreSelected($event)"
     ></app-outlet-selector-modal>
   `
@@ -60,16 +51,16 @@ import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-se
 export class FulfillmentSelector implements OnInit {
   private storefrontData = inject(StorefrontDataService);
   
-  stores: Store[] = [];
-  selectedStore: Store | null = null;
-  isOutletModalOpen = false;
+  stores = signal<Store[]>([]);
+  selectedStore = signal<Store | null>(null);
+  isOutletModalOpen = signal<boolean>(false);
 
   ngOnInit() {
     this.storefrontData.getStores().subscribe({
       next: (data) => {
-        this.stores = data;
-        if (this.stores.length > 0) {
-          this.selectedStore = this.stores[0];
+        this.stores.set(data);
+        if (data.length > 0 && !this.selectedStore()) {
+          this.selectedStore.set(data[0]);
         }
       },
       error: (err) => console.error('Failed to fetch stores', err)
@@ -77,11 +68,11 @@ export class FulfillmentSelector implements OnInit {
   }
 
   openOutletModal() {
-    this.isOutletModalOpen = true;
+    this.isOutletModalOpen.set(true);
   }
 
   onStoreSelected(store: Store) {
-    this.selectedStore = store;
-    this.isOutletModalOpen = false;
+    this.selectedStore.set(store);
+    this.isOutletModalOpen.set(false);
   }
 }

@@ -11,60 +11,51 @@
 
   <!-- Header -->
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">My Account</h1>
+    <h1 class="text-3xl font-bold text-brand-navy mb-2 flex items-center gap-2">
+      <ng-icon name="lucideUser" size="32" class="text-brand-orange"></ng-icon>
+      My Account
+    </h1>
     <p class="text-gray-600">Manage your profile, orders and preferences</p>
   </div>
 
   <!-- Profile Card -->
   <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col lg:flex-row lg:items-center gap-6 mb-6">
-    <div class="flex-shrink-0">
-      <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
-        <ng-icon name="lucideUser" size="48" strokeWidth="1.5"></ng-icon>
+    <div class="flex flex-row items-center gap-4 lg:gap-6 flex-grow">
+      <div class="flex-shrink-0">
+        <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+          <ng-icon name="lucideUser" size="40" strokeWidth="1.5"></ng-icon>
+        </div>
       </div>
-    </div>
-    
-    <div class="flex-grow space-y-2">
-      <h2 class="text-xl font-bold text-gray-900">{{user.name}}</h2>
-      <div class="flex items-center text-gray-600 text-sm">
-        <ng-icon name="lucideMail" size="18" class="mr-3"></ng-icon>
-        {{user.email}}
-      </div>
-      <div class="flex items-center text-gray-600 text-sm">
-        <ng-icon name="lucidePhone" size="18" class="mr-3"></ng-icon>
-        {{user.phone}}
+      
+      <div class="flex-grow space-y-1.5 lg:space-y-2">
+        <h2 class="text-xl font-bold text-gray-900">{{user?.displayName}}</h2>
+        <div class="flex items-center text-gray-600 text-sm">
+          <ng-icon name="lucideMail" size="18" class="mr-3"></ng-icon>
+          <span class="truncate">{{user?.email}}</span>
+        </div>
+        <div class="flex items-center text-gray-600 text-sm" *ngIf="user?.phone">
+          <ng-icon name="lucidePhone" size="18" class="mr-3"></ng-icon>
+          {{user?.phone}}
+        </div>
       </div>
     </div>
     
     <div class="flex-shrink-0 mt-4 lg:mt-0">
-      <button class="w-full lg:w-auto px-6 py-2.5 border border-brand-orange text-brand-orange font-bold rounded-lg hover:bg-brand-orange-light transition-colors">
+      <button routerLink="/account/profile" class="w-full lg:w-auto px-6 py-2.5 border border-brand-orange text-brand-orange font-bold rounded-lg hover:bg-brand-orange-light transition-colors">
         Edit Profile
       </button>
     </div>
   </div>
 
-  <!-- My Orders Banner -->
-  <div class="bg-brand-orange-light rounded-xl border border-brand-orange/20 p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-10">
-    <div class="flex items-center gap-4">
-      <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-brand-orange shadow-sm flex-shrink-0">
-        <ng-icon name="lucidePackage" size="24"></ng-icon>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-900">My Orders</h3>
-        <p class="text-sm text-gray-600 mt-0.5">Track and manage all your click & collect orders.</p>
-      </div>
-    </div>
-    <a routerLink="/orders" class="flex items-center text-brand-orange font-bold hover:underline self-start lg:self-auto ml-16 lg:ml-0">
-      View all orders
-      <ng-icon name="lucideChevronRight" size="20" class="ml-1"></ng-icon>
-    </a>
-  </div>
 
   <!-- Quick Actions -->
   <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
   
   <div class="grid grid-cols-1 lg:grid-cols-2 lg:grid-cols-2 gap-4 mb-10">
     <a *ngFor="let action of quickActions" 
-       [routerLink]="action.route" 
+       [routerLink]="action.route ? action.route : null"
+       (click)="action.action ? action.action() : null"
+       [class.cursor-pointer]="true"
        class="bg-white rounded-lg border border-gray-100 shadow-sm p-4 flex items-center justify-between hover:shadow-md transition-shadow group"
        [ngClass]="{'text-red-500 hover:bg-red-50': action.isDestructive, 'text-gray-900 hover:border-gray-300': !action.isDestructive}">
       
@@ -77,20 +68,6 @@
     </a>
   </div>
 
-  <!-- Help & Support -->
-  <div class="bg-blue-50/50 rounded-xl border border-blue-100 p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
-    <div class="flex items-center gap-5">
-      <div class="w-14 h-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
-        <ng-icon name="lucideHeadphones" size="28" strokeWidth="1.5"></ng-icon>
-      </div>
-      <div>
-        <h3 class="font-bold text-gray-900 text-lg">Need help?</h3>
-        <p class="text-gray-600 mt-1 max-w-sm">Our support team is here to help you with your orders.</p>
-      </div>
-    </div>
-    <button class="w-full lg:w-auto px-6 py-3 border border-blue-600 text-blue-700 font-bold rounded-lg hover:bg-blue-50 transition-colors">
-      Contact Support
-    </button>
-  </div>
+
 
 </div>

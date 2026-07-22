@@ -1,20 +1,26 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { lucideArrowLeft } from '@ng-icons/lucide';
 import { StorefrontDataService } from '../../services/storefront-data.service';
 import { StorefrontProductListReadModel, Category } from '../../../../core/models';
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
 import { CategoryCardComponent } from '../../../../shared/components/category-card/category-card.component';
+import { FilterSortButtonComponent } from '../../../../shared/components/filter-sort-button/filter-sort-button.component';
+import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-collections',
   standalone: true,
-  imports: [CommonModule, RouterModule, ProductCardComponent, CategoryCardComponent],
+  imports: [CommonModule, RouterModule, ProductCardComponent, CategoryCardComponent, FilterSortButtonComponent, PageHeaderComponent],
   templateUrl: './collections.html',
   styleUrl: './collections.css'
 })
 export class Collections implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private dataService = inject(StorefrontDataService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -61,8 +67,8 @@ export class Collections implements OnInit {
       next: (children) => {
         this.childCategories = children || [];
         if (this.childCategories.length === 0) {
-          // If no child categories, fetch products for this category
-          this.loadProducts(categoryId);
+          // If no child categories, redirect to search page
+          this.router.navigate(['/search'], { queryParams: { category: this.slug }, replaceUrl: true });
         } else {
           this.loading = false;
           this.cdr.detectChanges();

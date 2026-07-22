@@ -1,0 +1,115 @@
+﻿<div class="bg-page-bg min-h-screen pb-24 lg:pb-12 pt-6">
+  <div class="max-w-[1000px] mx-auto px-4 lg:px-8">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-4">
+        <!-- Back Button -->
+        <button onclick="history.back()" class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-white rounded-2xl shadow-sm text-brand-navy hover:bg-neutral-50 border border-neutral-100 transition-colors">
+          <ng-icon name="lucideArrowLeft" size="22" strokeWidth="1.5"></ng-icon>
+        </button>
+        <h1 class="text-2xl lg:text-3xl font-extrabold text-brand-navy tracking-tight">Wishlist</h1>
+      </div>
+      <p class="text-gray-500 mt-2 text-sm lg:text-base ml-[56px]">Save your favourite items for later.</p>
+    </div>
+
+    <ng-container *ngIf="wishlist$ | async as wishlist">
+      
+
+      <!-- Empty State -->
+      <div *ngIf="wishlist.items.length === 0" class="bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100 flex flex-col items-center">
+        <div class="w-24 h-24 bg-brand-orange-light/30 text-brand-orange rounded-full flex items-center justify-center mb-6">
+          <ng-icon name="lucideHeart" size="48"></ng-icon>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Your wishlist is empty</h2>
+        <p class="text-gray-500 mb-8 max-w-md">Looks like you haven't added any items to your wishlist yet. Explore our products and find something you love!</p>
+        <a routerLink="/" class="px-8 py-4 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold transition-colors">Start Shopping</a>
+      </div>
+
+      <!-- Wishlist Horizontal List -->
+      <div *ngIf="wishlist.items.length > 0" class="flex flex-col gap-4">
+        <div *ngFor="let item of wishlist.items" class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm border border-gray-100 flex flex-row gap-3 sm:gap-4 relative group">
+          
+          <!-- Image (Left) -->
+          <a [routerLink]="['/product', item.productSlug]" class="shrink-0 block">
+            <div class="w-[100px] h-[120px] sm:w-[140px] sm:h-[160px] rounded-lg sm:rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center">
+              <img 
+                [src]="item.imageUrl || 'assets/images/placeholder.webp'" 
+                [alt]="item.productName"
+                class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          </a>
+
+          <!-- Details & Actions (Right) -->
+          <div class="flex-1 flex flex-col justify-between py-1 relative">
+            
+            <!-- Top: Title, Variant and Right Icons -->
+            <div class="flex justify-between items-start">
+              <div class="pr-10 sm:pr-12">
+                <h3 class="font-bold text-gray-900 text-[13px] sm:text-[15px] leading-tight sm:leading-snug mb-1">
+                  <a [routerLink]="['/product', item.productSlug]" class="hover:text-brand-orange transition-colors">
+                    {{ item.productName }}
+                  </a>
+                </h3>
+                <p class="text-[11px] sm:text-xs text-gray-500" *ngIf="item.variantName">
+                  {{ item.variantName }}
+                </p>
+              </div>
+
+              <!-- Top Right Icons (Heart & Trash) -->
+              <div class="flex flex-col items-center gap-2.5 sm:gap-3 absolute top-0 right-0">
+                <button class="text-brand-orange hover:text-brand-orange-dark transition-colors" title="In Wishlist">
+                  <ng-icon name="lucideHeart" size="20" class="fill-current"></ng-icon>
+                </button>
+                <button 
+                  (click)="$event.preventDefault(); removeItem(item.id)" 
+                  class="w-7 h-7 sm:w-9 sm:h-9 border border-gray-200 rounded-md sm:rounded-lg flex items-center justify-center text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all"
+                  title="Remove from Wishlist">
+                  <ng-icon name="lucideTrash2" size="16"></ng-icon>
+                </button>
+              </div>
+            </div>
+
+            <!-- Bottom: Price, Stock & Cart Button -->
+            <div class="flex flex-row justify-between items-end mt-3 sm:mt-auto">
+              <div>
+                <div class="font-extrabold text-gray-900 text-sm sm:text-lg leading-none mb-1.5 sm:mb-2">{{ item.price | tenantCurrency:'symbol':'1.2-2' }}</div>
+                <div class="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold" [ngClass]="item.isInStock ? 'text-gray-500' : 'text-red-500'">
+                  <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full" [ngClass]="item.isInStock ? 'bg-green-500' : 'bg-red-500'"></div>
+                  {{ item.isInStock ? 'In stock' : 'Out of stock' }}
+                </div>
+              </div>
+
+              <button 
+                [disabled]="!item.isInStock"
+                (click)="moveToCart(item)"
+                class="px-4 py-2 sm:px-6 sm:py-2.5 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-md sm:rounded-lg font-bold text-[11px] sm:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                Move to Cart
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Banner -->
+      <div *ngIf="wishlist.items.length > 0" class="mt-8 bg-brand-orange-light/20 rounded-2xl border border-brand-orange-light p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-4 text-center md:text-left">
+          <div class="hidden md:flex text-brand-orange opacity-50">
+            <ng-icon name="lucideHeart" size="40"></ng-icon>
+          </div>
+          <div>
+            <h4 class="font-bold text-gray-900 text-lg">Love an item you recently viewed?</h4>
+            <p class="text-gray-500 text-sm">Keep browsing and add more to your wishlist.</p>
+          </div>
+        </div>
+        <a routerLink="/" class="w-full md:w-auto px-6 py-3 bg-white border border-brand-orange text-brand-orange hover:bg-brand-orange-light/20 font-bold rounded-lg transition-colors text-center">
+          Continue Shopping
+        </a>
+      </div>
+
+    </ng-container>
+
+  </div>
+</div>

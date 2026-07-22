@@ -1,0 +1,223 @@
+<div class="w-full px-4 md:px-8 pt-2 pb-20">
+  
+  <!-- Header Section -->
+  <app-page-header title="Order Details" customClasses="!px-0 !pt-4 !pb-0 !border-b-0"></app-page-header>
+  <p class="text-neutral-500 text-sm lg:ml-[56px] mt-0 mb-6">Review your click & collect order information.</p>
+
+  @if (isLoading()) {
+    <div class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#ff5b22]"></div>
+    </div>
+  }
+
+  @if (!isLoading() && orderData(); as order) {
+    
+    <!-- Status Banner -->
+    <div class="rounded-xl border p-4 mb-6 flex items-start gap-4 shadow-sm"
+         [ngClass]="getStatusBannerClasses(order.status)">
+      <div class="mt-0.5">
+        <ng-icon [name]="getStatusIcon(order.status)" class="text-2xl"></ng-icon>
+      </div>
+      <div>
+        <h3 class="font-bold text-lg mb-1">{{ order.statusLabel }}</h3>
+        <p class="text-sm opacity-90 leading-snug" [innerHTML]="order.statusMessage || 'Your order status has been updated.'"></p>
+      </div>
+    </div>
+
+    <!-- Start Grid Layout -->
+    <div class="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+      
+      <!-- Left Column -->
+      <div class="lg:col-span-7 flex flex-col gap-6 w-full">
+        <!-- QR Code Section (Only if Available) -->
+        @if (order.canShowCollectionQr && order.collectionQr) {
+          <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 flex flex-col md:flex-row gap-6 md:items-center">
+            <div class="flex flex-col items-center flex-shrink-0 bg-neutral-50 p-4 rounded-xl border border-neutral-100">
+              <h4 class="font-bold text-brand-navy mb-3 text-center w-full border-b pb-2">Collection QR</h4>
+              <div class="bg-white p-2 rounded-lg shadow-sm border border-neutral-200">
+                <qrcode [qrdata]="order.collectionQr" [width]="180" [errorCorrectionLevel]="'M'"></qrcode>
+              </div>
+              <p class="text-xs text-neutral-500 font-medium mt-3 text-center">Show this QR code at the store</p>
+              <button (click)="downloadQr()" class="mt-4 w-full flex items-center justify-center gap-1.5 py-2 px-4 border border-[#ff5b22] text-brand-orange rounded-lg font-bold text-sm hover:bg-orange-50 transition-colors active:scale-95">
+                <ng-icon name="lucideDownload" class="text-[16px]"></ng-icon> Save QR
+              </button>
+            </div>
+            
+            <!-- Order Info Summary next to QR on Desktop, below on mobile -->
+            <div class="flex-grow space-y-4 text-sm w-full bg-neutral-50 p-5 rounded-xl border border-neutral-100">
+              <div class="flex justify-between border-b border-neutral-200 pb-3">
+                <div class="flex items-center gap-2 text-neutral-500"><ng-icon name="lucideFileText"></ng-icon> Order ID</div>
+                <div class="font-bold text-brand-navy flex items-center gap-2">
+                  {{ order.displayOrderNumber }}
+                  <button (click)="copyOrderId(order.orderNumber)" class="text-neutral-400 hover:text-brand-orange transition-colors"><ng-icon name="lucideCopy"></ng-icon></button>
+                </div>
+              </div>
+              <div class="flex justify-between border-b border-neutral-200 pb-3">
+                <div class="flex items-center gap-2 text-neutral-500"><ng-icon name="lucideMapPin"></ng-icon> Collection Point</div>
+                <div class="font-semibold text-neutral-700 text-right">{{ order.outletName }}</div>
+              </div>
+              <div class="flex justify-between border-b border-neutral-200 pb-3">
+                <div class="flex items-center gap-2 text-neutral-500"><ng-icon name="lucideCreditCard"></ng-icon> Payment</div>
+                <div class="font-semibold text-neutral-700">{{ order.paymentLabel }}</div>
+              </div>
+              <div class="flex justify-between border-b border-neutral-200 pb-3">
+                <div class="flex items-center gap-2 text-neutral-500"><ng-icon name="lucideCalendar"></ng-icon> Placed on</div>
+                <div class="font-semibold text-neutral-700">{{ order.placedAt | date:'dd MMM yyyy, hh:mm a' }}</div>
+              </div>
+              <div class="flex justify-between">
+                <div class="flex items-center gap-2 text-neutral-500"><ng-icon name="lucideClock"></ng-icon> Pickup Time</div>
+                <div class="font-semibold text-neutral-700 text-right">
+                  {{ order.requestedCollectionAt | date:'dd MMM yyyy, hh:mm a' }} 
+                  <span *ngIf="order.requestedCollectionEndAt">- {{ order.requestedCollectionEndAt | date:'hh:mm a' }}</span>
+                </div>
+              </div>
+              @if (order.status === 'PENDING_CONFIRMATION' || order.status === 'ACCEPTED') {
+                <div class="pt-4 mt-4 border-t border-neutral-200 flex justify-end">
+                  <button (click)="promptCancelOrder()" class="flex items-center gap-1.5 text-red-500 hover:text-red-600 font-semibold text-[13px] transition-colors active:scale-95">
+                    <ng-icon name="lucideXCircle" class="text-[16px]"></ng-icon> Cancel Order
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        } @else {
+          <!-- Order Info Summary (No QR) -->
+          <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-5 md:p-6 space-y-4 text-sm">
+            <div class="flex justify-between border-b border-neutral-100 pb-4">
+              <div class="flex items-center gap-2 text-neutral-500"><ng-icon name="lucideFileText"></ng-icon> Order ID</div>
+              <div class="font-bold text-brand-navy flex items-center gap-2">
+                {{ order.displayOrderNumber }}
+                <button (click)="copyOrderId(order.orderNumber)" class="text-neutral-400 hover:text-brand-orange transition-colors"><ng-icon name="lucideCopy"></ng-icon></button>
+              </div>
+            </div>
+            <div class="flex justify-between border-b border-neutral-100 pb-4">
+              <div class="flex items-center gap-2 text-neutral-500"><ng-icon name="lucideMapPin"></ng-icon> Collection Point</div>
+              <div class="font-semibold text-neutral-700 text-right">{{ order.outletName }}</div>
+            </div>
+            <div class="flex justify-between border-b border-neutral-100 pb-4">
+              <div class="flex items-center gap-2 text-neutral-500"><ng-icon name="lucideCreditCard"></ng-icon> Payment</div>
+              <div class="font-semibold text-neutral-700">{{ order.paymentLabel }}</div>
+            </div>
+            <div class="flex justify-between border-b border-neutral-100 pb-4">
+              <div class="flex items-center gap-2 text-neutral-500"><ng-icon name="lucideCalendar"></ng-icon> Placed on</div>
+              <div class="font-semibold text-neutral-700">{{ order.placedAt | date:'dd MMM yyyy, hh:mm a' }}</div>
+            </div>
+            <div class="flex justify-between">
+              <div class="flex items-center gap-2 text-neutral-500"><ng-icon name="lucideClock"></ng-icon> Pickup Time</div>
+              <div class="font-semibold text-neutral-700 text-right">
+                {{ order.requestedCollectionAt | date:'dd MMM yyyy, hh:mm a' }}
+                <span *ngIf="order.requestedCollectionEndAt">- {{ order.requestedCollectionEndAt | date:'hh:mm a' }}</span>
+              </div>
+            </div>
+            @if (order.status === 'PENDING_CONFIRMATION' || order.status === 'ACCEPTED') {
+              <div class="pt-4 mt-4 border-t border-neutral-100 flex justify-end">
+                <button (click)="promptCancelOrder()" class="flex items-center gap-1.5 text-red-500 hover:text-red-600 font-semibold text-[13px] transition-colors active:scale-95">
+                  <ng-icon name="lucideXCircle" class="text-[16px]"></ng-icon> Cancel Order
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <app-order-timeline [steps]="order.timelineSteps"></app-order-timeline>
+      </div>
+
+      <!-- Right Column -->
+      <div class="lg:col-span-5 flex flex-col gap-6 w-full">
+        <!-- Items List -->
+        <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-5 md:p-6">
+          <h3 class="text-base font-bold text-brand-navy mb-4">Items ({{ order.itemCount }})</h3>
+          
+          <div class="space-y-4">
+            @for (item of (showAllItems() ? order.items : (order.items | slice:0:2)); track item.id; let i = $index, last = $last) {
+              <app-order-item [item]="item" [isLast]="last || (!showAllItems() && order.items.length > 2 && i === 1)" [currencyCode]="order.currencyCode"></app-order-item>
+            }
+          </div>
+
+          @if (order.items.length > 2) {
+            <button (click)="toggleItems()" class="w-full mt-4 flex items-center justify-center gap-2 py-2.5 text-sm font-bold text-brand-navy bg-neutral-50 hover:bg-neutral-100 rounded-xl border border-neutral-200 transition-colors">
+              {{ showAllItems() ? 'View Less' : 'View ' + (order.items.length - 2) + ' More Items' }}
+              <ng-icon [name]="showAllItems() ? 'lucideChevronUp' : 'lucideChevronDown'" size="16"></ng-icon>
+            </button>
+          }
+        </div>
+
+        <!-- Order Total -->
+        <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-5 md:p-6">
+          <h3 class="text-base font-bold text-brand-navy mb-4">Order Total</h3>
+          
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between text-neutral-600">
+              <span>Subtotal ({{ order.itemCount }} items)</span>
+              <span>{{ order.subtotalAmount | tenantCurrency:'symbol':'1.2-2' }}</span>
+            </div>
+            
+            @if (order.discountAmount > 0) {
+              <div class="flex justify-between text-brand-orange">
+                <span>Discount</span>
+                <span>-{{ order.discountAmount | tenantCurrency:'symbol':'1.2-2' }}</span>
+              </div>
+            }
+            
+            <div class="flex justify-between text-neutral-600">
+              <span>Collection</span>
+              @if (order.collectionChargeAmount === 0) {
+                <span class="text-green-600 font-semibold">Free</span>
+              } @else {
+                <span>{{ order.collectionChargeAmount | tenantCurrency:'symbol':'1.2-2' }}</span>
+              }
+            </div>
+            
+            @if (order.taxAmount > 0) {
+              <div class="flex justify-between text-neutral-600 border-b border-neutral-100 pb-3">
+                <span>{{ order.isTaxInclusive ? 'Includes VAT' : 'VAT' }}</span>
+                <span>{{ order.taxAmount | tenantCurrency:'symbol':'1.2-2' }}</span>
+              </div>
+            } @else {
+              <div class="border-b border-neutral-100 pb-2"></div>
+            }            
+            <div class="flex justify-between pt-1">
+              <span class="font-bold text-brand-navy text-lg">Total</span>
+              <span class="font-extrabold text-brand-navy text-xl">{{ order.grandTotal | tenantCurrency:'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col gap-3">
+          <a routerLink="/orders" class="w-full py-3.5 bg-white border border-[#ff5b22] text-brand-orange hover:bg-orange-50 rounded-xl font-bold text-base transition-colors flex items-center justify-center gap-2 active:scale-[0.98] shadow-sm">
+            <ng-icon name="lucideArrowLeft" class="text-xl"></ng-icon> Back to Orders
+          </a>
+        </div>
+      </div>
+    </div>
+  } 
+
+  <!-- Cancel Order Modal -->
+  @if (showCancelModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" (click)="closeCancelModal()"></div>
+      <div class="bg-white rounded-2xl p-6 w-full max-w-sm relative z-10 shadow-xl animate-in fade-in zoom-in duration-200">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-50 text-red-500 mb-4 mx-auto">
+          <ng-icon name="lucideXCircle" class="text-2xl"></ng-icon>
+        </div>
+        <h3 class="text-lg font-bold text-center text-brand-navy mb-2">Cancel Order?</h3>
+        <p class="text-sm text-center text-neutral-500 mb-6">Are you sure you want to cancel this order? This action cannot be undone.</p>
+        
+        <div class="flex flex-col gap-3">
+          <button (click)="confirmCancelOrder()" [disabled]="isCancelling()" class="w-full py-3 bg-red-500 hover:bg-red-600 disabled:opacity-50 disabled:active:scale-100 text-white rounded-xl font-bold transition-colors active:scale-95 flex justify-center items-center gap-2">
+            @if (isCancelling()) {
+              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              Cancelling...
+            } @else {
+              Yes, Cancel Order
+            }
+          </button>
+          <button (click)="closeCancelModal()" [disabled]="isCancelling()" class="w-full py-3 bg-neutral-100 hover:bg-neutral-200 disabled:opacity-50 text-brand-navy rounded-xl font-bold transition-colors active:scale-95">
+            No, Keep Order
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

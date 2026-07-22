@@ -10,10 +10,23 @@
   --color-brand-orange-dark: #e04815;
   --color-brand-black: #111111;
   --color-brand-gray: #f9fafb;
+  
+  /* Secondary / Accent Colors */
+  --color-brand-navy: #0f172a;       /* Deep Navy Blue */
+  --color-brand-navy-light: #1e293b; 
+  --color-brand-teal: #0d9488;
+  --color-brand-teal-light: #f0fdfa;
+
+  /* Custom Theme Colors */
+  --color-page-bg: #f8f8f8;
+  --color-card-bg: #ffffff;
+  --color-card-border: #e8e8e8;
+  --color-soft-control-bg: #f5f5f5;
+  --color-border-color: #e6e6e6;
 }
 
 body {
-  @apply bg-white text-brand-black antialiased;
+  @apply bg-page-bg text-brand-black antialiased;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -29,4 +42,28 @@ body {
 /* Safe area padding for mobile notch/home indicator */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+@keyframes cart-jiggle {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.2) rotate(-10deg); }
+  50% { transform: scale(1.2) rotate(10deg); }
+  75% { transform: scale(1.2) rotate(-10deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.animate-cart-jiggle {
+  animation: cart-jiggle 0.4s ease-in-out;
+  color: var(--color-brand-orange);
+}
+
+@keyframes cart-pop-in {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  80% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-cart-pop-in {
+  animation: cart-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }

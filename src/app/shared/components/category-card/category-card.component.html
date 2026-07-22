@@ -32,7 +32,12 @@
 <!-- Grid Layout (Used in Collections/Subcategories Grid) -->
 <a *ngIf="layout === 'grid'" [routerLink]="['/collections', category.slug]" class="item-card group block">
   <div class="item-image-wrapper bg-gray-100 rounded-2xl overflow-hidden aspect-square relative flex items-center justify-center mb-3">
-    <img [src]="category.imageUrl || 'assets/placeholder-category.png'" [alt]="category.name" class="w-full h-full object-cover mix-blend-multiply transition-transform duration-500 group-hover:scale-105" loading="lazy">
+    <img *ngIf="category.imageUrl" [src]="category.imageUrl" [alt]="category.name" class="w-full h-full object-cover mix-blend-multiply transition-transform duration-500 group-hover:scale-105" loading="lazy">
+    <div *ngIf="!category.imageUrl" class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100 transition-transform duration-500 group-hover:scale-105">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 lg:h-12 lg:w-12 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+      </svg>
+    </div>
   </div>
   <div class="flex items-center justify-between px-1">
     <span class="font-bold text-gray-900 text-sm lg:text-base group-hover:text-brand-orange transition-colors">{{ category.name }}</span>

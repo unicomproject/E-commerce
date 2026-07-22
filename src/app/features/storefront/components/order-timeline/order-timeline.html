@@ -1,0 +1,70 @@
+@if (steps().length > 0) {
+  <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 px-5 py-5 sm:px-6 sm:py-6 md:px-7 md:py-7 mb-6">
+    <div class="relative flex flex-col gap-7 sm:gap-8">
+      <div class="absolute left-[11px] top-[24px] bottom-[24px] w-px bg-gray-200 z-0"></div>
+
+      @for (step of steps(); track step.code) {
+        <div class="relative z-10 grid grid-cols-[24px_48px_minmax(0,1fr)] sm:grid-cols-[24px_48px_minmax(0,1fr)_116px] items-center gap-x-4 sm:gap-x-5 md:gap-x-6 min-h-[58px]">
+          <div class="flex h-6 w-6 items-center justify-center">
+            <div class="flex items-center justify-center rounded-full"
+                 [ngClass]="{
+                   'h-5 w-5 bg-green-500 text-white': isCompleted(step.state),
+                   'h-5 w-5 border-2 bg-white': isCurrent(step.state) || isError(step.state) || isPending(step.state),
+                   'border-red-500': isError(step.state),
+                   'border-gray-300': isPending(step.state)
+                 }"
+                 [style.borderColor]="isCurrent(step.state) ? '#ff5b22' : null">
+              @if (isCompleted(step.state)) {
+                <ng-icon name="lucideCheck" size="14" strokeWidth="3"></ng-icon>
+              }
+              @if (isError(step.state)) {
+                <div class="h-2 w-2 rounded-full bg-red-500"></div>
+              }
+            </div>
+          </div>
+
+          <div class="flex h-12 w-12 items-center justify-center rounded-full"
+               [ngClass]="{
+                 'bg-green-50 text-green-500': isCompleted(step.state),
+                 'bg-orange-50 text-brand-orange': isCurrent(step.state),
+                 'bg-red-50 text-red-500': isError(step.state),
+                 'bg-gray-50 text-gray-400': isPending(step.state)
+               }">
+            <ng-icon [name]="step.icon" size="21"></ng-icon>
+          </div>
+
+          <div class="min-w-0 pr-2">
+            <h4 class="mb-1 text-[15px] font-extrabold leading-tight"
+                [ngClass]="!isPending(step.state) ? (isError(step.state) ? 'text-red-500' : 'text-gray-900') : 'text-gray-400'">
+              {{ step.label }}
+            </h4>
+            <p class="text-[13px] leading-snug"
+               [ngClass]="!isPending(step.state) ? 'text-slate-500' : 'text-gray-400'">
+              {{ step.description }}
+            </p>
+          </div>
+
+          <div class="col-start-3 mt-2 sm:col-start-auto sm:mt-0 sm:flex sm:justify-end sm:text-right">
+            @if (isCompleted(step.state) && step.occurredAt) {
+              <div class="text-[13px] leading-snug text-slate-500">
+                <div class="font-medium">{{ step.occurredAt | date:'dd MMM yyyy' }}</div>
+                <div class="mt-1 text-xs text-slate-500">{{ step.occurredAt | date:'hh:mm a' }}</div>
+              </div>
+            } @else if (isCurrent(step.state) && step.badgeLabel) {
+              <span class="inline-flex items-center rounded-md bg-orange-50 px-2.5 py-1 text-[11px] font-bold leading-none text-brand-orange">
+                {{ step.badgeLabel }}
+              </span>
+            } @else if (isError(step.state) && step.occurredAt) {
+              <div class="text-[13px] leading-snug text-red-500">
+                <div class="font-medium">{{ step.occurredAt | date:'dd MMM yyyy' }}</div>
+                <div class="mt-1 text-xs text-red-400">{{ step.occurredAt | date:'hh:mm a' }}</div>
+              </div>
+            } @else {
+              <span class="hidden text-sm text-gray-300 sm:inline">-</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

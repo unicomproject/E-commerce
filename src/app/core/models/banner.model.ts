@@ -4,5 +4,7 @@ export interface Banner {
   subtitle?: string;
   imageUrl: string;
   linkUrl?: string;
+  description?: string;
+  buttonText?: string;
   bannerType: 'Hero' | 'Promo';
 }

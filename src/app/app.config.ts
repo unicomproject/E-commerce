@@ -1,9 +1,10 @@
 import { ApplicationConfig, APP_INITIALIZER, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter, withViewTransitions } from '@angular/router';
+import { provideRouter, withViewTransitions, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, HttpClient, withInterceptors } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../environments/environment';
 import { TenantContextService } from './core/services/tenant-context.service';
+import { AuthService } from './core/services/auth.service';
 import { routes } from './app.routes';
 import { tenantInterceptor } from './core/interceptors/tenant.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
@@ -28,7 +29,7 @@ function resolveStoreSlug(hostname: string): string {
   return parts.length >= 3 ? parts[0] : defaultSlug;
 }
 
-export function initializeTenant(http: HttpClient, tenantCtx: TenantContextService) {
+export function initializeTenant(http: HttpClient, tenantCtx: TenantContextService, authService: AuthService) {
   return (): Promise<any> => {
     return new Promise((resolve, reject) => {
       const slug = resolveStoreSlug(window.location.hostname);
@@ -37,7 +38,13 @@ export function initializeTenant(http: HttpClient, tenantCtx: TenantContextServi
       firstValueFrom(http.get<any>(url)).then(
         (res) => {
           tenantCtx.tenantId = res.tenantId;
-          resolve(true);
+          if (res.currencyCode) {
+            tenantCtx.currencyCode = res.currencyCode;
+          }
+          firstValueFrom(authService.refreshSession()).then(
+            () => resolve(true),
+            () => resolve(true)
+          );
         },
         (err) => {
           console.error('Failed to resolve tenant:', err);
@@ -59,12 +66,12 @@ export function initializeTenant(http: HttpClient, tenantCtx: TenantContextServi
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(), 
-    provideRouter(routes), 
+    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })), 
     provideHttpClient(withInterceptors([tenantInterceptor, sessionInterceptor, authInterceptor, errorInterceptor])),
     {
       provide: APP_INITIALIZER,
       useFactory: initializeTenant,
-      deps: [HttpClient, TenantContextService],
+      deps: [HttpClient, TenantContextService, AuthService],
       multi: true
     }
   ],

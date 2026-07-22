@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class TenantContextService {
   private _tenantId: string | null = null;
+  private _currencyCode: string = 'USD'; // Default fallback
 
   get tenantId(): string {
     if (!this._tenantId) {
@@ -15,5 +16,15 @@ export class TenantContextService {
 
   set tenantId(id: string) {
     this._tenantId = id;
+  }
+
+  get currencyCode(): string {
+    return this._currencyCode;
+  }
+
+  set currencyCode(code: string) {
+    if (code) {
+      this._currencyCode = code;
+    }
   }
 }

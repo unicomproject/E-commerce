@@ -10,6 +10,7 @@ export interface StorefrontCartReadModel {
   chargeTotal: number;
   grandTotal: number;
   totalQuantity: number;
+  isTaxInclusive: boolean;
   expiresAt?: string;
 }
 

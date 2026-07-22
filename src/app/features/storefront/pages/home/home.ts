@@ -8,6 +8,7 @@ import { HeroCarousel } from '../../components/hero-carousel/hero-carousel';
 import { CategoryStrip } from '../../components/category-strip/category-strip';
 import { PromoBanners } from '../../components/promo-banners/promo-banners';
 import { ProductGrid } from '../../components/product-grid/product-grid';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-home',
@@ -17,28 +18,27 @@ import { ProductGrid } from '../../components/product-grid/product-grid';
     HeroCarousel,
     CategoryStrip,
     PromoBanners,
-    ProductGrid
+    ProductGrid,
+    LoadingSpinnerComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="flex flex-col min-h-screen bg-white">
+    <div class="flex flex-col min-h-screen bg-page-bg">
       
       <app-fulfillment-selector></app-fulfillment-selector>
       
       <!-- Check if backend is responding or use fallback UI -->
       <ng-container *ngIf="!isLoading(); else loadingState">
-        <app-hero-carousel></app-hero-carousel>
-        <app-category-strip></app-category-strip>
-        <app-promo-banners></app-promo-banners>
-        <app-product-grid title="Best Sellers" [products]="bestSellers()"></app-product-grid>
+        <div class="w-full max-w-[1600px] mx-auto">
+          <app-hero-carousel [banners]="heroBanners()"></app-hero-carousel>
+          <app-category-strip [categories]="categories()"></app-category-strip>
+          <app-promo-banners [banners]="promoBanners()"></app-promo-banners>
+          <app-product-grid title="Best Sellers" [products]="bestSellers()"></app-product-grid>
+        </div>
       </ng-container>
 
       <ng-template #loadingState>
-        <div class="flex-1 flex flex-col items-center justify-center py-20 text-neutral-400">
-          <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-orange mb-4"></div>
-          <p>Loading Storefront...</p>
-          <p class="text-xs mt-2 max-w-xs text-center">If this takes too long, ensure the E_POS Backend API is running on localhost:5000.</p>
-        </div>
+        <app-loading-spinner message="Loading Storefront... If this takes too long, ensure the E_POS Backend API is running on localhost:5000."></app-loading-spinner>
       </ng-template>
 
     </div>
@@ -51,6 +51,8 @@ export class Home {
   categories = toSignal(this.dataService.getFeaturedCategories(), { initialValue: [] });
   bestSellers = toSignal(this.dataService.getBestSellers(), { initialValue: [] });
   stores = toSignal(this.dataService.getStores(), { initialValue: [] });
+  heroBanners = toSignal(this.dataService.getHeroBanners(), { initialValue: [] });
+  promoBanners = toSignal(this.dataService.getPromoBanners(), { initialValue: [] });
 
   // Computed signal to determine loading state. 
   // For MVP, if bestSellers hasn't loaded and hasn't errored yet (since it's empty initially).

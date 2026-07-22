@@ -9,9 +9,9 @@
 
 <!-- Bottom Sheet Container -->
 <div 
-  class="fixed bottom-0 left-0 right-0 lg:left-1/2 lg:-translate-x-1/2 lg:w-[600px] z-[101] bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 ease-out flex flex-col max-h-[90vh]"
-  [class.translate-y-full]="!isOpen"
-  [class.translate-y-0]="isOpen"
+  class="fixed bottom-0 left-0 right-0 lg:left-1/2 lg:-translate-x-1/2 lg:w-[600px] z-[101] bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[90vh] translate-y-full transition-transform duration-300 ease-out"
+  [class.!translate-y-0]="isOpen"
+  [class.pointer-events-none]="!isOpen"
 >
   <!-- Handle bar -->
   <div class="w-full flex justify-center pt-3 pb-1">
@@ -31,37 +31,7 @@
     </div>
   </div>
 
-  <!-- Search & Location -->
-  <div class="px-5 py-4 shrink-0 flex flex-col gap-4">
-    <!-- Search Bar -->
-    <div class="relative flex items-center">
-      <ng-icon name="lucideSearch" class="absolute left-4 text-gray-400 text-lg"></ng-icon>
-      <input 
-        type="text" 
-        placeholder="Search by store name, postcode or town..."
-        class="w-full py-3.5 pl-11 pr-11 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-orange/50 focus:border-brand-orange text-sm shadow-sm transition-shadow"
-      >
-      <button class="absolute right-4 text-brand-orange hover:text-brand-orange-dark transition-colors">
-        <ng-icon name="lucideTarget" class="text-lg"></ng-icon>
-      </button>
-    </div>
 
-    <!-- Use My Location -->
-    <div class="flex items-center justify-between bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-      <div class="flex items-center gap-4">
-        <div class="w-10 h-10 rounded-full bg-brand-orange-light flex items-center justify-center text-brand-orange shrink-0">
-          <ng-icon name="lucideMapPin" class="text-xl"></ng-icon>
-        </div>
-        <div>
-          <h4 class="text-sm font-bold text-gray-900">Use my current location</h4>
-          <p class="text-[11px] text-gray-500 mt-0.5">Find the nearest Arena Store<br>to collect your order.</p>
-        </div>
-      </div>
-      <button class="bg-brand-orange hover:bg-brand-orange-dark text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors shadow-sm">
-        Use my location
-      </button>
-    </div>
-  </div>
 
   <!-- Stores List -->
   <div class="px-5 flex-1 overflow-y-auto pb-4">
@@ -115,20 +85,7 @@
               {{store.address}}
             </p>
 
-            <div class="flex flex-wrap gap-2">
-              <div class="flex items-center gap-1.5 border border-gray-200 rounded px-2 py-1 bg-gray-50">
-                <ng-icon name="lucideCar" class="text-gray-600 text-[10px]"></ng-icon>
-                <span class="text-[10px] font-medium text-gray-700">{{store.distance}}</span>
-              </div>
-              <div class="flex items-center gap-1.5 border border-gray-200 rounded px-2 py-1 bg-gray-50">
-                <ng-icon name="lucideShoppingBag" class="text-gray-600 text-[10px]"></ng-icon>
-                <span class="text-[10px] font-medium text-gray-700">{{store.collectionTime}}</span>
-              </div>
-              <div class="flex items-center gap-1.5 border border-gray-200 rounded px-2 py-1 bg-gray-50">
-                <ng-icon name="lucideParkingCircle" class="text-gray-600 text-[10px]"></ng-icon>
-                <span class="text-[10px] font-medium text-gray-700">{{store.parkingInfo}}</span>
-              </div>
-            </div>
+
           </div>
         </div>
       }
