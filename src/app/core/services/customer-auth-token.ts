@@ -1,5 +1,6 @@
 const LEGACY_CUSTOMER_ACCESS_TOKEN_KEY = 'access_token';
 const LEGACY_CUSTOMER_CURRENT_USER_KEY = 'current_user';
+const CUSTOMER_SESSION_HINT_KEY = 'customer_session_hint';
 
 let customerAccessToken: string | null = null;
 
@@ -9,8 +10,13 @@ interface JwtPayload {
 }
 
 export function getValidCustomerAccessToken(): string | null {
+  if (!customerAccessToken) {
+    return null;
+  }
+
   if (!isValidCustomerAccessToken(customerAccessToken)) {
-    clearCustomerAuthStorage();
+    customerAccessToken = null;
+    clearLegacyCustomerAuthStorage();
     return null;
   }
 
@@ -19,11 +25,21 @@ export function getValidCustomerAccessToken(): string | null {
 
 export function setCustomerAccessToken(token: string): void {
   customerAccessToken = token;
+  setCustomerSessionHint();
   clearLegacyCustomerAuthStorage();
+}
+
+export function hasCustomerSessionHint(): boolean {
+  return localStorage.getItem(CUSTOMER_SESSION_HINT_KEY) === 'true';
+}
+
+export function setCustomerSessionHint(): void {
+  localStorage.setItem(CUSTOMER_SESSION_HINT_KEY, 'true');
 }
 
 export function clearCustomerAuthStorage(): void {
   customerAccessToken = null;
+  localStorage.removeItem(CUSTOMER_SESSION_HINT_KEY);
   clearLegacyCustomerAuthStorage();
 }
 

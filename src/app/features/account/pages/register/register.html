@@ -4,6 +4,10 @@
   <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Create account</h1>
   <p class="text-gray-600 mb-5 text-sm md:text-base">Join Arena Store for faster checkout, order tracking and rewards.</p>
 
+  <div *ngIf="errorMessage()" class="mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-medium">
+    {{ errorMessage() }}
+  </div>
+
   <!-- Register Form -->
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-3">
     
@@ -24,12 +28,16 @@
         <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
           <ng-icon name="lucideLock" size="20"></ng-icon>
         </div>
-        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Password" class="w-full py-3 pr-12 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base">
+        <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="Password" class="w-full py-3 pr-12 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base">
         <button type="button" (click)="togglePasswordVisibility()" class="absolute right-4 text-gray-500 hover:text-gray-700 flex items-center justify-center">
-          <ng-icon [name]="showPassword ? 'lucideEyeOff' : 'lucideEye'" size="20"></ng-icon>
+          <ng-icon [name]="showPassword() ? 'lucideEyeOff' : 'lucideEye'" size="20"></ng-icon>
         </button>
       </div>
-      <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid" class="text-red-500 text-sm mt-1">Password must be at least 8 characters.</div>
+      <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.errors as passwordErrors" class="text-red-500 text-sm mt-1">
+        <span *ngIf="passwordErrors['required']">Password is required.</span>
+        <span *ngIf="!passwordErrors['required'] && passwordErrors['minlength']">Password must be at least 8 characters.</span>
+        <span *ngIf="!passwordErrors['required'] && !passwordErrors['minlength'] && passwordErrors['pattern']">Password must contain letters and numbers.</span>
+      </div>
       <p class="text-gray-500 text-xs mt-1.5">Use 8+ characters with letters and numbers.</p>
     </div>
 
@@ -51,10 +59,10 @@
     <div class="pt-1">
       <button 
         type="submit" 
-        [disabled]="isLoading"
+        [disabled]="isLoading() || registerForm.invalid"
         class="w-full py-3 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed text-sm md:text-base"
       >
-        <span *ngIf="isLoading" class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></span>
+        <span *ngIf="isLoading()" class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></span>
         Create Account
       </button>
     </div>

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Category } from '../../../core/models';
@@ -10,6 +10,6 @@ import { Category } from '../../../core/models';
   templateUrl: './category-card.component.html'
 })
 export class CategoryCardComponent {
-  @Input() category!: Category;
-  @Input() layout: 'list' | 'grid' = 'grid';
+  readonly category = input.required<Category>();
+  readonly layout = input<'list' | 'grid'>('grid');
 }

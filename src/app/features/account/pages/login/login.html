@@ -5,12 +5,12 @@
   <p class="text-gray-600 mb-5 text-sm md:text-base">Sign in to view orders, loyalty rewards and faster checkout.</p>
 
   <!-- Error Message -->
-  <div *ngIf="errorMessage" class="mb-6 p-4 bg-red-50 text-red-700 border border-red-200 rounded-lg flex items-start gap-3">
+  <div *ngIf="errorMessage()" class="mb-6 p-4 bg-red-50 text-red-700 border border-red-200 rounded-lg flex items-start gap-3">
     <div class="mt-0.5 flex-shrink-0">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
     </div>
     <div class="text-sm font-medium leading-tight">
-      {{ errorMessage }}
+      {{ errorMessage() }}
     </div>
   </div>
 
@@ -42,7 +42,7 @@
           <ng-icon name="lucideLock" size="20"></ng-icon>
         </div>
         <input 
-          [type]="showPassword ? 'text' : 'password'" 
+          [type]="showPassword() ? 'text' : 'password'" 
           formControlName="password" 
           placeholder="Password" 
           class="w-full py-3 pr-12 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base"
@@ -52,7 +52,7 @@
           (click)="togglePasswordVisibility()" 
           class="absolute right-4 text-gray-500 hover:text-gray-700 flex items-center justify-center"
         >
-          <ng-icon [name]="showPassword ? 'lucideEyeOff' : 'lucideEye'" size="20"></ng-icon>
+          <ng-icon [name]="showPassword() ? 'lucideEyeOff' : 'lucideEye'" size="20"></ng-icon>
         </button>
       </div>
       <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" class="text-red-500 text-sm mt-1">
@@ -79,10 +79,10 @@
     <div class="space-y-3 pt-1">
       <button 
         type="submit" 
-        [disabled]="isLoading"
+        [disabled]="isLoading()"
         class="w-full py-3 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed text-sm md:text-base"
       >
-        <span *ngIf="isLoading" class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></span>
+        <span *ngIf="isLoading()" class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></span>
         Sign In
       </button>
       

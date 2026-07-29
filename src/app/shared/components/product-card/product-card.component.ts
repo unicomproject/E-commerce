@@ -1,4 +1,4 @@
-import { Component, Input, inject, computed } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -16,30 +16,34 @@ import { TenantCurrencyPipe } from '../../pipes/tenant-currency.pipe';
   templateUrl: './product-card.component.html'
 })
 export class ProductCardComponent {
-  @Input() product!: StorefrontProductListReadModel | any;
-  private wishlistService = inject(WishlistService);
+  readonly product = input.required<StorefrontProductListReadModel | any>();
+  private readonly wishlistService = inject(WishlistService);
   
   // Use toSignal to make wishlist$ reactive inside computed
-  wishlistSig = toSignal(this.wishlistService.wishlist$);
+  readonly wishlistSig = toSignal(this.wishlistService.wishlist$);
 
-  isInWishlist = computed(() => {
+  readonly isInWishlist = computed(() => {
     const list = this.wishlistSig();
-    if (!list) return false;
-    return list.items.some(i => i.productId === this.product.id);
+    const product = this.product();
+    if (!list || !product) return false;
+    return list.items.some(i => i.productId === product.id);
   });
 
   toggleWishlist(event: Event) {
     event.preventDefault();
     event.stopPropagation();
+
+    const product = this.product();
+    if (!product) return;
     
     if (this.isInWishlist()) {
       const list = this.wishlistSig();
-      const item = list?.items.find(i => i.productId === this.product.id);
+      const item = list?.items.find(i => i.productId === product.id);
       if (item) {
         this.wishlistService.removeItem(item.id);
       }
     } else {
-      this.wishlistService.addItem({ productId: this.product.id });
+      this.wishlistService.addItem({ productId: product.id });
     }
   }
 }

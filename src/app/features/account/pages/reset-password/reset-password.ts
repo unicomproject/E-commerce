@@ -1,86 +1,125 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, inject, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { 
-  lucideMail, 
-  lucideLock, 
-  lucideEye, 
+import {
+  lucideMail,
+  lucideLock,
+  lucideEye,
   lucideEyeOff,
   lucideShieldCheck,
   lucideKey,
   lucideHelpCircle
 } from '@ng-icons/lucide';
 import { AuthService } from '../../../../core/services/auth.service';
-import { AuthView } from '../../../../core/services/auth-modal.service';
+import { AuthView, AuthModalService } from '../../../../core/services/auth-modal.service';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
   templateUrl: './reset-password.html',
-  viewProviders: [provideIcons({ 
-    lucideMail, 
-    lucideLock, 
-    lucideEye, 
+  viewProviders: [provideIcons({
+    lucideMail,
+    lucideLock,
+    lucideEye,
     lucideEyeOff,
     lucideShieldCheck,
     lucideKey,
     lucideHelpCircle
   })]
 })
-export class ResetPasswordComponent {
-  @Output() switchView = new EventEmitter<AuthView>();
+export class ResetPasswordComponent implements OnInit {
+  readonly switchView = output<AuthView>();
 
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private authModalService = inject(AuthModalService);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  email = 'john.smith@email.com'; // This would usually come from a route query param or token payload
+  email = '';
+  token = '';
+  openedFromResetLink = false;
 
   resetForm = this.fb.group({
     newPassword: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', Validators.required]
   }, { validators: this.passwordMatchValidator });
 
-  showPassword = false;
-  showConfirmPassword = false;
-  isLoading = false;
+  showPassword = signal(false);
+  showConfirmPassword = signal(false);
+  isLoading = signal(false);
 
-  passwordMatchValidator(g: any) {
-    return g.get('newPassword').value === g.get('confirmPassword').value
-      ? null : { 'mismatch': true };
+  get isInvalidLink(): boolean {
+    return !this.email || !this.token;
+  }
+
+  ngOnInit() {
+    const queryEmail = this.route.snapshot.queryParamMap.get('email') || '';
+    const queryToken = this.route.snapshot.queryParamMap.get('token') || '';
+
+    if (queryEmail && queryToken) {
+      this.email = queryEmail;
+      this.token = queryToken;
+      this.openedFromResetLink = true;
+      
+      this.authModalService.open('reset-password');
+      this.router.navigate([], { queryParams: {} });
+    } else if (this.authModalService.passwordResetEmail && this.authModalService.passwordResetToken) {
+      this.email = this.authModalService.passwordResetEmail;
+      this.token = this.authModalService.passwordResetToken;
+    }
+  }
+
+  passwordMatchValidator(control: AbstractControl) {
+    const password = control.get('newPassword')?.value;
+    const confirmPassword = control.get('confirmPassword')?.value;
+    if (password !== confirmPassword) {
+      control.get('confirmPassword')?.setErrors({ passwordMismatch: true });
+      return { passwordMismatch: true };
+    } else {
+      return null;
+    }
   }
 
   togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
+    this.showPassword.update(v => !v);
   }
 
   toggleConfirmPasswordVisibility() {
-    this.showConfirmPassword = !this.showConfirmPassword;
+    this.showConfirmPassword.update(v => !v);
   }
 
   onSubmit() {
-    if (this.resetForm.invalid) {
+    if (this.resetForm.invalid || this.isInvalidLink) {
       this.resetForm.markAllAsTouched();
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     const { newPassword } = this.resetForm.value;
 
-    this.authService.resetPassword({ email: this.email, newPassword: newPassword! })
-      .subscribe({
+    this.authService.resetPassword({
+      email: this.email,
+      token: this.token,
+      newPassword: newPassword!
+    }).subscribe({
         next: (response) => {
-          this.isLoading = false;
+          this.isLoading.set(false);
           if (response.success) {
-            this.switchView.emit('login');
+            this.authModalService.clearPasswordResetContext();
+            if (this.openedFromResetLink) {
+              this.router.navigate(['/']);
+              this.authModalService.open('login');
+            } else {
+              this.switchView.emit('login');
+            }
           }
         },
-        error: (err) => {
-          this.isLoading = false;
-          console.error('Reset password error', err);
+        error: () => {
+          this.isLoading.set(false);
         }
       });
   }

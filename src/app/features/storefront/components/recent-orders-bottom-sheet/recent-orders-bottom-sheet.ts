@@ -1,9 +1,10 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit, OnDestroy, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, effect, inject, signal, OnInit, OnDestroy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideX, lucideClipboardList, lucideChevronRight, lucideCalendar } from '@ng-icons/lucide';
 import { RecentOrdersModalService } from '../../../../core/services/recent-orders-modal.service';
 import { OrderService } from '../../../../core/services/order.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { CustomerOrderSummaryReadModel } from '../../../../core/models/order.model';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 import { RouterModule, Router } from '@angular/router';
@@ -21,6 +22,7 @@ export type RecentOrderTab = 'all' | 'accepted' | 'preparing' | 'ready';
 export class RecentOrdersBottomSheet implements OnInit, OnDestroy {
   public modalService = inject(RecentOrdersModalService);
   private orderService = inject(OrderService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   // Filter tabs
@@ -34,9 +36,15 @@ export class RecentOrdersBottomSheet implements OnInit, OnDestroy {
   now = signal<Date>(new Date());
   private timerInterval: any;
 
+  constructor() {
+    effect(() => {
+      if (this.modalService.isOpen()) {
+        this.fetchRecentOrders();
+      }
+    });
+  }
+
   ngOnInit() {
-    this.fetchRecentOrders();
-    
     // Setup timer to tick every second for countdowns
     this.timerInterval = setInterval(() => {
       this.now.set(new Date());
@@ -59,6 +67,12 @@ export class RecentOrdersBottomSheet implements OnInit, OnDestroy {
   }
 
   fetchRecentOrders() {
+    if (!this.authService.isAuthenticated && !this.authService.currentUserSnapshot) {
+      this.orders.set([]);
+      this.isLoading.set(false);
+      return;
+    }
+
     this.isLoading.set(true);
     // Fetch first page of orders, no status filter to grab recent ones
     this.orderService.getOrders('all', 1, 20).subscribe({

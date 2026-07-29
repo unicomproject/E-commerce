@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,6 +8,6 @@ import { CommonModule } from '@angular/common';
   templateUrl: './star-rating.component.html'
 })
 export class StarRatingComponent {
-  @Input() rating: number = 0;
-  @Input() size: number = 14;
+  readonly rating = input(0);
+  readonly size = input(14);
 }

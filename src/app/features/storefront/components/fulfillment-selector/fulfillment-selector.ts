@@ -16,8 +16,9 @@ import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-se
       <div class="py-2 px-3 lg:py-3 lg:px-4 w-full mx-auto">
         <div class="flex items-center">
           <button 
-            (click)="openOutletModal()" 
-            class="flex items-center gap-2.5 lg:gap-3 pr-4 pl-1.5 py-1.5 bg-neutral-100 hover:bg-neutral-200 rounded-full transition-all duration-300 active:scale-95 group border border-transparent hover:border-neutral-300"
+            (click)="stores().length > 1 ? openOutletModal() : null" 
+            class="flex items-center gap-2.5 lg:gap-3 pr-4 pl-1.5 py-1.5 bg-neutral-100 rounded-full transition-all duration-300 group border border-transparent"
+            [ngClass]="{'hover:bg-neutral-200 active:scale-95 hover:border-neutral-300 cursor-pointer': stores().length > 1, 'cursor-default': stores().length <= 1}"
           >
             <!-- Circular Icon Container -->
             <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-white flex items-center justify-center shadow-sm text-brand-orange group-hover:scale-110 transition-transform duration-300">
@@ -33,7 +34,7 @@ import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-se
             </div>
 
             <!-- Arrow -->
-            <ng-icon name="lucideChevronDown" class="text-neutral-400 group-hover:text-neutral-800 transition-colors ml-1 lg:ml-2 text-sm"></ng-icon>
+            <ng-icon *ngIf="stores().length > 1" name="lucideChevronDown" class="text-neutral-400 group-hover:text-neutral-800 transition-colors ml-1 lg:ml-2 text-sm"></ng-icon>
           </button>
         </div>
       </div>

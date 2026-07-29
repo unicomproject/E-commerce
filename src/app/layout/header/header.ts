@@ -1,5 +1,6 @@
-import { Component, HostListener, inject, OnInit, ViewChild, ElementRef, AfterViewInit, AfterViewChecked } from '@angular/core';
+import { Component, HostListener, inject, OnInit, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -27,6 +28,7 @@ import { RecentOrdersModalService } from '../../core/services/recent-orders-moda
 })
 export class Header implements OnInit, AfterViewInit, AfterViewChecked {
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
   public authModalService = inject(AuthModalService);
   public authService = inject(AuthService);
   public cartService = inject(CartService);
@@ -54,6 +56,11 @@ export class Header implements OnInit, AfterViewInit, AfterViewChecked {
   }
 
   openRecentOrders() {
+    if (!this.authService.isAuthenticated && !this.authService.currentUserSnapshot) {
+      this.authModalService.open('login');
+      return;
+    }
+
     this.modalService.open();
   }
   
@@ -67,7 +74,15 @@ export class Header implements OnInit, AfterViewInit, AfterViewChecked {
 
   ngOnInit() {
     this.cartService.loadCart();
-    this.wishlistService.loadWishlist();
+    this.authService.currentUser$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(user => {
+        if (user) {
+          this.wishlistService.loadWishlist();
+        } else {
+          this.wishlistService.clearLocalState();
+        }
+      });
   }
 
   clearSearch() {

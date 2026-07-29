@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, computed, input, linkedSignal, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { 
@@ -34,36 +34,39 @@ import { Store } from '../../../../core/models';
   templateUrl: './outlet-selector-modal.html'
 })
 export class OutletSelectorModalComponent {
-  @Input() stores: Store[] = [];
-  @Input() selectedStoreId: string | null = null;
-  @Input() isOpen = false;
+  readonly stores = input<Store[]>([]);
+  readonly selectedStoreId = input<string | null>(null);
+  readonly isOpen = input(false);
   
-  @Output() close = new EventEmitter<void>();
-  @Output() selectStore = new EventEmitter<Store>();
+  readonly close = output<void>();
+  readonly selectStore = output<Store>();
+
+  readonly visible = linkedSignal(() => this.isOpen());
+  readonly selectedStoreIdState = linkedSignal(() => this.selectedStoreId());
+  readonly selectedStoreName = computed(() => {
+    const selectedStoreId = this.selectedStoreIdState();
+    if (!selectedStoreId) return '';
+    return this.stores().find(s => s.id === selectedStoreId)?.name ?? '';
+  });
 
   closeModal() {
-    this.isOpen = false;
+    this.visible.set(false);
     setTimeout(() => {
       this.close.emit();
     }, 300); // match transition duration
   }
 
   onSelect(store: Store) {
-    this.selectedStoreId = store.id;
+    this.selectedStoreIdState.set(store.id);
   }
 
   confirmSelection() {
-    if (this.selectedStoreId) {
-      const store = this.stores.find(s => s.id === this.selectedStoreId);
-      if (store) {
-        this.selectStore.emit(store);
-      }
-    }
-  }
+    const selectedStoreId = this.selectedStoreIdState();
+    if (!selectedStoreId) return;
 
-  get selectedStoreName(): string {
-    if (!this.selectedStoreId) return '';
-    const store = this.stores.find(s => s.id === this.selectedStoreId);
-    return store ? store.name : '';
+    const store = this.stores().find(s => s.id === selectedStoreId);
+    if (store) {
+      this.selectStore.emit(store);
+    }
   }
 }

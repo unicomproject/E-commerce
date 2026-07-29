@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideShoppingBag, lucideTruck, lucideArrowRight } from '@ng-icons/lucide';
@@ -10,10 +10,10 @@ import { Banner } from '../../../../core/models';
   imports: [CommonModule, NgIcon],
   viewProviders: [provideIcons({ lucideShoppingBag, lucideTruck, lucideArrowRight })],
   template: `
-    <div class="px-4 py-4 w-full mx-auto" *ngIf="banners && banners.length > 0">
+    <div class="px-4 py-4 w-full mx-auto" *ngIf="banners().length > 0">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
         
-        <a *ngFor="let banner of banners.slice(0, 2)" [href]="banner.linkUrl || '#'" class="bg-brand-orange-light rounded-2xl p-5 md:p-6 lg:p-8 flex flex-row items-center justify-between gap-4 md:gap-6 group cursor-pointer border border-transparent hover:border-brand-orange/20 transition-all hover:shadow-md">
+        <a *ngFor="let banner of banners().slice(0, 2)" [href]="banner.linkUrl || '#'" class="bg-brand-orange-light rounded-2xl p-5 md:p-6 lg:p-8 flex flex-row items-center justify-between gap-4 md:gap-6 group cursor-pointer border border-transparent hover:border-brand-orange/20 transition-all hover:shadow-md">
           <div class="flex-1 z-10 relative">
             <div *ngIf="banner.subtitle" class="flex items-center gap-1.5 lg:gap-2 text-brand-orange font-bold text-[10px] md:text-xs lg:text-sm tracking-wider uppercase mb-2">
               <ng-icon *ngIf="banner.subtitle.toLowerCase().includes('delivery')" name="lucideTruck"></ng-icon>
@@ -38,5 +38,5 @@ import { Banner } from '../../../../core/models';
   `
 })
 export class PromoBanners {
-  @Input() banners: Banner[] = [];
+  readonly banners = input<Banner[]>([]);
 }

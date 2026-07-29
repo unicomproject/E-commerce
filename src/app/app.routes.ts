@@ -27,8 +27,13 @@ export const routes: Routes = [
     loadComponent: () => import('./features/storefront/pages/cart/cart').then(m => m.Cart)
   },
   {
+    path: 'reset-password',
+    loadComponent: () => import('./features/account/pages/reset-password/reset-password').then(m => m.ResetPasswordComponent)
+  },
+  {
     path: 'wishlist',
-    loadComponent: () => import('./features/storefront/pages/wishlist/wishlist').then(m => m.Wishlist)
+    loadComponent: () => import('./features/storefront/pages/wishlist/wishlist').then(m => m.Wishlist),
+    canActivate: [authGuard]
   },
   {
     path: 'orders',
