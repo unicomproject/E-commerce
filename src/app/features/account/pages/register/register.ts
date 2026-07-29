@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,7 +15,7 @@ import {
   lucideStar
 } from '@ng-icons/lucide';
 import { AuthService } from '../../../../core/services/auth.service';
-import { AuthView } from '../../../../core/services/auth-modal.service';
+import { AuthView, AuthModalService } from '../../../../core/services/auth-modal.service';
 
 @Component({
   selector: 'app-register',
@@ -35,24 +35,30 @@ import { AuthView } from '../../../../core/services/auth-modal.service';
   })]
 })
 export class RegisterComponent {
-  @Output() switchView = new EventEmitter<AuthView>();
+  readonly switchView = output<AuthView>();
 
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private authModalService = inject(AuthModalService);
   private router = inject(Router);
 
   registerForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: ['', [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)
+    ]],
     agreeTerms: [false, Validators.requiredTrue],
     sendOffers: [false]
   });
 
-  showPassword = false;
-  isLoading = false;
+  showPassword = signal(false);
+  isLoading = signal(false);
+  errorMessage = signal<string | null>(null);
 
   togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
+    this.showPassword.update(v => !v);
   }
 
   onSubmit() {
@@ -61,7 +67,8 @@ export class RegisterComponent {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
     const { email, password, agreeTerms, sendOffers } = this.registerForm.value;
 
     this.authService.register({ 
@@ -71,14 +78,17 @@ export class RegisterComponent {
       sendOffers: sendOffers! 
     }).subscribe({
         next: (response) => {
-          this.isLoading = false;
+          this.isLoading.set(false);
           if (response.success) {
-            // Redirect to email verification page after registration
+            this.authModalService.setPendingVerificationEmail(email!);
             this.switchView.emit('verify');
+          } else {
+            this.errorMessage.set(response.message || 'Registration failed. Please check your details.');
           }
         },
         error: (err) => {
-          this.isLoading = false;
+          this.isLoading.set(false);
+          this.errorMessage.set('An unexpected error occurred. Please try again.');
           console.error('Registration error', err);
         }
       });

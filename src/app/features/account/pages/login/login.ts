@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -31,7 +31,7 @@ import { AuthView, AuthModalService } from '../../../../core/services/auth-modal
   })]
 })
 export class LoginComponent {
-  @Output() switchView = new EventEmitter<AuthView>();
+  readonly switchView = output<AuthView>();
 
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
@@ -44,12 +44,12 @@ export class LoginComponent {
     rememberMe: [false]
   });
 
-  showPassword = false;
-  isLoading = false;
-  errorMessage: string | null = null;
+  showPassword = signal(false);
+  isLoading = signal(false);
+  errorMessage = signal<string | null>(null);
 
   togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
+    this.showPassword.update(v => !v);
   }
 
   onSubmit() {
@@ -58,23 +58,31 @@ export class LoginComponent {
       return;
     }
 
-    this.isLoading = true;
-    this.errorMessage = null;
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
     const { email, password, rememberMe } = this.loginForm.value;
 
     this.authService.login({ email: email!, password: password!, rememberMe: rememberMe! })
       .subscribe({
         next: (response) => {
-          this.isLoading = false;
+          this.isLoading.set(false);
           if (response.success) {
             this.authModalService.close();
-          } else {
-            this.errorMessage = response.message || 'Login failed. Please check your credentials.';
+            return;
           }
+
+          if (response.errorCode === 'customer_auth.email_not_verified') {
+            this.authModalService.setPendingVerificationEmail(email!);
+            this.errorMessage.set(null);
+            this.switchView.emit('verify');
+            return;
+          }
+
+          this.errorMessage.set(response.message || 'Login failed. Please check your credentials.');
         },
         error: (err) => {
-          this.isLoading = false;
-          this.errorMessage = 'An unexpected error occurred. Please try again.';
+          this.isLoading.set(false);
+          this.errorMessage.set('An unexpected error occurred. Please try again.');
           console.error('Login error', err);
         }
       });

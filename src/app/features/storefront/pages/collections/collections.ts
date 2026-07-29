@@ -1,14 +1,11 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideArrowLeft } from '@ng-icons/lucide';
 import { StorefrontDataService } from '../../services/storefront-data.service';
 import { StorefrontProductListReadModel, Category } from '../../../../core/models';
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
 import { CategoryCardComponent } from '../../../../shared/components/category-card/category-card.component';
 import { FilterSortButtonComponent } from '../../../../shared/components/filter-sort-button/filter-sort-button.component';
-import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 @Component({
@@ -22,61 +19,60 @@ export class Collections implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private dataService = inject(StorefrontDataService);
-  private cdr = inject(ChangeDetectorRef);
 
-  slug = '';
-  category: Category | null = null;
-  childCategories: Category[] = [];
-  products: StorefrontProductListReadModel[] = [];
-  loading = true;
+  slug = signal('');
+  category = signal<Category | null>(null);
+  childCategories = signal<Category[]>([]);
+  products = signal<StorefrontProductListReadModel[]>([]);
+  loading = signal(true);
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      this.slug = params.get('slug') || '';
-      if (this.slug) {
+      this.slug.set(params.get('slug') || '');
+      this.category.set(null);
+      this.childCategories.set([]);
+      this.products.set([]);
+
+      if (this.slug()) {
         this.loadCategory();
       } else {
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
 
   loadCategory() {
-    this.loading = true;
-    this.cdr.detectChanges();
-    this.dataService.getCategoryBySlug(this.slug).subscribe({
+    this.loading.set(true);
+    this.dataService.getCategoryBySlug(this.slug()).subscribe({
       next: (cat) => {
         if (!cat || !cat.id) {
-            this.loading = false;
-            this.cdr.detectChanges();
+            this.loading.set(false);
             return;
         }
-        this.category = cat;
+        this.category.set(cat);
         this.loadChildren(cat.id);
       },
       error: (err) => {
-        this.loading = false;
-        this.cdr.detectChanges();
+        console.error('Error loading category', err);
+        this.loading.set(false);
       }
     });
   }
 
   loadChildren(categoryId: string) {
-    this.cdr.detectChanges();
     this.dataService.getChildCategories(categoryId).subscribe({
       next: (children) => {
-        this.childCategories = children || [];
-        if (this.childCategories.length === 0) {
+        this.childCategories.set(children || []);
+        if (this.childCategories().length === 0) {
           // If no child categories, redirect to search page
-          this.router.navigate(['/search'], { queryParams: { category: this.slug }, replaceUrl: true });
+          this.router.navigate(['/search'], { queryParams: { category: this.slug() }, replaceUrl: true });
         } else {
-          this.loading = false;
-          this.cdr.detectChanges();
+          this.loading.set(false);
         }
       },
       error: (err) => {
-        this.loading = false;
-        this.cdr.detectChanges();
+        console.error('Error loading child categories', err);
+        this.loading.set(false);
       }
     });
   }
@@ -84,14 +80,12 @@ export class Collections implements OnInit {
   loadProducts(categoryId: string) {
     this.dataService.getProducts(categoryId).subscribe({
       next: (res) => {
-        this.products = res.items || [];
-        this.loading = false;
-        this.cdr.detectChanges();
+        this.products.set(res.items || []);
+        this.loading.set(false);
       },
       error: (err) => {
         console.error('Error fetching products', err);
-        this.loading = false;
-        this.cdr.detectChanges();
+        this.loading.set(false);
       }
     });
   }

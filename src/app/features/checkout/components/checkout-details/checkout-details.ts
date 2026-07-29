@@ -62,8 +62,8 @@ import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pip
             <div class="relative w-full md:w-32 flex-shrink-0">
               <div class="w-full px-3 py-2.5 rounded-lg border border-gray-300 flex items-center justify-between bg-white cursor-pointer hover:bg-gray-50">
                 <div class="flex items-center gap-2">
-                  <span class="text-lg leading-none">🇬🇧</span>
-                  <span class="text-gray-900 font-medium">+44</span>
+                  <span class="text-lg leading-none">🇱🇰</span>
+                  <span class="text-gray-900 font-medium">+94</span>
                 </div>
                 <ng-icon name="lucideChevronDown" size="16" class="text-gray-500"></ng-icon>
               </div>

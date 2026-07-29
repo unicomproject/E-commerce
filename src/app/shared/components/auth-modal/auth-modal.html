@@ -1,4 +1,4 @@
-<div *ngIf="isOpen" 
+<div *ngIf="authModalService.isOpen()" 
      class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-gray-900/40 backdrop-blur-sm transition-opacity duration-200"
      (click)="close()">
   
@@ -20,11 +20,11 @@
 
     <!-- Scrollable Content Views -->
     <div class="w-full flex-1 overflow-y-auto pb-safe">
-      <app-login *ngIf="currentView === 'login'" (switchView)="switchView($event)"></app-login>
-      <app-register *ngIf="currentView === 'register'" (switchView)="switchView($event)"></app-register>
-      <app-forgot-password *ngIf="currentView === 'forgot-password'" (switchView)="switchView($event)"></app-forgot-password>
-      <app-email-verification *ngIf="currentView === 'verify'" (switchView)="switchView($event)"></app-email-verification>
-      <app-reset-password *ngIf="currentView === 'reset-password'" (switchView)="switchView($event)"></app-reset-password>
+      <app-login *ngIf="authModalService.view() === 'login'" (switchView)="switchView($event)"></app-login>
+      <app-register *ngIf="authModalService.view() === 'register'" (switchView)="switchView($event)"></app-register>
+      <app-forgot-password *ngIf="authModalService.view() === 'forgot-password'" (switchView)="switchView($event)"></app-forgot-password>
+      <app-email-verification *ngIf="authModalService.view() === 'verify'" (switchView)="switchView($event)"></app-email-verification>
+      <app-reset-password *ngIf="authModalService.view() === 'reset-password'" (switchView)="switchView($event)"></app-reset-password>
     </div>
 
   </div>

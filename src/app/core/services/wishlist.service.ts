@@ -4,6 +4,8 @@ import { BehaviorSubject, Observable, map } from 'rxjs';
 import { WishlistReadModel, AddWishlistItemRequest } from '../models/wishlist.models';
 import { environment } from '../../../environments/environment';
 import { ToastService } from './toast.service';
+import { AuthService } from './auth.service';
+import { AuthModalService } from './auth-modal.service';
 import { ApiResponse } from './cart.service';
 
 @Injectable({
@@ -12,6 +14,8 @@ import { ApiResponse } from './cart.service';
 export class WishlistService {
   private http = inject(HttpClient);
   private toastService = inject(ToastService);
+  private authService = inject(AuthService);
+  private authModalService = inject(AuthModalService);
   private wishlistSubject = new BehaviorSubject<WishlistReadModel | null>(null);
   
   wishlist$ = this.wishlistSubject.asObservable();
@@ -24,6 +28,10 @@ export class WishlistService {
   constructor() {}
 
   loadWishlist(): void {
+    if (!this.ensureAuthenticated(false)) {
+      return;
+    }
+
     this.http.get<ApiResponse<WishlistReadModel>>(this.baseUrl).subscribe({
       next: (response) => {
         if (response.success) {
@@ -37,6 +45,10 @@ export class WishlistService {
   }
 
   addItem(request: AddWishlistItemRequest): void {
+    if (!this.ensureAuthenticated()) {
+      return;
+    }
+
     this.http.post<ApiResponse<WishlistReadModel>>(`${this.baseUrl}/items`, request).subscribe({
       next: (response) => {
         if (response.success) {
@@ -52,6 +64,10 @@ export class WishlistService {
   }
 
   removeItem(itemId: string): void {
+    if (!this.ensureAuthenticated()) {
+      return;
+    }
+
     this.http.delete<ApiResponse<WishlistReadModel>>(`${this.baseUrl}/items/${itemId}`).subscribe({
       next: (response) => {
         if (response.success) {
@@ -67,6 +83,10 @@ export class WishlistService {
   }
 
   clearWishlist(): void {
+    if (!this.ensureAuthenticated()) {
+      return;
+    }
+
     this.http.delete<ApiResponse<WishlistReadModel>>(this.baseUrl).subscribe({
       next: (response) => {
         if (response.success) {
@@ -79,5 +99,22 @@ export class WishlistService {
         this.toastService.error('Failed to clear wishlist');
       }
     });
+  }
+
+  clearLocalState(): void {
+    this.wishlistSubject.next(null);
+  }
+
+  private ensureAuthenticated(openLogin = true): boolean {
+    if (this.authService.isAuthenticated || this.authService.currentUserSnapshot) {
+      return true;
+    }
+
+    this.clearLocalState();
+    if (openLogin) {
+      this.authModalService.open('login');
+    }
+
+    return false;
   }
 }

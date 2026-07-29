@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideSlidersHorizontal } from '@ng-icons/lucide';
@@ -16,5 +16,5 @@ import { lucideSlidersHorizontal } from '@ng-icons/lucide';
   `
 })
 export class FilterSortButtonComponent {
-  @Output() click = new EventEmitter<MouseEvent>();
+  readonly click = output<MouseEvent>();
 }

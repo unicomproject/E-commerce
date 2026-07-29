@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthModalService, AuthView } from '../../../core/services/auth-modal.service';
 import { LoginComponent } from '../../../features/account/pages/login/login';
@@ -24,15 +24,8 @@ import { lucideX } from '@ng-icons/lucide';
   templateUrl: './auth-modal.html',
   viewProviders: [provideIcons({ lucideX })]
 })
-export class AuthModalComponent implements OnInit {
-  authModalService = inject(AuthModalService);
-  isOpen = false;
-  currentView: AuthView = 'login';
-
-  ngOnInit() {
-    this.authModalService.isOpen$.subscribe(isOpen => this.isOpen = isOpen);
-    this.authModalService.view$.subscribe(view => this.currentView = view);
-  }
+export class AuthModalComponent {
+  readonly authModalService = inject(AuthModalService);
 
   close() {
     this.authModalService.close();

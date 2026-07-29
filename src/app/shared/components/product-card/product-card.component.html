@@ -1,4 +1,4 @@
-<a [routerLink]="['/product', product.slug]" class="group flex flex-col cursor-pointer block h-full bg-card-bg rounded-2xl border border-card-border p-2 lg:p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+<a *ngIf="product() as product" [routerLink]="['/product', product.slug]" class="group flex flex-col cursor-pointer block h-full bg-card-bg rounded-2xl border border-card-border p-2 lg:p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
   <!-- Image Container -->
   <div class="relative bg-neutral-50 rounded-xl overflow-hidden aspect-square mb-3">
     
@@ -31,7 +31,7 @@
     
     <!-- Price Row -->
     <div class="flex items-center gap-2 mb-3">
-      <span class="text-lg font-bold text-neutral-900">
+      <span class="text-lg font-bold text-brand-orange">
         {{ product.price | tenantCurrency:'symbol':'1.0-0' }}
       </span>
       <span *ngIf="product.originalPrice" class="text-sm font-medium text-neutral-400 line-through">

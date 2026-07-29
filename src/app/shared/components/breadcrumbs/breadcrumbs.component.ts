@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
@@ -13,7 +13,7 @@ export interface BreadcrumbItem {
   imports: [CommonModule, RouterLink],
   template: `
     <nav class="flex items-center text-sm text-gray-500 flex-wrap gap-y-1">
-      <ng-container *ngFor="let item of items; let last = last; let i = index">
+      <ng-container *ngFor="let item of items(); let last = last; let i = index">
         <a *ngIf="item.link" [routerLink]="item.link" class="hover:text-gray-900 transition-colors">{{ item.label }}</a>
         <span *ngIf="!item.link" class="text-gray-900 font-medium">{{ item.label }}</span>
         
@@ -25,5 +25,5 @@ export interface BreadcrumbItem {
   `
 })
 export class BreadcrumbsComponent {
-  @Input() items: BreadcrumbItem[] = [];
+  readonly items = input<BreadcrumbItem[]>([]);
 }

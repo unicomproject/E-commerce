@@ -22,7 +22,7 @@ import { CheckoutService } from '../../../../core/services/checkout.service';
       <div class="text-center mb-8">
         <h2 class="text-3xl font-bold text-gray-900 mb-2">Order Submitted!</h2>
         <p class="text-gray-500">
-          Order #<span class="font-bold text-gray-900">{{ checkoutService.checkoutSession()?.checkoutNumber || '12345678' }}</span>
+          Order ID <span class="font-bold text-gray-900">{{ checkoutService.checkoutSession()?.order?.orderNumber || checkoutService.checkoutSession()?.checkoutNumber }}</span>
         </p>
       </div>
 
@@ -60,15 +60,41 @@ import { CheckoutService } from '../../../../core/services/checkout.service';
             </div>
             <!-- Card -->
             <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-              <h4 class="font-bold text-gray-900 mb-1">Order confirmed</h4>
-              <p class="text-sm text-gray-500">We'll send you an email when the store accepts your order.</p>
+              <h4 class="font-bold text-gray-900 mb-1">Order received</h4>
+              <p class="text-sm text-gray-500">We've received your order successfully.</p>
             </div>
           </div>
           
           <!-- Timeline Item 2 -->
           <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
             <!-- Icon -->
-            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-gray-100 text-gray-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-green-100 text-green-600 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+              <ng-icon name="lucideCheckCircle2" size="20"></ng-icon>
+            </div>
+            <!-- Card -->
+            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+              <h4 class="font-bold text-gray-900 mb-1">Order confirmed</h4>
+              <p class="text-sm text-gray-500">Store has accepted your order.</p>
+            </div>
+          </div>
+
+          <!-- Timeline Item 3 -->
+          <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+            <!-- Icon -->
+            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-blue-100 text-blue-600 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+              <ng-icon name="lucideClock" size="20"></ng-icon>
+            </div>
+            <!-- Card -->
+            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+              <h4 class="font-bold text-gray-900 mb-1">Preparing</h4>
+              <p class="text-sm text-gray-500">Your items are being prepared.</p>
+            </div>
+          </div>
+          
+          <!-- Timeline Item 4 -->
+          <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+            <!-- Icon -->
+            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-purple-100 text-purple-600 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
               <ng-icon name="lucideShoppingBag" size="20"></ng-icon>
             </div>
             <!-- Card -->
@@ -78,15 +104,15 @@ import { CheckoutService } from '../../../../core/services/checkout.service';
             </div>
           </div>
           
-          <!-- Timeline Item 3 -->
+          <!-- Timeline Item 5 -->
           <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
             <!-- Icon -->
-            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-gray-100 text-gray-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-pink-100 text-pink-600 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
               <ng-icon name="lucideQrCode" size="20"></ng-icon>
             </div>
             <!-- Card -->
             <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-              <h4 class="font-bold text-gray-900 mb-1">Bring your QR code</h4>
+              <h4 class="font-bold text-gray-900 mb-1">Collect your order</h4>
               <p class="text-sm text-gray-500">You'll need the QR code from your email to collect your order.</p>
             </div>
           </div>

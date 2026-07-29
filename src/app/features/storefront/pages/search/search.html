@@ -9,10 +9,10 @@
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <ng-icon name="lucideSearch" class="text-neutral-500" size="18" strokeWidth="2"></ng-icon>
         </div>
-        <input type="text" [(ngModel)]="searchInput" (keyup.enter)="onSearchSubmit()"
+        <input type="text" [ngModel]="searchInput()" (ngModelChange)="searchInput.set($event)" (keyup.enter)="onSearchSubmit()"
           placeholder="Search for products..." 
           class="block w-full pl-10 pr-10 py-2.5 rounded-xl bg-white border border-neutral-300 text-neutral-900 placeholder-neutral-500 focus:outline-none focus:bg-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/30 text-[15px] shadow-sm transition-all">
-        <button type="button" *ngIf="searchInput" (click)="onClearSearch()" class="absolute inset-y-0 right-0 pr-3 flex items-center z-10">
+        <button type="button" *ngIf="searchInput()" (click)="onClearSearch()" class="absolute inset-y-0 right-0 pr-3 flex items-center z-10">
           <div class="bg-neutral-400 rounded-full w-5 h-5 flex items-center justify-center hover:bg-neutral-500 transition-colors">
             <ng-icon name="lucideX" class="text-white" size="14" strokeWidth="2.5"></ng-icon>
           </div>
@@ -25,7 +25,7 @@
 
 
     <!-- Loading State -->
-    <ng-container *ngIf="loading">
+    <ng-container *ngIf="loading()">
       <div class="grid grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-6">
         <div *ngFor="let i of [1,2,3,4]" class="animate-pulse flex flex-col">
           <div class="bg-gray-200 aspect-[4/5] rounded-xl mb-3"></div>
@@ -37,7 +37,7 @@
     </ng-container>
 
     <!-- Empty State -->
-    <ng-container *ngIf="!loading && totalCount === 0">
+    <ng-container *ngIf="!loading() && totalCount() === 0">
       <div class="text-center py-20">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4 text-gray-400">
           <ng-icon name="lucideSearch" size="32"></ng-icon>
@@ -47,9 +47,9 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="!loading && products.length > 0">
+    <ng-container *ngIf="!loading() && products().length > 0">
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-6">
-        <app-product-card *ngFor="let product of products" [product]="product"></app-product-card>
+        <app-product-card *ngFor="let product of products()" [product]="product"></app-product-card>
       </div>
     </ng-container>
 

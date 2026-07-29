@@ -41,6 +41,11 @@ export function initializeTenant(http: HttpClient, tenantCtx: TenantContextServi
           if (res.currencyCode) {
             tenantCtx.currencyCode = res.currencyCode;
           }
+          if (!authService.hasSessionHint) {
+            resolve(true);
+            return;
+          }
+
           firstValueFrom(authService.refreshSession()).then(
             () => resolve(true),
             () => resolve(true)

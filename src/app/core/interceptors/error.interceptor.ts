@@ -29,9 +29,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       
       const isRefreshRequest = req.url.includes('/ecommerce/storefront/auth/refresh');
       const isLoginRequest = req.url.includes('/ecommerce/storefront/auth/login');
+      const isExpectedEmailVerificationLoginFailure = isLoginRequest &&
+        error.status === 403 &&
+        error.error?.errorCode === 'customer_auth.email_not_verified';
       
       // Don't log 401 on refresh as it's expected when user is not logged in
-      if (!(error.status === 401 && isRefreshRequest)) {
+      if (!(error.status === 401 && isRefreshRequest) && !isExpectedEmailVerificationLoginFailure) {
         console.error('Global Error Interceptor:', errorMsg);
         
         // Show a generic toast for 500 errors or 0 (network down)
@@ -48,6 +51,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.status === 401) {
         if (isLoginRequest || isRefreshRequest) {
           clearCustomerAuthStorage();
+          return throwError(() => error);
+        }
+
+        const canAttemptRefresh = authService.currentUserSnapshot !== null || authService.accessToken !== null || authService.hasSessionHint;
+        if (!canAttemptRefresh) {
+          authService.clearLocalSession();
+          authModalService.open('login');
           return throwError(() => error);
         }
 
@@ -70,7 +80,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           })
         );
       }
-
       return throwError(() => error);
     })
   );
