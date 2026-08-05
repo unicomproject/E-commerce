@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { Product, Category, Banner, Store, StorefrontSearchReadModel, StorefrontSearchRequest, StorefrontProductDetailReadModel } from '../../../core/models';
+import { Product, Category, Banner, Store, StorefrontSearchReadModel, StorefrontSearchRequest, StorefrontProductDetailReadModel, ProductReviewsPageReadModel } from '../../../core/models';
 
 @Injectable({ providedIn: 'root' })
 export class StorefrontDataService {
@@ -47,6 +47,17 @@ export class StorefrontDataService {
     return this.http.get<StorefrontProductDetailReadModel>(`${this.baseUrl}/catalog/products/${slug}`);
   }
 
+  getProductReviews(productId: string, page = 1, pageSize = 10, sort = 'newest'): Observable<ProductReviewsPageReadModel> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString())
+      .set('sort', sort);
+      
+    // Unwrap the response from the generic wrapper: Success(message, data)
+    return this.http.get<{ data: ProductReviewsPageReadModel }>(`${this.baseUrl}/catalog/products/${productId}/reviews`, { params })
+      .pipe(map(response => response.data));
+  }
+
   searchProducts(request: StorefrontSearchRequest): Observable<StorefrontSearchReadModel> {
     // Clean up empty params
     let params = new HttpParams();
@@ -57,6 +68,11 @@ export class StorefrontDataService {
       }
     });
     return this.http.get<StorefrontSearchReadModel>(`${this.baseUrl}/catalog/search`, { params });
+  }
+
+  autocompleteSearch(query: string, limit: number = 10): Observable<StorefrontSearchReadModel> {
+    const params = new HttpParams().set('q', query).set('limit', limit.toString());
+    return this.http.get<StorefrontSearchReadModel>(`${this.baseUrl}/catalog/autocomplete`, { params });
   }
 
   getStores(): Observable<Store[]> {

@@ -30,24 +30,24 @@ export const routes: Routes = [
     path: 'reset-password',
     loadComponent: () => import('./features/account/pages/reset-password/reset-password').then(m => m.ResetPasswordComponent)
   },
-  {
-    path: 'wishlist',
-    loadComponent: () => import('./features/storefront/pages/wishlist/wishlist').then(m => m.Wishlist),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'orders',
-    loadComponent: () => import('./features/storefront/pages/orders/orders').then(m => m.Orders),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'orders/:id',
-    loadComponent: () => import('./features/storefront/pages/order-details/order-details').then(m => m.OrderDetails),
-    canActivate: [authGuard]
-  },
+
   {
     path: 'account',
+    loadComponent: () => import('./features/storefront/pages/account-layout/account-layout.component').then(m => m.AccountLayoutComponent),
     children: [
+      {
+        path: 'wishlist',
+        loadComponent: () => import('./features/storefront/pages/wishlist/wishlist').then(m => m.Wishlist)
+      },
+      {
+        path: 'orders',
+        loadComponent: () => import('./features/storefront/pages/orders/orders').then(m => m.Orders)
+      },
+
+      {
+        path: 'orders/:id',
+        loadComponent: () => import('./features/storefront/pages/order-details/order-details').then(m => m.OrderDetails)
+      },
       {
         path: '',
         loadComponent: () => import('./features/storefront/pages/account/account').then(m => m.Account)
@@ -55,6 +55,22 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadComponent: () => import('./features/storefront/pages/account/profile/profile').then(m => m.PersonalInformation)
+      },
+      {
+        path: 'addresses',
+        loadComponent: () => import('./features/storefront/pages/account/addresses/addresses').then(m => m.AddressesComponent)
+      },
+      {
+        path: 'reviews',
+        loadComponent: () => import('./features/storefront/pages/account/reviews/reviews.component').then(m => m.ReviewsComponent)
+      },
+      {
+        path: 'reviews/write/:productId',
+        loadComponent: () => import('./features/storefront/pages/account/reviews/write-review/write-review.component').then(m => m.WriteReviewComponent)
+      },
+      {
+        path: 'reviews/edit/:reviewId',
+        loadComponent: () => import('./features/storefront/pages/account/reviews/write-review/write-review.component').then(m => m.WriteReviewComponent)
       }
     ],
     canActivate: [authGuard]

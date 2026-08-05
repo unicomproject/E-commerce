@@ -33,7 +33,7 @@ import { CategoryModalService } from '../../core/services/category-modal.service
         </a>
 
         <!-- Orders -->
-        <a routerLink="/orders" routerLinkActive="!text-brand-orange" class="flex flex-col items-center justify-center flex-1 text-brand-navy/70 hover:text-brand-orange active:scale-95 transition-all">
+        <a routerLink="/account/orders" routerLinkActive="!text-brand-orange" class="flex flex-col items-center justify-center flex-1 text-brand-navy/70 hover:text-brand-orange active:scale-95 transition-all">
           <ng-icon name="lucidePackage" class="text-[24px] mb-1"></ng-icon>
           <span class="text-[10px] font-medium">Orders</span>
         </a>

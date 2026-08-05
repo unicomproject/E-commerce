@@ -9,6 +9,7 @@ import {
   ResendEmailVerificationRequest,
   ForgotPasswordRequest,
   ResetPasswordRequest,
+  GoogleLoginRequest,
   AuthResponse,
   CustomerLoginRequest,
   CustomerLoginCustomerDto,
@@ -16,7 +17,8 @@ import {
   CustomerVerifyEmailRequest,
   CustomerResendEmailVerificationRequest,
   CustomerForgotPasswordRequest,
-  CustomerResetPasswordRequest
+  CustomerResetPasswordRequest,
+  CustomerGoogleLoginRequest
 } from '../models';
 import {
   clearCustomerAuthStorage,
@@ -79,6 +81,27 @@ export class AuthService {
         err,
         'Login failed',
         err.error?.errorCode !== 'customer_auth.email_not_verified'))
+    );
+  }
+
+  googleLogin(data: GoogleLoginRequest): Observable<AuthResponse> {
+    const request: CustomerGoogleLoginRequest = {
+      idToken: data.idToken || '',
+      deviceName: data.deviceName || this.resolveDeviceName(),
+      rememberMe: data.rememberMe === true,
+      agreeTerms: data.agreeTerms === true,
+      sendOffers: data.sendOffers === true
+    };
+
+    return this.http.post<AuthResponse>(`${this.baseUrl}/google`, request, { withCredentials: true }).pipe(
+      tap(response => {
+        if (response.success && response.data) {
+          setCustomerAccessToken(response.data.accessToken);
+          this.currentUserSubject.next(response.data.customer);
+          this.toastService.success(`Welcome, ${response.data.customer.displayName || 'User'}!`);
+        }
+      }),
+      catchError(err => this.toAuthFailure(err, 'Google sign-in failed', false))
     );
   }
 
@@ -216,5 +239,13 @@ export class AuthService {
       message,
       errorCode: err.error?.errorCode
     });
+  }
+
+  private resolveDeviceName(): string {
+    if (typeof navigator === 'undefined') {
+      return 'Web browser';
+    }
+
+    return navigator.userAgent || 'Web browser';
   }
 }

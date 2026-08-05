@@ -63,7 +63,7 @@ export class RecentOrdersBottomSheet implements OnInit, OnDestroy {
 
   onOrderClick(orderId: string) {
     this.close();
-    this.router.navigate(['/order', orderId]);
+    this.router.navigate(['/account/orders', orderId]);
   }
 
   fetchRecentOrders() {
@@ -125,28 +125,5 @@ export class RecentOrdersBottomSheet implements OnInit, OnDestroy {
     return defaultLabel || status;
   }
 
-  // Timer calculation
-  getCountdownParts(targetDateStr: string | null): { hours: string, mins: string, secs: string } | null {
-    if (!targetDateStr) return null;
-    
-    const targetDate = new Date(targetDateStr).getTime();
-    const currentTime = this.now().getTime();
-    
-    // If target date is in the past, return 00:00:00
-    if (targetDate <= currentTime) {
-      return { hours: '00', mins: '00', secs: '00' };
-    }
-    
-    const diff = targetDate - currentTime;
-    
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const secs = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    return {
-      hours: hours.toString().padStart(2, '0'),
-      mins: mins.toString().padStart(2, '0'),
-      secs: secs.toString().padStart(2, '0')
-    };
-  }
+
 }

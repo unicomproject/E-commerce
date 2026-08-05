@@ -1,8 +1,8 @@
 <div class="w-full px-4 md:px-8 pt-2 pb-20">
   
   <!-- Header Section -->
-  <app-page-header title="Order Details" customClasses="!px-0 !pt-4 !pb-0 !border-b-0"></app-page-header>
-  <p class="text-neutral-500 text-sm lg:ml-[56px] mt-0 mb-6">Review your click & collect order information.</p>
+  <app-page-header title="Order Details" [breadcrumbs]="breadcrumbItems()" customClasses="!px-0 !pt-4 !pb-0 !border-b-0"></app-page-header>
+  <p class="text-neutral-500 text-sm lg:ml-[56px] mt-0 mb-6 lg:hidden">Review your click & collect order information.</p>
 
   @if (isLoading()) {
     <div class="flex justify-center items-center py-20">
@@ -33,14 +33,12 @@
         @if (order.canShowCollectionQr && order.collectionQr) {
           <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 flex flex-col md:flex-row gap-6 md:items-center">
             <div class="flex flex-col items-center flex-shrink-0 bg-neutral-50 p-4 rounded-xl border border-neutral-100">
-              <h4 class="font-bold text-brand-navy mb-3 text-center w-full border-b pb-2">Collection QR</h4>
+              <h4 class="font-bold text-brand-navy mb-3 text-center w-full pb-2">Collection QR</h4>
               <div class="bg-white p-2 rounded-lg shadow-sm border border-neutral-200">
                 <qrcode [qrdata]="order.collectionQr" [width]="180" [errorCorrectionLevel]="'M'"></qrcode>
               </div>
               <p class="text-xs text-neutral-500 font-medium mt-3 text-center">Show this QR code at the store</p>
-              <button (click)="downloadQr()" class="mt-4 w-full flex items-center justify-center gap-1.5 py-2 px-4 border border-[#ff5b22] text-brand-orange rounded-lg font-bold text-sm hover:bg-orange-50 transition-colors active:scale-95">
-                <ng-icon name="lucideDownload" class="text-[16px]"></ng-icon> Save QR
-              </button>
+
             </div>
             
             <!-- Order Info Summary next to QR on Desktop, below on mobile -->
@@ -178,14 +176,14 @@
             }            
             <div class="flex justify-between pt-1">
               <span class="font-bold text-brand-navy text-lg">Total</span>
-              <span class="font-extrabold text-brand-navy text-xl">{{ order.grandTotal | tenantCurrency:'symbol':'1.2-2' }}</span>
+              <span class="font-extrabold text-brand-orange text-xl">{{ order.grandTotal | tenantCurrency:'symbol':'1.2-2' }}</span>
             </div>
           </div>
         </div>
 
         <!-- Action Buttons -->
         <div class="flex flex-col gap-3">
-          <a routerLink="/orders" class="w-full py-3.5 bg-white border border-[#ff5b22] text-brand-orange hover:bg-orange-50 rounded-xl font-bold text-base transition-colors flex items-center justify-center gap-2 active:scale-[0.98] shadow-sm">
+          <a routerLink="/account/orders" class="w-full py-3.5 bg-white border border-[#ff5b22] text-brand-orange hover:bg-orange-50 rounded-xl font-bold text-base transition-colors flex items-center justify-center gap-2 active:scale-[0.98] shadow-sm">
             <ng-icon name="lucideArrowLeft" class="text-xl"></ng-icon> Back to Orders
           </a>
         </div>

@@ -1,4 +1,4 @@
-﻿export interface LoginRequest {
+export interface LoginRequest {
   email?: string;
   password?: string;
   rememberMe?: boolean;
@@ -31,6 +31,14 @@ export interface ResetPasswordRequest {
   email?: string;
   token?: string;
   newPassword?: string;
+}
+
+export interface GoogleLoginRequest {
+  idToken?: string;
+  deviceName?: string;
+  rememberMe?: boolean;
+  agreeTerms?: boolean;
+  sendOffers?: boolean;
 }
 
 // Backend DTOs
@@ -66,6 +74,14 @@ export interface CustomerResetPasswordRequest {
   email: string;
   token: string;
   newPassword: string;
+}
+
+export interface CustomerGoogleLoginRequest {
+  idToken: string;
+  deviceName?: string;
+  rememberMe: boolean;
+  agreeTerms: boolean;
+  sendOffers: boolean;
 }
 
 export interface CustomerLoginCustomerDto {

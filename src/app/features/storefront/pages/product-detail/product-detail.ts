@@ -16,29 +16,35 @@ import {
   lucideRotateCcw,
   lucideStar,
   lucideArrowLeft,
-  lucideZoomIn
+  lucideZoomIn,
+  lucideChevronDown,
+  lucideChevronUp,
+  lucidePackage
 } from '@ng-icons/lucide';
 import { StorefrontDataService } from '../../services/storefront-data.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { CartAnimationService } from '../../../../core/services/cart-animation.service';
-import { StorefrontProductDetailReadModel, StorefrontProductImageReadModel, StorefrontProductVariantReadModel } from '../../../../core/models';
+import { StorefrontProductDetailReadModel, StorefrontProductImageReadModel, StorefrontProductVariantReadModel, ProductReviewsPageReadModel } from '../../../../core/models';
 import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
 import { QuantityStepperComponent } from '../../../../shared/components/quantity-stepper/quantity-stepper.component';
+import { BreadcrumbsComponent, BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 import { TabsComponent, TabItem } from '../../../../shared/components/tabs/tabs.component';
-import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { FulfillmentSelector } from '../../components/fulfillment-selector/fulfillment-selector';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
-import { DEMO_SNEAKER } from '../../../../core/mocks/demo-product.mock';
+import { DEMO_SNEAKER, DEMO_REVIEWS } from '../../../../core/mocks/demo-product.mock';
+
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { ProductReviewsComponent } from '../../components/product-reviews/product-reviews.component';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, NgIconComponent, StarRatingComponent, QuantityStepperComponent, TabsComponent, TenantCurrencyPipe, PageHeaderComponent],
+  imports: [CommonModule, NgIconComponent, StarRatingComponent, QuantityStepperComponent, TenantCurrencyPipe, BreadcrumbsComponent, PageHeaderComponent, TabsComponent, ProductReviewsComponent],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.css',
   viewProviders: [provideIcons({ 
@@ -54,7 +60,11 @@ import { DEMO_SNEAKER } from '../../../../core/mocks/demo-product.mock';
     lucideStore,
     lucideRotateCcw,
     lucideStar,
-    lucideArrowLeft
+    lucideArrowLeft,
+    lucideChevronDown,
+    lucideChevronUp,
+    lucideZoomIn,
+    lucidePackage
   })]
 })
 export class ProductDetail implements OnInit {
@@ -77,45 +87,59 @@ export class ProductDetail implements OnInit {
   isInWishlist = computed(() => {
     const list = this.wishlistSig();
     const prod = this.product();
+    const variant = this.selectedVariant();
     if (!list || !prod) return false;
-    // For products with variants, we might want to check the specific variant, but usually wishlist is per product or per selected variant
-    // For now we check if any variant or the product itself is in the wishlist
-    return list.items.some(i => i.productId === prod.id);
+    
+    // Check if the specific variant is in the wishlist
+    // If there is no variant selected, check if the base product is in the wishlist
+    return list.items.some(i => i.productId === prod.id && i.productVariantId === (variant?.id || null));
   });
   
   // Selection Signals
   activeImageIndex = signal<number>(0);
   quantity = signal<number>(1);
-  selectedColorId = signal<string | null>(null);
-  selectedSizeId = signal<string | null>(null);
-  activeTab = signal<string>('overview');
-  productTabs = signal<TabItem[]>([]);
+  selectedOptions = signal<Record<string, string>>({});
+  
+  // Tabs State
+  activeTabId = signal<string>('reviews');
+  reviews = signal<ProductReviewsPageReadModel | null>(null);
+
+  tabs = computed<TabItem[]>(() => {
+    const p = this.product();
+    const r = this.reviews();
+    const count = r ? r.summary.totalReviews : (p?.reviewCount || 0);
+    return [
+      { id: 'details', label: 'Product Details' },
+      { id: 'specs', label: 'Specifications' },
+      { id: 'returns', label: 'Delivery & Returns' },
+      { id: 'reviews', label: `Reviews (${count})` }
+    ];
+  });
 
   // Computed Signals for Real-time Reactive Sync
   selectedVariant = computed<StorefrontProductVariantReadModel | null>(() => {
     const p = this.product();
     if (!p || !p.variants || p.variants.length === 0) return null;
 
-    const colorId = this.selectedColorId();
-    const sizeId = this.selectedSizeId();
-
-    const selectedColorName = colorId 
-      ? p.colours?.find(c => c.id === colorId)?.name 
-      : undefined;
-    const selectedSizeName = sizeId 
-      ? p.sizes?.find(s => s.id === sizeId)?.name 
-      : undefined;
-
+    const currentSelection = this.selectedOptions();
+    
     return p.variants.find(v => {
-      let colorMatch = true;
-      let sizeMatch = true;
-      if (selectedColorName) {
-        colorMatch = v.colour === selectedColorName || v.colour === colorId;
+      // For every option defined in the product, check if the variant's optionValue matches the selected option value name
+      for (const opt of (p.options || [])) {
+        const selectedValueId = currentSelection[opt.optionName];
+        if (!selectedValueId) return false;
+        
+        const selectedValue = opt.values.find(val => val.id === selectedValueId);
+        if (!selectedValue) return false;
+        
+        // Match the string name from the variant's dictionary
+        const variantOptionValueName = v.optionValues?.[opt.optionName];
+        
+        if (variantOptionValueName !== selectedValue.name && variantOptionValueName !== selectedValue.displayName) {
+          return false;
+        }
       }
-      if (selectedSizeName) {
-        sizeMatch = v.size === selectedSizeName || v.size === sizeId;
-      }
-      return colorMatch && sizeMatch;
+      return true;
     }) || null;
   });
 
@@ -126,26 +150,48 @@ export class ProductDetail implements OnInit {
     return p.images[idx] || p.images[0];
   });
 
-  selectedColorName = computed<string>(() => {
+  selectedOptionValueName(optionName: string): string {
     const p = this.product();
-    const colorId = this.selectedColorId();
-    if (!p || !colorId) return '';
-    const col = p.colours.find(c => c.id === colorId);
-    return col ? col.displayName || col.name : '';
-  });
-
-  selectedSizeName = computed<string>(() => {
-    const p = this.product();
-    const sizeId = this.selectedSizeId();
-    if (!p || !sizeId) return '';
-    const size = p.sizes.find(s => s.id === sizeId);
-    return size ? size.displayName || size.name : '';
-  });
+    const selection = this.selectedOptions();
+    if (!p || !selection[optionName]) return '';
+    
+    const opt = p.options.find(o => o.optionName === optionName);
+    if (!opt) return '';
+    
+    const val = opt.values.find(v => v.id === selection[optionName]);
+    return val ? (val.displayName || val.name) : '';
+  }
 
   displayPrice = computed<number>(() => {
     const variant = this.selectedVariant();
     if (variant) return variant.price;
     return this.product()?.price ?? 0;
+  });
+
+  originalPrice = computed<number | undefined>(() => {
+    const variant: any = this.selectedVariant();
+    if (variant && variant.originalPrice) return variant.originalPrice;
+    return (this.product() as any)?.originalPrice;
+  });
+
+  breadcrumbItems = computed<BreadcrumbItem[]>(() => {
+    const p = this.product();
+    if (!p) return [{ label: 'Home', link: '/' }];
+    
+    const items: BreadcrumbItem[] = [
+      { label: 'Home', link: '/' }
+    ];
+
+    if (p.categoryName) {
+       items.push({ label: p.categoryName, link: p.categorySlug ? `/collections/${p.categorySlug}` : undefined });
+    }
+    
+    if (p.subCategoryName) {
+       items.push({ label: p.subCategoryName, link: p.subCategorySlug ? `/collections/${p.subCategorySlug}` : undefined });
+    }
+
+    items.push({ label: p.name || 'Product Details' });
+    return items;
   });
 
   isCurrentlyInStock = computed<boolean>(() => {
@@ -163,8 +209,12 @@ export class ProductDetail implements OnInit {
   canAddToCart = computed<boolean>(() => {
     const p = this.product();
     if (!p) return false;
-    if (p.colours?.length > 0 && !this.selectedColorId()) return false;
-    if (p.sizes?.length > 0 && !this.selectedSizeId()) return false;
+    
+    const currentSelection = this.selectedOptions();
+    for (const opt of (p.options || [])) {
+      if (!currentSelection[opt.optionName]) return false;
+    }
+    
     return this.isCurrentlyInStock();
   });
 
@@ -188,42 +238,57 @@ export class ProductDetail implements OnInit {
       next: (prod) => {
         this.product.set(prod);
         this.activeImageIndex.set(0);
-        this.productTabs.set([
-          { id: 'overview', label: 'Overview' },
-          { id: 'details', label: 'Details' },
-          { id: 'returns', label: 'Returns & Refunds' },
-          { id: 'reviews', label: 'Reviews', count: prod.reviewCount }
-        ]);
 
-        // Auto-select base variant (first variant's color & size)
-        if (prod.variants?.length > 0) {
-          const baseVariant = prod.variants[0];
-          
-          if (prod.colours?.length > 0) {
-            const colMatch = prod.colours.find(c => 
-              c.id === baseVariant.colour || c.name === baseVariant.colour || c.displayName === baseVariant.colour);
-            this.selectedColorId.set(colMatch ? colMatch.id : prod.colours[0].id);
-          }
-
-          if (prod.sizes?.length > 0) {
-            const sizeMatch = prod.sizes.find(s => 
-              s.id === baseVariant.size || s.name === baseVariant.size || s.displayName === baseVariant.size);
-            this.selectedSizeId.set(sizeMatch ? sizeMatch.id : prod.sizes[0].id);
-          }
-        } else {
-          if (prod.colours?.length > 0) {
-            this.selectedColorId.set(prod.colours[0].id);
-          }
-          if (prod.sizes?.length > 0) {
-            this.selectedSizeId.set(prod.sizes[0].id);
+        // Auto-select base variant (first variant's options)
+        const initialSelections: Record<string, string> = {};
+        if (prod.options && prod.options.length > 0) {
+          if (prod.variants && prod.variants.length > 0) {
+            const baseVariant = prod.variants[0];
+            for (const opt of prod.options) {
+              const variantOptValueName = baseVariant.optionValues?.[opt.optionName];
+              if (variantOptValueName) {
+                const match = opt.values.find(v => v.name === variantOptValueName || v.displayName === variantOptValueName);
+                if (match) {
+                  initialSelections[opt.optionName] = match.id;
+                } else if (opt.values.length > 0) {
+                  initialSelections[opt.optionName] = opt.values[0].id;
+                }
+              } else if (opt.values.length > 0) {
+                initialSelections[opt.optionName] = opt.values[0].id;
+              }
+            }
+          } else {
+            for (const opt of prod.options) {
+              if (opt.values.length > 0) {
+                initialSelections[opt.optionName] = opt.values[0].id;
+              }
+            }
           }
         }
+        this.selectedOptions.set(initialSelections);
         
         this.loading.set(false);
+        this.loadReviews(prod.id);
       },
       error: (err) => {
         console.error('Error fetching product details', err);
         this.loading.set(false);
+      }
+    });
+  }
+
+  loadReviews(productId: string) {
+    if (this.slug === 'demo-sneaker') {
+      this.reviews.set(DEMO_REVIEWS);
+      return;
+    }
+
+    this.dataService.getProductReviews(productId).subscribe({
+      next: (reviewsPage) => {
+        this.reviews.set(reviewsPage);
+      },
+      error: (err) => {
+        console.error('Error fetching product reviews', err);
       }
     });
   }
@@ -245,22 +310,29 @@ export class ProductDetail implements OnInit {
     this.activeImageIndex.set(index);
   }
 
-  selectColor(id: string) {
-    this.selectedColorId.set(id);
-    const p = this.product();
-    if (p?.images?.length) {
-      const col = p.colours.find(c => c.id === id);
-      if (col?.imageUrl) {
-        const imgIdx = p.images.findIndex(img => img.url === col.imageUrl);
-        if (imgIdx !== -1) {
-          this.activeImageIndex.set(imgIdx);
+  selectOption(optionName: string, valueId: string) {
+    this.selectedOptions.update(opts => ({
+      ...opts,
+      [optionName]: valueId
+    }));
+    
+    // Check if the option is color, to update the image
+    const isColor = optionName.toLowerCase().includes('color') || optionName.toLowerCase().includes('colour');
+    if (isColor) {
+      const p = this.product();
+      if (p?.images?.length) {
+        const opt = p.options.find(o => o.optionName === optionName);
+        if (opt) {
+          const val = opt.values.find(v => v.id === valueId);
+          if (val?.imageUrl) {
+            const imgIdx = p.images.findIndex(img => img.url === val.imageUrl);
+            if (imgIdx !== -1) {
+              this.activeImageIndex.set(imgIdx);
+            }
+          }
         }
       }
     }
-  }
-
-  selectSize(id: string) {
-    this.selectedSizeId.set(id);
   }
 
   onQuantityChange(newQty: number) {
@@ -295,10 +367,11 @@ export class ProductDetail implements OnInit {
   toggleWishlist() {
     const p = this.product();
     if (!p) return;
-
+    
     if (this.isInWishlist()) {
       const list = this.wishlistSig();
-      const item = list?.items.find(i => i.productId === p.id);
+      const variant = this.selectedVariant();
+      const item = list?.items.find(i => i.productId === p.id && i.productVariantId === (variant?.id || null));
       if (item) {
         this.wishlistService.removeItem(item.id);
       }

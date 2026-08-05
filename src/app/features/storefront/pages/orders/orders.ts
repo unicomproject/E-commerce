@@ -6,12 +6,14 @@ import { lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lu
 import { OrderService } from '../../../../core/services/order.service';
 import { OrderCard } from '../../components/order-card/order-card';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 export interface OrderTab {
   id: string;
   label: string;
   icon?: string;
   colorClass?: string;
+  activeClass?: string;
 }
 
 @Component({
@@ -26,15 +28,17 @@ export interface OrderTab {
 export class Orders implements OnInit {
   private orderService = inject(OrderService);
 
+  breadcrumbItems: BreadcrumbItem[] = [{ label: 'Home', link: '/' }, { label: 'My Account', link: '/account' }, { label: 'My Orders' }];
+
   // Tabs Definition matching the design
   tabs: OrderTab[] = [
-    { id: 'all', label: 'All', colorClass: 'bg-brand-orange text-white border-brand-orange' },
-    { id: 'pending', label: 'Pending', icon: 'lucideClock', colorClass: 'text-brand-orange border-neutral-200 hover:border-brand-orange/50' },
-    { id: 'accepted', label: 'Accepted', icon: 'lucideCheckCircle2', colorClass: 'text-green-600 border-neutral-200 hover:border-green-600/50' },
-    { id: 'preparing', label: 'Preparing', icon: 'lucideSettings', colorClass: 'text-blue-600 border-neutral-200 hover:border-blue-600/50' },
-    { id: 'ready', label: 'Ready', icon: 'lucidePackageCheck', colorClass: 'text-green-700 border-neutral-200 hover:border-green-700/50' },
-    { id: 'completed', label: 'Completed', icon: 'lucideCheckSquare', colorClass: 'text-neutral-600 border-neutral-200 hover:border-neutral-600/50' },
-    { id: 'cancelled', label: 'Cancelled', icon: 'lucideXCircle', colorClass: 'text-red-500 border-neutral-200 hover:border-red-500/50' }
+    { id: 'all', label: 'All', activeClass: 'bg-brand-orange text-white border-brand-orange' },
+    { id: 'pending', label: 'Pending', icon: 'lucideClock', colorClass: 'text-brand-orange border-neutral-200 hover:border-brand-orange/50', activeClass: 'bg-orange-50 text-brand-orange border-brand-orange/30' },
+    { id: 'accepted', label: 'Accepted', icon: 'lucideCheckCircle2', colorClass: 'text-green-600 border-neutral-200 hover:border-green-600/50', activeClass: 'bg-green-50 text-green-700 border-green-300' },
+    { id: 'preparing', label: 'Preparing', icon: 'lucideSettings', colorClass: 'text-blue-600 border-neutral-200 hover:border-blue-600/50', activeClass: 'bg-blue-50 text-blue-700 border-blue-300' },
+    { id: 'ready', label: 'Ready', icon: 'lucidePackageCheck', colorClass: 'text-green-700 border-neutral-200 hover:border-green-700/50', activeClass: 'bg-green-50 text-green-700 border-green-300' },
+    { id: 'completed', label: 'Completed', icon: 'lucideCheckSquare', colorClass: 'text-neutral-600 border-neutral-200 hover:border-neutral-600/50', activeClass: 'bg-neutral-100 text-neutral-800 border-neutral-300' },
+    { id: 'cancelled', label: 'Cancelled', icon: 'lucideXCircle', colorClass: 'text-red-500 border-neutral-200 hover:border-red-500/50', activeClass: 'bg-red-50 text-red-600 border-red-300' }
   ];
 
   // State Signals
@@ -59,20 +63,19 @@ export class Orders implements OnInit {
 
   getTabClass(tab: OrderTab): string {
     const isActive = this.activeTab() === tab.id;
-    if (!isActive) {
-      return 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300';
+    if (isActive) {
+      return tab.activeClass || 'bg-neutral-100 text-neutral-800 border-neutral-300';
     }
     
+    // Inactive state
     if (tab.id === 'all') {
-      return 'bg-brand-orange text-white border-brand-orange';
+      return 'bg-white text-neutral-600 border-neutral-200 hover:border-brand-orange/50 hover:text-brand-orange';
     }
 
     if (tab.colorClass) {
-      const textColor = tab.colorClass.split(' ')[0];
-      const bgModifier = textColor.replace('text-', 'bg-') + '/10';
-      return `${bgModifier} ${tab.colorClass}`;
+      return `bg-white ${tab.colorClass}`;
     }
     
-    return 'bg-neutral-100 text-neutral-800 border-neutral-300';
+    return 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300';
   }
 }

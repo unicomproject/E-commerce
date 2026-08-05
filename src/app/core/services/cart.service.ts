@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, map } from 'rxjs';
 import { StorefrontCartReadModel, AddStorefrontCartItemRequest, UpdateStorefrontCartItemRequest } from '../models/cart.model';
 import { environment } from '../../../environments/environment';
 import { ToastService } from './toast.service';
+import { AuthService } from './auth.service';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -26,8 +27,17 @@ export class CartService {
   
   private readonly baseUrl = `${environment.apiUrl}/ecommerce/storefront/cart`;
 
-  constructor() {}
-
+  private authService = inject(AuthService);
+  
+  constructor() {
+    this.authService.currentUser$.subscribe((user) => {
+      if (!user) {
+        this.clearLocalState();
+      } else {
+        this.loadCart();
+      }
+    });
+  }
   loadCart(): void {
     this.http.get<ApiResponse<StorefrontCartReadModel>>(this.baseUrl).subscribe({
       next: (response) => {

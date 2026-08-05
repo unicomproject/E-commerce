@@ -1,16 +1,9 @@
-﻿<div class="bg-page-bg min-h-screen pb-24 lg:pb-12 pt-6">
-  <div class="max-w-[1000px] mx-auto px-4 lg:px-8">
+<div class="w-full pb-24 lg:pb-12 pt-2 lg:pt-0">
     
     <!-- Header -->
-    <div class="mb-8">
-      <div class="flex items-center gap-4">
-        <!-- Back Button -->
-        <button onclick="history.back()" class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-white rounded-2xl shadow-sm text-brand-navy hover:bg-neutral-50 border border-neutral-100 transition-colors">
-          <ng-icon name="lucideArrowLeft" size="22" strokeWidth="1.5"></ng-icon>
-        </button>
-        <h1 class="text-2xl lg:text-3xl font-extrabold text-brand-navy tracking-tight">Wishlist</h1>
-      </div>
-      <p class="text-gray-500 mt-2 text-sm lg:text-base ml-[56px]">Save your favourite items for later.</p>
+    <div class="mb-4 lg:mb-0 lg:hidden">
+      <app-page-header title="Wishlist" [hideDesktopTitle]="true" customClasses="!px-0 !pt-0 !pb-0 !border-b-0"></app-page-header>
+      <p class="text-gray-500 mt-2 text-sm ml-[56px]">Save your favourite items for later.</p>
     </div>
 
     <ng-container *ngIf="wishlist$ | async as wishlist">
@@ -26,65 +19,73 @@
         <a routerLink="/" class="px-8 py-4 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold transition-colors">Start Shopping</a>
       </div>
 
-      <!-- Wishlist Horizontal List -->
-      <div *ngIf="wishlist.items.length > 0" class="flex flex-col gap-4">
-        <div *ngFor="let item of wishlist.items" class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm border border-gray-100 flex flex-row gap-3 sm:gap-4 relative group">
+      <!-- Wishlist Grid -->
+      <div *ngIf="wishlist.items.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+        <div *ngFor="let item of wishlist.items" class="bg-white rounded-xl p-2 sm:p-3 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-100/80 flex flex-row gap-2 sm:gap-3 relative group hover:border-brand-orange/30 transition-colors">
           
           <!-- Image (Left) -->
           <a [routerLink]="['/product', item.productSlug]" class="shrink-0 block">
-            <div class="w-[100px] h-[120px] sm:w-[140px] sm:h-[160px] rounded-lg sm:rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center">
+            <div class="w-[90px] h-[90px] sm:w-[120px] sm:h-[120px] rounded-lg sm:rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center">
               <img 
                 [src]="item.imageUrl || 'assets/images/placeholder.webp'" 
                 [alt]="item.productName"
-                class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </div>
           </a>
 
           <!-- Details & Actions (Right) -->
-          <div class="flex-1 flex flex-col justify-between py-1 relative">
+          <div class="flex-1 flex flex-col justify-between py-1 sm:py-1.5">
             
-            <!-- Top: Title, Variant and Right Icons -->
-            <div class="flex justify-between items-start">
-              <div class="pr-10 sm:pr-12">
-                <h3 class="font-bold text-gray-900 text-[13px] sm:text-[15px] leading-tight sm:leading-snug mb-1">
+            <!-- Top: Title, Variant -->
+            <div class="flex justify-between items-start gap-3">
+              <div class="flex-1">
+                <!-- 1. Name -->
+                <h3 class="font-bold text-gray-900 text-[13px] sm:text-[15px] leading-tight sm:leading-snug mb-1.5 line-clamp-2">
                   <a [routerLink]="['/product', item.productSlug]" class="hover:text-brand-orange transition-colors">
                     {{ item.productName }}
                   </a>
                 </h3>
-                <p class="text-[11px] sm:text-xs text-gray-500" *ngIf="item.variantName">
+                
+                <!-- 2. Price -->
+                <div class="font-extrabold text-brand-orange text-sm sm:text-lg leading-none mb-1.5">{{ item.price | tenantCurrency:'symbol':'1.2-2' }}</div>
+                
+                <!-- 3. Rating -->
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <app-star-rating [rating]="item.rating || 0" [size]="14"></app-star-rating>
+                  <span class="text-[11px] sm:text-xs font-bold text-gray-900">{{ (item.rating || 0) | number:'1.1-1' }}</span>
+                  <a [routerLink]="['/product', item.productSlug]" fragment="reviews" class="text-[10px] sm:text-[11px] text-brand-orange hover:underline">({{ item.reviewCount || 0 }} reviews)</a>
+                </div>
+
+                <!-- 4. Variant -->
+                <p class="text-[11px] sm:text-xs text-gray-500 mb-1.5" *ngIf="item.variantName">
                   {{ item.variantName }}
                 </p>
-              </div>
-
-              <!-- Top Right Icons (Heart & Trash) -->
-              <div class="flex flex-col items-center gap-2.5 sm:gap-3 absolute top-0 right-0">
-                <button class="text-brand-orange hover:text-brand-orange-dark transition-colors" title="In Wishlist">
-                  <ng-icon name="lucideHeart" size="20" class="fill-current"></ng-icon>
-                </button>
-                <button 
-                  (click)="$event.preventDefault(); removeItem(item.id)" 
-                  class="w-7 h-7 sm:w-9 sm:h-9 border border-gray-200 rounded-md sm:rounded-lg flex items-center justify-center text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all"
-                  title="Remove from Wishlist">
-                  <ng-icon name="lucideTrash2" size="16"></ng-icon>
-                </button>
-              </div>
-            </div>
-
-            <!-- Bottom: Price, Stock & Cart Button -->
-            <div class="flex flex-row justify-between items-end mt-3 sm:mt-auto">
-              <div>
-                <div class="font-extrabold text-gray-900 text-sm sm:text-lg leading-none mb-1.5 sm:mb-2">{{ item.price | tenantCurrency:'symbol':'1.2-2' }}</div>
+                
+                <!-- 5. Stock -->
                 <div class="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold" [ngClass]="item.isInStock ? 'text-gray-500' : 'text-red-500'">
                   <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full" [ngClass]="item.isInStock ? 'bg-green-500' : 'bg-red-500'"></div>
                   {{ item.isInStock ? 'In stock' : 'Out of stock' }}
                 </div>
               </div>
 
+              <!-- Top Right Icon (Trash) -->
+              <button 
+                (click)="$event.preventDefault(); removeItem(item.id)" 
+                class="shrink-0 w-7 h-7 sm:w-8 sm:h-8 border border-gray-200 rounded-md sm:rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all shadow-sm bg-white"
+                title="Remove from Wishlist">
+                <ng-icon name="lucideTrash2" size="15"></ng-icon>
+              </button>
+            </div>
+
+            <!-- Bottom: Cart Button -->
+            <div class="flex flex-row flex-wrap items-end justify-end mt-3 sm:mt-auto gap-2">
+
               <button 
                 [disabled]="!item.isInStock"
                 (click)="moveToCart(item)"
-                class="px-4 py-2 sm:px-6 sm:py-2.5 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-md sm:rounded-lg font-bold text-[11px] sm:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                class="ml-auto px-3 py-1.5 sm:px-3 sm:py-2 bg-transparent border border-brand-orange text-brand-orange hover:bg-brand-orange-light/10 rounded-md sm:rounded-lg font-bold text-[11px] sm:text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap shrink-0">
+                <ng-icon name="lucideShoppingCart" size="14"></ng-icon>
                 Move to Cart
               </button>
             </div>
@@ -112,4 +113,3 @@
     </ng-container>
 
   </div>
-</div>

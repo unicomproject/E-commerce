@@ -16,7 +16,7 @@ import { Product } from '../../../../core/models/product.model';
         </button>
       </div>
       
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 lg:gap-4">
         <app-product-card *ngFor="let product of products()" [product]="product"></app-product-card>
       </div>
     </div>

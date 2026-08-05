@@ -1,5 +1,5 @@
 <div class="max-w-[500px] mx-auto px-4 py-6">
-  
+
   <!-- Header -->
   <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Create account</h1>
   <p class="text-gray-600 mb-5 text-sm md:text-base">Join Arena Store for faster checkout, order tracking and rewards.</p>
@@ -10,7 +10,7 @@
 
   <!-- Register Form -->
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-3">
-    
+
     <!-- Email -->
     <div>
       <div class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow">
@@ -48,7 +48,7 @@
         <span class="text-gray-600 text-xs md:text-sm">I agree to the <a href="#" class="text-gray-900 font-bold hover:underline">Terms & Conditions</a> and <a href="#" class="text-gray-900 font-bold hover:underline">Privacy Policy</a></span>
       </label>
       <div *ngIf="registerForm.get('agreeTerms')?.touched && registerForm.get('agreeTerms')?.invalid" class="text-red-500 text-xs ml-7">You must agree to the terms.</div>
-      
+
       <label class="flex items-center space-x-3 cursor-pointer">
         <input type="checkbox" formControlName="sendOffers" class="w-4 h-4 rounded border-gray-300 text-brand-orange focus:ring-brand-orange">
         <span class="text-gray-600 text-xs md:text-sm">Send me offers, rewards and store updates</span>
@@ -57,8 +57,8 @@
 
     <!-- Submit Button -->
     <div class="pt-1">
-      <button 
-        type="submit" 
+      <button
+        type="submit"
         [disabled]="isLoading() || registerForm.invalid"
         class="w-full py-3 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed text-sm md:text-base"
       >
@@ -76,15 +76,14 @@
   </div>
 
   <!-- Social Register -->
-  <button class="w-full py-3.5 flex items-center justify-center space-x-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors font-medium text-gray-900">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M22.56 12.25C22.56 11.47 22.49 10.72 22.36 10H12V14.26H17.92C17.67 15.63 16.86 16.79 15.69 17.57V20.34H19.26C21.35 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4"/>
-      <path d="M12 23C14.97 23 17.46 22.02 19.26 20.34L15.69 17.57C14.71 18.23 13.47 18.63 12 18.63C9.16 18.63 6.75 16.71 5.86 14.14H2.18V16.99C4.01 20.63 7.7 23 12 23Z" fill="#34A853"/>
-      <path d="M5.86 14.14C5.63 13.48 5.5 12.76 5.5 12C5.5 11.24 5.63 10.52 5.86 9.86V7.01H2.18C1.43 8.5 1 10.2 1 12C1 13.8 1.43 15.5 2.18 16.99L5.86 14.14Z" fill="#FBBC05"/>
-      <path d="M12 5.38C13.62 5.38 15.06 5.94 16.21 7.03L19.34 3.9C17.45 2.14 14.97 1 12 1C7.7 1 4.01 3.37 2.18 7.01L5.86 9.86C6.75 7.29 9.16 5.38 12 5.38Z" fill="#EA4335"/>
-    </svg>
-    <span>Continue with Google</span>
-  </button>
+  <div
+    #googleButtonContainer
+    class="flex justify-center"
+    [class.opacity-60]="isGoogleLoading()"
+    [class.pointer-events-none]="isGoogleLoading()"
+  ></div>
+  <p *ngIf="isGoogleLoading()" class="mt-2 text-center text-sm text-gray-500">Signing up with Google...</p>
+  <p *ngIf="googleUnavailableMessage()" class="mt-2 text-center text-xs text-gray-500">{{ googleUnavailableMessage() }}</p>
 
 
 

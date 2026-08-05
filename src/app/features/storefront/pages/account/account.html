@@ -1,73 +1,53 @@
-<div class="max-w-4xl mx-auto px-4 py-6 lg:py-8">
-  
-  <!-- Breadcrumb -->
-  <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
-    <a routerLink="/" class="hover:text-gray-900">Home</a>
-    <span class="mx-2">&gt;</span>
-    <span class="hover:text-gray-900">Account</span>
-    <span class="mx-2">&gt;</span>
-    <span class="text-brand-orange font-medium">My Account</span>
-  </nav>
-
-  <!-- Header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-brand-navy mb-2 flex items-center gap-2">
-      <ng-icon name="lucideUser" size="32" class="text-brand-orange"></ng-icon>
-      My Account
-    </h1>
-    <p class="text-gray-600">Manage your profile, orders and preferences</p>
-  </div>
-
-  <!-- Profile Card -->
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col lg:flex-row lg:items-center gap-6 mb-6">
-    <div class="flex flex-row items-center gap-4 lg:gap-6 flex-grow">
-      <div class="flex-shrink-0">
-        <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
-          <ng-icon name="lucideUser" size="40" strokeWidth="1.5"></ng-icon>
-        </div>
-      </div>
-      
-      <div class="flex-grow space-y-1.5 lg:space-y-2">
-        <h2 class="text-xl font-bold text-gray-900">{{user?.displayName}}</h2>
-        <div class="flex items-center text-gray-600 text-sm">
-          <ng-icon name="lucideMail" size="18" class="mr-3"></ng-icon>
-          <span class="truncate">{{user?.email}}</span>
-        </div>
-        <div class="flex items-center text-gray-600 text-sm" *ngIf="user?.phone">
-          <ng-icon name="lucidePhone" size="18" class="mr-3"></ng-icon>
-          {{user?.phone}}
-        </div>
-      </div>
-    </div>
+<div class="w-full lg:px-0">
     
-    <div class="flex-shrink-0 mt-4 lg:mt-0">
-      <button routerLink="/account/profile" class="w-full lg:w-auto px-6 py-2.5 border border-brand-orange text-brand-orange font-bold rounded-lg hover:bg-brand-orange-light transition-colors">
-        Edit Profile
-      </button>
+    <!-- Header -->
+    <div class="mb-6 lg:mb-8">
+      <app-page-header title="My Account" customClasses="!px-0 !pt-0 !pb-0 !border-b-0"></app-page-header>
     </div>
-  </div>
 
-
-  <!-- Quick Actions -->
-  <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-  
-  <div class="grid grid-cols-1 lg:grid-cols-2 lg:grid-cols-2 gap-4 mb-10">
-    <a *ngFor="let action of quickActions" 
-       [routerLink]="action.route ? action.route : null"
-       (click)="action.action ? action.action() : null"
-       [class.cursor-pointer]="true"
-       class="bg-white rounded-lg border border-gray-100 shadow-sm p-4 flex items-center justify-between hover:shadow-md transition-shadow group"
-       [ngClass]="{'text-red-500 hover:bg-red-50': action.isDestructive, 'text-gray-900 hover:border-gray-300': !action.isDestructive}">
-      
-      <div class="flex items-center gap-4 font-medium">
-        <ng-icon [name]="action.icon" size="24" [class.text-red-500]="action.isDestructive" [class.text-gray-700]="!action.isDestructive" class="group-hover:scale-110 transition-transform"></ng-icon>
-        {{action.label}}
+    <!-- Profile Card -->
+    <div class="bg-white rounded-[24px] p-6 flex flex-col md:flex-row md:items-center gap-6 mb-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100 cursor-pointer hover:shadow-md transition-shadow" routerLink="/account/profile">
+      <div class="flex flex-row items-center gap-5 flex-grow">
+        <div class="flex-shrink-0">
+          <div class="w-20 h-20 bg-[#fff0e6] rounded-full flex items-center justify-center text-brand-orange overflow-hidden">
+            <ng-icon name="lucideUser" size="40" strokeWidth="1.5"></ng-icon>
+          </div>
+        </div>
+        
+        <div class="flex-grow space-y-1">
+          <h2 class="text-xl font-bold text-gray-900">{{user?.displayName}}</h2>
+          <div class="text-gray-500 text-sm">
+            {{user?.email}}
+          </div>
+        </div>
       </div>
-      
-      <ng-icon name="lucideChevronRight" size="20" [class.text-red-500]="action.isDestructive" [class.text-brand-orange]="!action.isDestructive"></ng-icon>
-    </a>
-  </div>
+    </div>
 
-
+    <!-- Menu List -->
+    <div class="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden mb-10 lg:hidden">
+      <div class="flex flex-col">
+        <a *ngFor="let action of quickActions; let last = last" 
+           [routerLink]="action.route ? action.route : null"
+           (click)="action.action ? action.action() : null"
+           class="flex items-center justify-between p-5 hover:bg-gray-50 transition-colors cursor-pointer group"
+           [class.border-b]="!last"
+           [class.border-gray-100]="!last">
+          
+          <div class="flex items-center gap-4 font-bold text-[15px]"
+               [ngClass]="{'text-[#f65a11]': action.isDestructive, 'text-gray-800': !action.isDestructive}">
+            <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:scale-110 transition-transform"
+                 [ngClass]="{'bg-red-50 text-[#f65a11]': action.isDestructive, 'text-gray-600': !action.isDestructive}">
+              <ng-icon [name]="action.icon" size="20" strokeWidth="2"></ng-icon>
+            </div>
+            {{action.label}}
+          </div>
+          
+          <ng-icon name="lucideChevronRight" size="20" 
+                   class="transition-transform group-hover:translate-x-1"
+                   [ngClass]="{'text-[#f65a11]': action.isDestructive, 'text-gray-300': !action.isDestructive}">
+          </ng-icon>
+        </a>
+      </div>
+    </div>
 
 </div>

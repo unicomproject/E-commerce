@@ -1,0 +1,116 @@
+@if (notificationService.panelOpen()) {
+  <div class="fixed inset-0 z-[80]" (click)="close()"></div>
+
+  <section
+    class="fixed right-3 top-24 z-[81] w-[calc(100vw-1.5rem)] max-w-[420px] overflow-hidden rounded-3xl border border-neutral-100 bg-white shadow-[0_24px_80px_-24px_rgba(15,23,42,0.35)] lg:right-8 lg:top-24"
+    (click)="$event.stopPropagation()">
+
+    <div class="flex items-center justify-between border-b border-neutral-100 bg-gradient-to-r from-orange-50 to-white px-5 py-4">
+      <div class="flex items-center gap-3">
+        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-orange text-white shadow-sm">
+          <ng-icon name="lucideBell" size="21"></ng-icon>
+        </div>
+        <div>
+          <h2 class="text-base font-extrabold text-neutral-900">Notifications</h2>
+          <p class="text-xs font-medium text-neutral-500">
+            @if (notificationService.unreadCount() > 0) {
+              {{ notificationService.unreadCount() }} unread updates
+            } @else {
+              You are all caught up
+            }
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <button
+          type="button"
+          (click)="refresh(); $event.stopPropagation()"
+          class="flex h-9 w-9 items-center justify-center rounded-full text-neutral-500 transition hover:bg-white hover:text-brand-orange"
+          aria-label="Refresh notifications">
+          <ng-icon name="lucideRefreshCw" size="18"></ng-icon>
+        </button>
+        <button
+          type="button"
+          (click)="close()"
+          class="flex h-9 w-9 items-center justify-center rounded-full text-neutral-500 transition hover:bg-white hover:text-neutral-900"
+          aria-label="Close notifications">
+          <ng-icon name="lucideX" size="19"></ng-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between px-5 py-3">
+      <span class="text-xs font-bold uppercase tracking-wide text-neutral-400">Recent updates</span>
+      <button
+        type="button"
+        (click)="markAllRead($event)"
+        [disabled]="notificationService.unreadCount() === 0 || notificationService.marking()"
+        class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold text-brand-orange transition hover:bg-orange-50 disabled:cursor-not-allowed disabled:text-neutral-300 disabled:hover:bg-transparent">
+        <ng-icon name="lucideCheckCheck" size="15"></ng-icon>
+        Mark all read
+      </button>
+    </div>
+
+    <div class="max-h-[60vh] overflow-y-auto px-3 pb-3">
+      @if (notificationService.loading() && notificationService.items().length === 0) {
+        <div class="flex items-center justify-center py-14">
+          <div class="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-b-brand-orange"></div>
+        </div>
+      } @else if (notificationService.error()) {
+        <div class="rounded-2xl border border-red-100 bg-red-50 p-5 text-center">
+          <p class="mb-3 text-sm font-semibold text-red-700">{{ notificationService.error() }}</p>
+          <button type="button" (click)="refresh()" class="rounded-full bg-white px-4 py-2 text-sm font-bold text-red-600 shadow-sm">
+            Try again
+          </button>
+        </div>
+      } @else if (notificationService.items().length === 0) {
+        <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 py-12 text-center">
+          <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-white text-neutral-300 shadow-sm">
+            <ng-icon name="lucideInbox" size="28"></ng-icon>
+          </div>
+          <h3 class="text-sm font-extrabold text-neutral-800">No notifications yet</h3>
+          <p class="mt-1 max-w-[260px] text-xs text-neutral-500">Order updates will appear here when your click & collect order moves forward.</p>
+        </div>
+      } @else {
+        <div class="space-y-2">
+          @for (item of notificationService.items(); track item.id) {
+            <button
+              type="button"
+              (click)="openNotification(item)"
+              class="group flex w-full gap-3 rounded-2xl border p-3 text-left transition hover:border-brand-orange/30 hover:bg-orange-50/40"
+              [ngClass]="item.isRead ? 'border-neutral-100 bg-white' : 'border-orange-100 bg-orange-50/70'">
+              <div class="mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl"
+                   [ngClass]="item.isRead ? 'bg-neutral-100 text-neutral-500' : 'bg-brand-orange text-white'">
+                <ng-icon [name]="notificationIcon(item)" size="19"></ng-icon>
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <div class="flex items-start justify-between gap-2">
+                  <h4 class="line-clamp-1 text-sm font-extrabold text-neutral-900">{{ item.title }}</h4>
+                  @if (!item.isRead) {
+                    <span class="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-brand-orange"></span>
+                  }
+                </div>
+                <p class="mt-0.5 line-clamp-2 text-xs leading-5 text-neutral-500">{{ item.body }}</p>
+                <p class="mt-2 text-[11px] font-semibold text-neutral-400">{{ item.createdAt | date:'short' }}</p>
+              </div>
+
+              <ng-icon name="lucideChevronRight" size="18" class="mt-3 flex-shrink-0 text-neutral-300 transition group-hover:translate-x-0.5 group-hover:text-brand-orange"></ng-icon>
+            </button>
+          }
+        </div>
+
+        @if (notificationService.hasMore()) {
+          <button
+            type="button"
+            (click)="loadMore($event)"
+            [disabled]="notificationService.loading()"
+            class="mt-3 w-full rounded-2xl border border-neutral-200 bg-white py-3 text-sm font-bold text-neutral-700 transition hover:border-brand-orange/40 hover:text-brand-orange disabled:opacity-50">
+            Load more
+          </button>
+        }
+      }
+    </div>
+  </section>
+}

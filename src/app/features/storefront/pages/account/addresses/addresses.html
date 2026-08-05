@@ -1,0 +1,183 @@
+<div class="space-y-6">
+  <div class="mb-4 lg:mb-0 lg:hidden">
+    <app-page-header title="Address Book" subtitle="Manage your shipping and billing addresses" [hideDesktopTitle]="true" customClasses="!px-0 !pt-0 !pb-0 !border-b-0 lg:hidden" (back)="goBack()"></app-page-header>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="flex justify-center items-center py-12">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-orange"></div>
+  </div>
+
+
+  <!-- Address List -->
+  <div *ngIf="!isLoading() && !showForm() && addresses().length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div *ngFor="let address of addresses()" 
+         class="bg-white rounded-xl border p-6 relative group transition-all"
+         [ngClass]="{'border-brand-orange ring-1 ring-brand-orange': address.isDefaultShipping || address.isDefaultBilling, 'border-gray-100 hover:border-gray-300': !address.isDefaultShipping && !address.isDefaultBilling}">
+      
+      <!-- Badges -->
+      <div class="flex gap-2 mb-4">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+          {{ address.addressType }}
+        </span>
+        <span *ngIf="address.isDefaultShipping" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-brand-orange">
+          Default Shipping
+        </span>
+        <span *ngIf="address.isDefaultBilling" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          Default Billing
+        </span>
+      </div>
+
+      <!-- Address Details -->
+      <div class="space-y-1 mb-6">
+        <p class="font-bold text-gray-900">{{ address.contactName }}</p>
+        <p class="text-gray-600">{{ address.addressLine1 }}</p>
+        <p *ngIf="address.addressLine2" class="text-gray-600">{{ address.addressLine2 }}</p>
+        <p class="text-gray-600">{{ address.city }}, {{ address.state }} {{ address.postalCode }}</p>
+        <p class="text-gray-600">{{ address.countryCode }}</p>
+        <p class="text-gray-600 mt-2 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          {{ address.contactPhone }}
+        </p>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div class="flex items-center gap-3">
+          <button (click)="openEditForm(address)" class="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1.5">
+            <ng-icon name="lucideEdit2" size="14"></ng-icon>
+            Edit
+          </button>
+          <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+          <button (click)="deleteAddress(address.id)" class="text-sm font-medium text-red-600 hover:text-red-800 transition-colors flex items-center gap-1.5">
+            <ng-icon name="lucideTrash2" size="14"></ng-icon>
+            Remove
+          </button>
+        </div>
+        
+        <!-- Set Default Dropdown (simplified as buttons for now) -->
+        <div class="flex items-center gap-2">
+           <button *ngIf="!address.isDefaultShipping" (click)="setDefault(address.id, 'SHIPPING')" class="text-xs font-medium text-gray-500 hover:text-brand-orange transition-colors">
+            Set as Shipping
+           </button>
+           <button *ngIf="!address.isDefaultBilling" (click)="setDefault(address.id, 'BILLING')" class="text-xs font-medium text-gray-500 hover:text-blue-600 transition-colors">
+            Set as Billing
+           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Address Form -->
+  <div *ngIf="showForm()" class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
+
+    <form [formGroup]="addressForm" (ngSubmit)="saveAddress()" class="space-y-6">
+      
+      <!-- Contact Details -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Contact Name *</label>
+          <input type="text" formControlName="contactName" 
+                 class="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
+                 placeholder="Full name">
+        </div>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Phone Number *</label>
+          <input type="text" formControlName="contactPhone" 
+                 class="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
+                 placeholder="Phone number">
+        </div>
+      </div>
+
+      <!-- Address Details -->
+      <div class="space-y-6">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Address Line 1 *</label>
+          <input type="text" formControlName="addressLine1" 
+                 class="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
+                 placeholder="Street address, P.O. box, company name, c/o">
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Address Line 2 <span class="text-gray-400 font-normal">(Optional)</span></label>
+          <input type="text" formControlName="addressLine2" 
+                 class="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
+                 placeholder="Apartment, suite, unit, building, floor, etc.">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">City *</label>
+            <input type="text" formControlName="city" 
+                   class="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
+                   placeholder="City">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">State / Province *</label>
+            <input type="text" formControlName="state" 
+                   class="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
+                   placeholder="State">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Postal Code *</label>
+            <input type="text" formControlName="postalCode" 
+                   class="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
+                   placeholder="Postal code">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Country Code *</label>
+            <input type="text" formControlName="countryCode" 
+                   class="w-full rounded-lg border border-gray-300 py-2.5 px-4 focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
+                   placeholder="US, CA, GB, etc.">
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="space-y-4 pt-4 border-t border-gray-100">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700">Address Type</label>
+          <div class="flex items-center gap-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" formControlName="addressType" value="HOME" class="text-brand-orange focus:ring-brand-orange">
+              <span class="text-sm text-gray-700">Home</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" formControlName="addressType" value="WORK" class="text-brand-orange focus:ring-brand-orange">
+              <span class="text-sm text-gray-700">Work</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" formControlName="addressType" value="OTHER" class="text-brand-orange focus:ring-brand-orange">
+              <span class="text-sm text-gray-700">Other</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" formControlName="isDefaultShipping" class="w-4 h-4 text-brand-orange rounded border-gray-300 focus:ring-brand-orange">
+            <span class="text-sm text-gray-700">Set as default shipping address</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" formControlName="isDefaultBilling" class="w-4 h-4 text-brand-orange rounded border-gray-300 focus:ring-brand-orange">
+            <span class="text-sm text-gray-700">Set as default billing address</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
+        <button *ngIf="addresses().length > 0" type="button" (click)="cancelForm()"
+                class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="isSaving() || addressForm.invalid"
+                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-brand-orange rounded-lg hover:bg-brand-orange/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <ng-icon name="lucideCheck" size="16"></ng-icon>
+          {{ isSaving() ? 'Saving...' : 'Save Address' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

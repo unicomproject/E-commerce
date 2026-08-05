@@ -14,9 +14,11 @@ import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pip
 })
 export class CartItem {
   item = input.required<any>();
+  isSelected = input<boolean>(false);
   
   onRemove = output<any>();
   onUpdateQuantity = output<{itemId: string, quantity: number}>();
+  onToggleSelect = output<string>();
 
   removeItem() {
     this.onRemove.emit(this.item());

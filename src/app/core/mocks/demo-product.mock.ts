@@ -12,6 +12,7 @@ export const DEMO_SNEAKER: StorefrontProductDetailReadModel = {
   reviewCount: 342,
   isInStock: true,
   badge: 'Just In',
+  brandName: 'Puma',
   images: [
     {
       id: 'img1',
@@ -42,18 +43,26 @@ export const DEMO_SNEAKER: StorefrontProductDetailReadModel = {
       isPrimary: false
     }
   ],
-  colours: [
-    { id: 'c-red', name: 'Red/Black', displayName: 'Red/Black', colorHex: '#e11d48', sortOrder: 1 },
-    { id: 'c-white', name: 'White/Orange', displayName: 'White/Orange', colorHex: '#ffffff', sortOrder: 2 },
-    { id: 'c-black', name: 'Core Black', displayName: 'Core Black', colorHex: '#000000', sortOrder: 3 }
-  ],
-  sizes: [
-    { id: 's-7', name: '7', displayName: 'US 7', sortOrder: 1 },
-    { id: 's-8', name: '8', displayName: 'US 8', sortOrder: 2 },
-    { id: 's-9', name: '9', displayName: 'US 9', sortOrder: 3 },
-    { id: 's-10', name: '10', displayName: 'US 10', sortOrder: 4 },
-    { id: 's-11', name: '11', displayName: 'US 11', sortOrder: 5 },
-    { id: 's-12', name: '12', displayName: 'US 12', sortOrder: 6 }
+  options: [
+    {
+      optionName: 'Color',
+      values: [
+        { id: 'c-red', name: 'Red/Black', displayName: 'Red/Black', colorHex: '#e11d48', sortOrder: 1 },
+        { id: 'c-white', name: 'White/Orange', displayName: 'White/Orange', colorHex: '#ffffff', sortOrder: 2 },
+        { id: 'c-black', name: 'Core Black', displayName: 'Core Black', colorHex: '#000000', sortOrder: 3 }
+      ]
+    },
+    {
+      optionName: 'Size',
+      values: [
+        { id: 's-7', name: '7', displayName: 'US 7', sortOrder: 1 },
+        { id: 's-8', name: '8', displayName: 'US 8', sortOrder: 2 },
+        { id: 's-9', name: '9', displayName: 'US 9', sortOrder: 3 },
+        { id: 's-10', name: '10', displayName: 'US 10', sortOrder: 4 },
+        { id: 's-11', name: '11', displayName: 'US 11', sortOrder: 5 },
+        { id: 's-12', name: '12', displayName: 'US 12', sortOrder: 6 }
+      ]
+    }
   ],
   variants: [],
   highlights: [
@@ -84,8 +93,10 @@ colors.forEach(colorId => {
       id: `v-mock-${variantIdCounter++}`,
       sku: `AS-PRO-${colorId}-${size.id}`.toUpperCase(),
       variantName: `${colorId} - Size ${size.id}`,
-      colour: colorId,
-      size: size.id,
+      optionValues: {
+        'Color': colorId,
+        'Size': size.id
+      },
       price: size.price,
       currencyCode: 'USD',
       isDefault: colorId === 'c-red' && size.id === 's-9',
@@ -93,3 +104,57 @@ colors.forEach(colorId => {
     });
   });
 });
+
+import { ProductReviewsPageReadModel } from '../models';
+
+export const DEMO_REVIEWS: ProductReviewsPageReadModel = {
+  productId: 'mock-sneaker-001',
+  canWriteReview: true, // Mock the verified buyer capability
+  page: 1,
+  pageSize: 10,
+  totalCount: 342,
+  summary: {
+    averageRating: 4.8,
+    totalReviews: 342,
+    fiveStarCount: 282,
+    fourStarCount: 41,
+    threeStarCount: 11,
+    twoStarCount: 5,
+    oneStarCount: 3
+  },
+  items: [
+    {
+      id: 'rev-001',
+      productId: 'mock-sneaker-001',
+      ratingValue: 5,
+      reviewTitle: 'Super Comfortable!',
+      reviewText: 'Absolutely love these sneakers. The cushioning is top-notch and perfect for daily runs.',
+      customerDisplayName: 'Rahul Verma',
+      isVerifiedPurchase: false, // Per request, omitting verified badge
+      status: 'Approved',
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: 'rev-002',
+      productId: 'mock-sneaker-001',
+      ratingValue: 5,
+      reviewTitle: 'Great for Long Runs',
+      reviewText: 'Lightweight, breathable and super stylish. My feet feel fresh even after long runs.',
+      customerDisplayName: 'Ankit Sharma',
+      isVerifiedPurchase: false,
+      status: 'Approved',
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+      id: 'rev-003',
+      productId: 'mock-sneaker-001',
+      ratingValue: 5,
+      reviewTitle: 'Exceeded Expectations',
+      reviewText: 'Amazing grip and support. Highly recommended for marathon training!',
+      customerDisplayName: 'Priya Nair',
+      isVerifiedPurchase: false,
+      status: 'Approved',
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    }
+  ]
+};

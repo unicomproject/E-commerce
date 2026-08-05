@@ -9,3 +9,4 @@ export * from './cart.model';
 export * from './checkout.model';
 export * from './customer-profile.model';
 export * from './wishlist.models';
+export * from './notification.model';
