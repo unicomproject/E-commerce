@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -9,6 +9,7 @@ import { OrderItem } from '../../components/order-item/order-item';
 import { OrderTimeline } from '../../components/order-timeline/order-timeline';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-order-details',
@@ -27,6 +28,16 @@ export class OrderDetails implements OnInit, OnDestroy {
   orderData = this.orderService.orderDetail;
   isLoading = this.orderService.orderDetailLoading;
   showAllItems = signal(false);
+
+  breadcrumbItems = computed<BreadcrumbItem[]>(() => {
+    const order = this.orderData();
+    return [
+      { label: 'Home', link: '/' },
+      { label: 'My Account', link: '/account' },
+      { label: 'My Orders', link: '/account/orders' },
+      { label: order ? order.displayOrderNumber : 'Order Details' }
+    ];
+  });
 
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');

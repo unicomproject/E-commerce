@@ -1,8 +1,12 @@
-<div class="w-full px-4 md:px-8 pt-2 pb-20 max-w-[1000px] mx-auto">
+<div class="w-full pt-2 lg:pt-0 pb-20">
   
-  <!-- Header -->
-  <app-page-header title="My Orders" customClasses="!px-0 !pt-4 !pb-0 !border-b-0"></app-page-header>
-  <p class="text-neutral-500 text-sm ml-[56px] mt-0 mb-4">Track your click & collect orders and order history.</p>
+  <!-- Header Section -->
+  <div class="flex flex-row justify-between items-center mb-3">
+    <div>
+      <app-page-header title="My Orders" [hideDesktopTitle]="true" customClasses="!px-0 !pt-1 !pb-0 !border-b-0"></app-page-header>
+    </div>
+
+  </div>
 
   <!-- Status Tabs Scrollable -->
   <div class="flex overflow-x-auto hide-scrollbar space-x-3 mb-4">
@@ -36,7 +40,7 @@
         <p class="text-neutral-500 text-sm">You don't have any {{ activeTab() !== 'all' ? activeTab() : '' }} orders yet.</p>
       </div>
     } @else {
-      <div class="flex flex-col gap-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         @for (order of data.items; track order.id) {
           <app-order-card [order]="order"></app-order-card>
         }

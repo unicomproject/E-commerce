@@ -22,4 +22,6 @@ export interface WishlistItemReadModel {
   currencyCode?: string;
   imageUrl?: string;
   isInStock: boolean;
+  rating: number;
+  reviewCount: number;
 }

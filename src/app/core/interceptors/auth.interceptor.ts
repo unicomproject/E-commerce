@@ -5,6 +5,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Only intercept requests going to our backend API
   if (req.url.includes('/api/v1/')) {
     const isLoginOrRefresh = req.url.includes('/ecommerce/storefront/auth/login') ||
+      req.url.includes('/ecommerce/storefront/auth/google') ||
       req.url.includes('/ecommerce/storefront/auth/refresh');
     const token = getValidCustomerAccessToken();
 

@@ -31,14 +31,14 @@ import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pip
             <label class="block text-sm font-medium text-gray-700 mb-1">
               First name <span class="text-brand-orange">*</span>
             </label>
-            <input type="text" formControlName="firstName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-colors">
+            <input type="text" formControlName="firstName" class="w-full px-4 py-3 rounded-lg border border-gray-300 font-bold text-gray-900 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-colors">
             <div *ngIf="detailsForm.get('firstName')?.touched && detailsForm.get('firstName')?.invalid" class="text-red-500 text-xs mt-1">First name is required.</div>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">
               Last name <span class="text-brand-orange">*</span>
             </label>
-            <input type="text" formControlName="lastName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-colors">
+            <input type="text" formControlName="lastName" class="w-full px-4 py-3 rounded-lg border border-gray-300 font-bold text-gray-900 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-colors">
             <div *ngIf="detailsForm.get('lastName')?.touched && detailsForm.get('lastName')?.invalid" class="text-red-500 text-xs mt-1">Last name is required.</div>
           </div>
         </div>
@@ -48,7 +48,7 @@ import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pip
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Email address <span class="text-brand-orange">*</span>
           </label>
-          <input type="email" formControlName="email" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-colors">
+          <input type="email" formControlName="email" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 font-bold text-gray-900 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-colors">
           <div *ngIf="detailsForm.get('email')?.touched && detailsForm.get('email')?.invalid" class="text-red-500 text-xs mt-1">Valid email is required.</div>
         </div>
 
@@ -70,7 +70,7 @@ import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pip
             </div>
             <!-- Input -->
             <div class="w-full relative">
-              <input type="tel" formControlName="mobile" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-colors">
+              <input type="tel" formControlName="mobile" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 font-bold text-gray-900 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-colors">
               <div *ngIf="detailsForm.get('mobile')?.touched && detailsForm.get('mobile')?.invalid" class="text-red-500 text-xs mt-1 absolute -bottom-5">Mobile number is required.</div>
             </div>
           </div>
@@ -84,16 +84,7 @@ import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pip
           </label>
         </div>
 
-        <!-- Secure Banner -->
-        <div class="bg-orange-50 border border-orange-100 rounded-xl p-3 flex gap-3 items-start mb-4">
-          <div class="text-brand-orange bg-white p-2 rounded-full shadow-sm shrink-0">
-            <ng-icon name="lucideShield" size="20"></ng-icon>
-          </div>
-          <div>
-            <h4 class="font-bold text-gray-900">Your information is secure</h4>
-            <p class="text-gray-600 text-sm mt-0.5">We use encryption to protect your data and never share it.</p>
-          </div>
-        </div>
+
 
         <!-- Order Summary Preview -->
         <div class="border border-gray-200 rounded-xl p-3 mb-4 flex items-center justify-between" *ngIf="cartService.cart$ | async as cart">

@@ -29,6 +29,12 @@ body {
   @apply bg-page-bg text-brand-black antialiased;
 }
 
+/* Ensure ng-icon SVGs inherit fill colors when fill classes are applied */
+ng-icon[class*="fill-"] svg,
+ng-icon.fill-current svg {
+  fill: inherit !important;
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;

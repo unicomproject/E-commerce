@@ -29,12 +29,15 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       
       const isRefreshRequest = req.url.includes('/ecommerce/storefront/auth/refresh');
       const isLoginRequest = req.url.includes('/ecommerce/storefront/auth/login');
+      const isGoogleAuthRequest = req.url.includes('/ecommerce/storefront/auth/google');
+      const isComponentHandledAuthRequest = isLoginRequest || isGoogleAuthRequest;
       const isExpectedEmailVerificationLoginFailure = isLoginRequest &&
         error.status === 403 &&
         error.error?.errorCode === 'customer_auth.email_not_verified';
+      const shouldSuppressGlobalErrorLog = isComponentHandledAuthRequest || isExpectedEmailVerificationLoginFailure;
       
       // Don't log 401 on refresh as it's expected when user is not logged in
-      if (!(error.status === 401 && isRefreshRequest) && !isExpectedEmailVerificationLoginFailure) {
+      if (!(error.status === 401 && isRefreshRequest) && !shouldSuppressGlobalErrorLog) {
         console.error('Global Error Interceptor:', errorMsg);
         
         // Show a generic toast for 500 errors or 0 (network down)
@@ -42,14 +45,14 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
            toastService.error('Cannot connect to the server. Please check your internet connection.');
         } else if (error.status >= 500) {
            toastService.error('Something went wrong on the server. Please try again later.');
-        } else if (error.status >= 400 && error.status !== 401 && !isLoginRequest) {
+        } else if (error.status >= 400 && error.status !== 401 && !isComponentHandledAuthRequest) {
            // For 400s (Bad Request, etc.) other than 401 and login
            toastService.error(error.error?.message || 'An error occurred.');
         }
       }
       
       if (error.status === 401) {
-        if (isLoginRequest || isRefreshRequest) {
+        if (isComponentHandledAuthRequest || isRefreshRequest) {
           clearCustomerAuthStorage();
           return throwError(() => error);
         }

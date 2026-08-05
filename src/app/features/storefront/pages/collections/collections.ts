@@ -7,6 +7,7 @@ import { ProductCardComponent } from '../../../../shared/components/product-card
 import { CategoryCardComponent } from '../../../../shared/components/category-card/category-card.component';
 import { FilterSortButtonComponent } from '../../../../shared/components/filter-sort-button/filter-sort-button.component';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-collections',
@@ -25,6 +26,7 @@ export class Collections implements OnInit {
   childCategories = signal<Category[]>([]);
   products = signal<StorefrontProductListReadModel[]>([]);
   loading = signal(true);
+  breadcrumbItems = signal<BreadcrumbItem[]>([]);
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -50,6 +52,11 @@ export class Collections implements OnInit {
             return;
         }
         this.category.set(cat);
+        this.breadcrumbItems.set([
+          { label: 'Home', link: '/' },
+          { label: 'Categories', link: '/categories' },
+          { label: cat.name }
+        ]);
         this.loadChildren(cat.id);
       },
       error: (err) => {

@@ -28,9 +28,13 @@ import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pip
           <div class="space-y-4 max-h-[300px] overflow-y-auto pr-2 hide-scrollbar">
             @for (item of checkoutService.checkoutSession()!.items; track item.id) {
               <div class="flex gap-4">
-                <!-- Product Image Placeholder -->
-                <div class="w-20 h-24 bg-gray-100 rounded-lg shrink-0 flex items-center justify-center">
-                  <span class="text-xs text-gray-400">Image</span>
+                <!-- Product Image -->
+                <div class="w-20 h-24 bg-gray-100 rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
+                  @if (item.imageUrl) {
+                    <img [src]="item.imageUrl" [alt]="item.productName" class="w-full h-full object-cover">
+                  } @else {
+                    <span class="text-xs text-gray-400">Image</span>
+                  }
                 </div>
                 
                 <div class="flex-1 flex flex-col justify-between py-1">

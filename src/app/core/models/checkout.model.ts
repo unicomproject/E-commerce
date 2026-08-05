@@ -17,6 +17,7 @@ export interface StorefrontCheckoutLineReadModel {
   productVariantId?: string;
   sku?: string;
   productName: string;
+  imageUrl?: string;
   quantity: number;
   unitPrice: number;
   subtotal: number;

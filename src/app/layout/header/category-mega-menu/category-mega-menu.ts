@@ -53,8 +53,8 @@ import { debounceTime } from 'rxjs/operators';
 
         <div *ngIf="!isLoadingChildren() && activeChildren().length > 0" class="grid grid-cols-3 gap-y-8 gap-x-4">
           <a *ngFor="let child of activeChildren()" [routerLink]="['/search']" [queryParams]="{ category: child.slug }" class="flex flex-col items-center group cursor-pointer text-center">
-            <div class="w-24 h-24 rounded-2xl overflow-hidden bg-gray-50 mb-3 shadow-sm group-hover:shadow-md transition-shadow ring-1 ring-black/5 group-hover:ring-brand-orange/30 p-2 flex items-center justify-center">
-              <img [src]="child.imageUrl || 'https://images.unsplash.com/photo-1555529733-0e670560f4e1?w=200&h=200&fit=crop'" [alt]="child.name" class="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300">
+            <div class="w-24 h-24 rounded-2xl overflow-hidden bg-gray-50 mb-3 shadow-sm group-hover:shadow-md transition-shadow ring-1 ring-black/5 group-hover:ring-brand-orange/30 flex items-center justify-center">
+              <img [src]="child.imageUrl || 'https://images.unsplash.com/photo-1555529733-0e670560f4e1?w=200&h=200&fit=crop'" [alt]="child.name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
             </div>
             <span class="text-xs font-medium text-gray-700 group-hover:text-brand-orange transition-colors line-clamp-2 leading-tight">{{ child.name }}</span>
           </a>
@@ -65,8 +65,8 @@ import { debounceTime } from 'rxjs/operators';
         <div *ngIf="!isLoadingChildren() && activeChildren().length === 0 && activeRoot() && !isLoadingProducts() && activeProducts().length > 0" class="flex flex-col h-full">
           <div class="grid grid-cols-3 gap-y-8 gap-x-4 mb-4">
             <a *ngFor="let product of activeProducts()" [routerLink]="['/product', product.slug]" class="flex flex-col items-center group cursor-pointer text-center">
-              <div class="w-24 h-24 rounded-2xl overflow-hidden bg-white mb-3 shadow-sm group-hover:shadow-md transition-shadow ring-1 ring-black/5 group-hover:ring-brand-orange/30 p-2 flex items-center justify-center">
-                <img [src]="product.imageUrl || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop'" [alt]="product.name" class="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300">
+              <div class="w-24 h-24 rounded-2xl overflow-hidden bg-white mb-3 shadow-sm group-hover:shadow-md transition-shadow ring-1 ring-black/5 group-hover:ring-brand-orange/30 flex items-center justify-center">
+                <img [src]="product.imageUrl || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop'" [alt]="product.name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
               </div>
               <span class="text-xs font-medium text-gray-700 group-hover:text-brand-orange transition-colors line-clamp-2 leading-tight">{{ product.name }}</span>
             </a>

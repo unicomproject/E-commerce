@@ -8,6 +8,7 @@ import { Category } from '../../../../core/models';
 import { Observable } from 'rxjs';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideArrowLeft } from '@ng-icons/lucide';
+import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-categories',
@@ -21,6 +22,7 @@ export class Categories implements OnInit {
   private storefrontData = inject(StorefrontDataService);
   
   categories$!: Observable<Category[]>;
+  breadcrumbItems: BreadcrumbItem[] = [{ label: 'Home', link: '/' }, { label: 'Shop by Category' }];
 
   ngOnInit(): void {
     this.categories$ = this.storefrontData.getRootCategories();

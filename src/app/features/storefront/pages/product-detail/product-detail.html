@@ -1,8 +1,6 @@
 <div class="product-page pb-24 lg:pb-12 bg-page-bg min-h-screen">
   
-  <!-- Page Title -->
-  <app-page-header title="Product Details" customClasses="!pt-4 !pb-0 !border-b-0"></app-page-header>
-
+  <!-- Removed old Page Title -->
   <!-- Loading State -->
   <ng-container *ngIf="loading()">
     <div class="w-full mx-auto px-4 py-8 animate-pulse">
@@ -20,30 +18,55 @@
   </ng-container>
 
   <ng-container *ngIf="!loading() && product() as prod">
-    <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8 pt-4 pb-6">
+    
+    <!-- Mobile/Tablet Header (Moved outside padding container to avoid double padding) -->
+    <div class="lg:hidden">
+      <app-page-header title="Product Details" [showBack]="true"></app-page-header>
+    </div>
+
+    <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8 pt-0 lg:pt-4 pb-6">
       
-
-
+      <!-- Breadcrumbs (Desktop Only) -->
+      <div class="hidden lg:block mb-6 lg:mb-8">
+        <app-breadcrumbs [items]="breadcrumbItems()"></app-breadcrumbs>
+      </div>
+      
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12 h-full lg:min-h-[calc(100vh-140px)]">
         
         <!-- Left: Image Gallery -->
-        <div class="lg:col-span-6 flex flex-col lg:sticky lg:top-[120px] self-start z-10 w-full">
+        <div class="lg:col-span-6 flex flex-col self-start z-10 w-full">
           <!-- Main Image -->
-          <div class="relative bg-[#f1efe8] rounded-3xl w-full aspect-[4/3] sm:aspect-square lg:aspect-[4/3] flex items-center justify-center mb-4 overflow-hidden border-0">
-            <img *ngIf="currentImage() as img" [src]="img.url" [alt]="img.altText" class="w-full h-full object-cover mix-blend-multiply transition-all duration-300">
+          <div class="relative bg-white rounded-3xl w-full aspect-square lg:aspect-[4/3] flex items-center justify-center mb-6 overflow-hidden border border-gray-100 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
             
-            <!-- Zoom Icon -->
-            <button class="absolute bottom-4 right-4 p-2 bg-white/90 hover:bg-white backdrop-blur rounded-xl shadow-md text-gray-700 hover:text-black transition-colors z-20">
-              <ng-icon name="lucideZoomIn" size="20"></ng-icon>
+            <!-- Badge -->
+            <div *ngIf="prod.badge" class="absolute top-4 left-4 z-20 bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+              {{ prod.badge }}
+            </div>
+            <button class="absolute left-4 z-20 w-10 h-10 bg-white shadow-md rounded-full flex items-center justify-center text-gray-600 hover:text-black hover:scale-105 transition-all" (click)="prevImage()">
+              <ng-icon name="lucideChevronLeft" size="20"></ng-icon>
+            </button>
+
+            <img *ngIf="currentImage() as img" [src]="img.url" [alt]="img.altText" class="w-full h-full object-cover transition-all duration-300">
+            
+            <button class="absolute right-4 z-20 w-10 h-10 bg-white shadow-md rounded-full flex items-center justify-center text-gray-600 hover:text-black hover:scale-105 transition-all" (click)="nextImage()">
+              <ng-icon name="lucideChevronRight" size="20"></ng-icon>
+            </button>
+
+            <!-- Wishlist Icon -->
+            <button (click)="toggleWishlist()" 
+                    class="absolute top-4 right-4 p-2.5 bg-white rounded-full shadow-sm transition-all z-20 border border-gray-100 group"
+                    [ngClass]="isInWishlist() ? 'hover:bg-brand-orange-light' : 'hover:bg-brand-orange-light'">
+              <ng-icon name="lucideHeart" size="20" 
+                       [class]="isInWishlist() ? 'text-brand-orange fill-brand-orange group-hover:text-brand-orange-dark group-hover:fill-brand-orange-dark transition-colors' : 'text-gray-400 group-hover:text-brand-orange transition-colors'"></ng-icon>
             </button>
           </div>
 
-          <!-- Thumbnails Bar (Mobile & Desktop) -->
-          <div *ngIf="prod.images && prod.images.length > 1" class="flex items-center gap-3 overflow-x-auto pb-2 pt-1 scrollbar-none">
+          <!-- Thumbnails Bar -->
+          <div *ngIf="prod.images && prod.images.length > 1" class="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-none">
             <button *ngFor="let img of prod.images; let i = index" 
                     (click)="setImage(i)"
-                    [class]="'flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 overflow-hidden bg-[#f1efe8] transition-all ' + (i === activeImageIndex() ? 'border-brand-orange shadow-sm' : 'border-transparent hover:border-gray-200 opacity-80 hover:opacity-100')">
-              <img [src]="img.url" [alt]="img.altText" class="w-full h-full object-cover mix-blend-multiply">
+                    [class]="'flex-shrink-0 w-20 h-20 lg:w-24 lg:h-24 rounded-2xl border-2 overflow-hidden bg-white transition-all ' + (i === activeImageIndex() ? 'border-brand-orange shadow-sm' : 'border-gray-100 hover:border-gray-200 opacity-70 hover:opacity-100')">
+              <img [src]="img.url" [alt]="img.altText" class="w-full h-full object-cover rounded-xl">
             </button>
           </div>
         </div>
@@ -51,158 +74,175 @@
         <!-- Right: Product Info -->
         <div class="lg:col-span-6 flex flex-col justify-start">
           
-          <!-- Badge -->
-          <div *ngIf="prod.badge" class="bg-brand-orange-light/30 text-brand-orange text-xs font-bold px-3 py-1 rounded-md uppercase tracking-wide w-max mb-3">
-            {{ prod.badge }}
+          <!-- Title & Subtitle -->
+          <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-1 tracking-tight">
+            {{ prod.name }}
+          </h1>
+          <div class="text-sm text-gray-500 mb-1 flex items-center gap-2">
+            <span class="font-medium" *ngIf="prod.shortDescription">{{ prod.shortDescription }}</span>
+            <span class="text-gray-300" *ngIf="prod.shortDescription && prod.brandName">|</span>
+            <span class="font-medium" *ngIf="prod.brandName">{{ prod.brandName }}</span>
           </div>
-
-          <!-- Title & Price Row -->
-          <!-- Badge -->
-          <div *ngIf="prod.badge" class="inline-flex bg-red-50 text-brand-orange text-[11px] font-bold px-2 py-1 rounded-md uppercase tracking-wide mb-3 w-max">
-            {{ prod.badge }}
-          </div>
-          
-          <div class="flex justify-between items-start gap-4 mb-2">
-            <div>
-              <h1 class="text-2xl lg:text-3xl font-extrabold text-gray-900 leading-tight">
-                {{ prod.name }}
-              </h1>
-              <div class="text-sm text-gray-500 mt-1">{{ prod.shortDescription || 'Product' }}</div>
+          <!-- Price Row -->
+          <div class="flex items-baseline flex-wrap gap-x-4 gap-y-1 mb-1">
+            <div class="text-3xl lg:text-[2rem] font-bold text-brand-orange tracking-tight">
+              {{ displayPrice() | tenantCurrency:'symbol':'1.2-2' }}
             </div>
-            <div class="text-right flex-shrink-0">
-              <div class="text-2xl lg:text-3xl font-extrabold text-brand-orange">
-                {{ displayPrice() | tenantCurrency:'symbol':'1.2-2' }}
-              </div>
+            <div *ngIf="originalPrice() && originalPrice()! > displayPrice()" class="text-lg text-gray-400 line-through font-medium">
+              {{ originalPrice() | tenantCurrency:'symbol':'1.2-2' }}
+            </div>
+            <div *ngIf="originalPrice() && originalPrice()! > displayPrice()" class="text-sm font-bold text-red-500">
+              Save {{ (originalPrice()! - displayPrice()) | tenantCurrency:'symbol':'1.0-0' }} ({{ ((originalPrice()! - displayPrice()) / originalPrice()! * 100) | number:'1.0-0' }}%)
             </div>
           </div>
 
-          <!-- Rating & Stock Status -->
-          <div class="flex flex-col gap-2 mb-6 border-b border-gray-100 pb-6">
+          <!-- Rating -->
+          <div class="flex items-center gap-4 mb-2 text-sm border-b border-gray-100 pb-2">
             <div class="flex items-center gap-2">
               <div class="flex items-center text-brand-orange">
                 <app-star-rating [rating]="prod.rating" [size]="16"></app-star-rating>
               </div>
-              <div class="text-sm font-bold text-gray-900">{{ prod.rating.toFixed(1) }}</div>
-              <a href="#reviews" class="text-sm text-gray-500 hover:text-gray-900">({{ prod.reviewCount }} reviews)</a>
-            </div>
-            
-            <div *ngIf="isCurrentlyInStock()" class="inline-flex items-center gap-1.5 text-green-600 text-sm font-bold w-max">
-              <ng-icon name="lucideCheck" size="16"></ng-icon>
-              In stock
-            </div>
-            <div *ngIf="!isCurrentlyInStock()" class="inline-flex items-center gap-1.5 text-red-600 text-sm font-bold w-max">
-              Out of stock
+              <div class="font-bold text-gray-900">{{ prod.rating.toFixed(1) }}</div>
+              <a href="#reviews" class="text-brand-orange hover:underline">({{ prod.reviewCount }} reviews)</a>
             </div>
           </div>
-
-          <!-- Color Selection -->
-          <div class="mb-8" *ngIf="prod.colours && prod.colours.length > 0">
-            <div class="flex justify-between items-end mb-3">
-              <span class="font-bold text-gray-900 text-sm">Color: <span class="font-normal text-gray-600 ml-1">{{ selectedColorName() }}</span></span>
-            </div>
-            <div class="flex flex-wrap gap-3">
-              <button *ngFor="let color of prod.colours" 
-                      (click)="selectColor(color.id)"
-                      [class]="'w-10 h-10 rounded-full border-2 transition-all flex items-center justify-center relative ' + (selectedColorId() === color.id ? 'border-brand-orange ring-2 ring-brand-orange/20 ring-offset-2 scale-105' : 'border-gray-200 hover:border-gray-300')">
-                <span class="w-8 h-8 rounded-full border border-black/10 block" [style.backgroundColor]="color.colorHex || '#ddd'"></span>
-              </button>
-            </div>
+          
+          <!-- Full Description -->
+          <div class="text-sm text-gray-600 leading-relaxed mb-2" *ngIf="prod.longDescription">
+            {{ prod.longDescription }}
           </div>
 
-          <!-- Size and Quantity Grid (Two columns) -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 pb-8 border-b border-gray-100">
-            <!-- Left: Size -->
-            <div *ngIf="prod.sizes && prod.sizes.length > 0">
-              <div class="flex justify-between items-center mb-3">
-                <span class="font-bold text-gray-900 text-sm">Size: <span class="font-normal text-gray-900 ml-1">{{ selectedSizeName() || 'Select size' }}</span></span>
+          <!-- Dynamic Options Selection -->
+          <div class="mb-2" *ngIf="prod.options && prod.options.length > 0">
+            <ng-container *ngFor="let option of prod.options">
+              
+              <!-- Option Header -->
+              <div class="flex justify-between items-end mb-1 mt-2 first:mt-0">
+                <span class="font-bold text-gray-900 text-sm">{{ option.optionName }}: <span class="font-normal text-gray-600 ml-1">{{ selectedOptionValueName(option.optionName) || ('Select ' + option.optionName | lowercase) }}</span></span>
               </div>
-              <div class="flex flex-wrap gap-2">
-                <button *ngFor="let size of prod.sizes" 
-                        (click)="selectSize(size.id)"
-                        [class]="'h-12 min-w-[3rem] px-4 flex items-center justify-center rounded-lg border-2 text-sm font-bold transition-all ' + (selectedSizeId() === size.id ? 'border-brand-orange text-brand-orange shadow-sm' : 'border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50')">
-                  {{ size.displayName || size.name }}
-                </button>
+              
+              <!-- Option Values Grid -->
+              <div class="flex flex-wrap gap-3">
+                <ng-container *ngFor="let val of option.values">
+                  
+                  <!-- If it's a Color Option (render as swatch) -->
+                  <button *ngIf="(option.optionName | lowercase).includes('color') || (option.optionName | lowercase).includes('colour')"
+                          (click)="selectOption(option.optionName, val.id)"
+                          [class]="'w-10 h-10 rounded-full border-2 transition-all flex items-center justify-center relative ' + (selectedOptions()[option.optionName] === val.id ? 'border-brand-orange ring-2 ring-brand-orange/20 ring-offset-2 scale-105' : 'border-gray-200 hover:border-gray-300')">
+                    <span class="w-8 h-8 rounded-full border border-black/10 block bg-gray-200" 
+                          [style.backgroundColor]="val.colorHex || val.name">
+                    </span>
+                  </button>
+                  
+                  <!-- If it's NOT a Color Option (render as chip) -->
+                  <button *ngIf="!((option.optionName | lowercase).includes('color') || (option.optionName | lowercase).includes('colour'))"
+                          (click)="selectOption(option.optionName, val.id)"
+                          [class]="'h-11 min-w-[3rem] px-4 flex items-center justify-center rounded-lg border-2 text-sm font-bold transition-all ' + (selectedOptions()[option.optionName] === val.id ? 'border-brand-orange text-brand-orange shadow-sm bg-orange-50/50' : 'border-gray-200 text-gray-700 hover:border-gray-300 bg-white')">
+                    {{ val.displayName || val.name }}
+                  </button>
+                  
+                </ng-container>
               </div>
-            </div>
+              
+            </ng-container>
+          </div>
+          
+          <!-- Quantity Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 pb-2 border-b border-gray-100">
 
             <!-- Right: Quantity -->
             <div>
-              <div class="flex justify-between items-center mb-3">
+              <div class="flex items-center mb-1">
                 <span class="font-bold text-gray-900 text-sm">Quantity</span>
-                <button class="text-xs font-bold text-brand-orange hover:text-brand-orange-dark flex items-center gap-1">
-                  Size Guide <ng-icon name="lucideRuler" size="14"></ng-icon>
-                </button>
               </div>
               <!-- Stepper -->
-              <div class="h-12">
+              <div class="h-11 max-w-[140px]">
                 <app-quantity-stepper [quantity]="quantity()" (quantityChange)="onQuantityChange($event)"></app-quantity-stepper>
               </div>
             </div>
           </div>
 
-          <!-- Short Description -->
-          <div class="text-sm text-gray-600 leading-relaxed mb-10">
-            {{ (prod.shortDescription || prod.longDescription) | slice:0:150 }}... <a class="text-brand-orange font-bold cursor-pointer hover:underline" (click)="activeTab.set('overview');">more</a>
-          </div>
-
           <!-- Desktop Buttons -->
-          <div class="hidden lg:flex lg:flex-row gap-3 pt-4">
+          <div class="hidden lg:flex lg:flex-row gap-3 pt-0 mb-6">
             <button 
               (click)="addToCart($event)"
               [disabled]="!canAddToCart()"
-              class="flex-1 h-14 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange-light/20 rounded-xl font-bold text-base transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
-              <ng-icon name="lucideShoppingCart" size="20"></ng-icon> Add to Cart
+              class="flex-1 h-12 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
+              <ng-icon name="lucideShoppingCart" size="18"></ng-icon> Add to Cart
             </button>
             <button 
               (click)="buyNow($event)"
               [disabled]="!canAddToCart()"
-              class="flex-1 h-14 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold text-base transition-colors flex items-center justify-center gap-2 shadow-sm shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
-              Buy Now
+              class="flex-1 h-12 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange-light/20 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed bg-white">
+              <ng-icon name="lucideRotateCcw" size="18"></ng-icon> Buy Now
             </button>
           </div>
+
 
         </div>
       </div>
 
-      <!-- Tabs Section -->
-      <app-tabs [tabs]="productTabs()" [activeTabId]="activeTab()" (activeTabIdChange)="activeTab.set($event)" theme="plain"></app-tabs>
+      <!-- Tabs Navigation Section -->
+      <div class="max-w-4xl pt-8 pb-12">
+        <app-tabs 
+          [tabs]="tabs()" 
+          [activeTabId]="activeTabId()" 
+          (activeTabIdChange)="activeTabId.set($event)"
+          theme="plain"
+          class="block border-b border-gray-200 mb-8"
+        ></app-tabs>
 
-      <!-- Tab Content -->
-      <div class="max-w-3xl pb-12">
-        
-        <!-- Overview Tab -->
-        <div *ngIf="activeTab() === 'overview'" class="prose prose-sm lg:prose-base text-gray-600 max-w-none">
-          <p class="mb-6 leading-relaxed">{{ prod.longDescription || prod.shortDescription }}</p>
+        <!-- Tab Content Container -->
+        <div class="min-h-[400px]">
           
-          <ul class="space-y-3 list-none pl-0">
-            <li *ngFor="let highlight of prod.highlights" class="flex items-start gap-3">
-              <ng-icon name="lucideCheckCircle2" class="text-brand-orange mt-0.5 flex-shrink-0" size="18"></ng-icon>
-              <span class="text-gray-800">{{ highlight }}</span>
-            </li>
-          </ul>
-        </div>
+          <!-- Product Details Tab -->
+          <div *ngIf="activeTabId() === 'details'" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">About this product</h3>
+            <p class="mb-6 text-gray-600 leading-relaxed">{{ prod.longDescription || prod.shortDescription }}</p>
+            <h4 class="font-bold text-gray-900 mb-3">Highlights</h4>
+            <ul class="space-y-3 list-none pl-0">
+              <li *ngFor="let highlight of prod.highlights" class="flex items-start gap-3">
+                <ng-icon name="lucideCheck" class="text-green-500 mt-1 flex-shrink-0" size="18"></ng-icon>
+                <span class="text-gray-600">{{ highlight }}</span>
+              </li>
+            </ul>
+          </div>
 
-        <!-- Details Tab -->
-        <div *ngIf="activeTab() === 'details'" class="text-gray-600">
-          <p class="mb-4">SKU: <span class="font-mono text-gray-900 ml-2 font-bold">{{ currentSku() }}</span></p>
-        </div>
-
-        <!-- Returns Tab -->
-        <div *ngIf="activeTab() === 'returns'" class="text-gray-600">
-          <p class="whitespace-pre-line leading-relaxed">{{ prod.returnInfo || 'You can return any unworn items within 30 days.' }}</p>
-        </div>
-
-        <!-- Reviews Tab -->
-        <div *ngIf="activeTab() === 'reviews'" id="reviews" class="text-gray-600">
-          <div class="flex items-center gap-4 mb-8">
-            <div class="text-4xl font-extrabold text-gray-900">{{ prod.rating.toFixed(1) }}</div>
-            <div class="flex flex-col">
-              <app-star-rating [rating]="prod.rating" [size]="18" class="mb-1"></app-star-rating>
-              <div class="text-xs text-gray-500">Based on {{ prod.reviewCount }} reviews</div>
+          <!-- Specifications Tab -->
+          <div *ngIf="activeTabId() === 'specs'" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Specifications</h3>
+            <div class="border border-gray-200 rounded-xl overflow-hidden">
+              <div class="grid grid-cols-3 border-b border-gray-100 p-4">
+                <div class="col-span-1 text-sm font-bold text-gray-700">Brand</div>
+                <div class="col-span-2 text-sm text-gray-600">{{ prod.brandName || 'N/A' }}</div>
+              </div>
+              <div class="grid grid-cols-3 border-b border-gray-100 p-4 bg-gray-50">
+                <div class="col-span-1 text-sm font-bold text-gray-700">Category</div>
+                <div class="col-span-2 text-sm text-gray-600">{{ prod.categoryName || 'General' }}</div>
+              </div>
             </div>
           </div>
-        </div>
 
+          <!-- Delivery & Returns Tab -->
+          <div *ngIf="activeTabId() === 'returns'" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Delivery Options</h3>
+            <p class="text-gray-600 mb-8">{{ prod.deliveryInfo || 'Standard delivery in 3-5 days.' }}</p>
+            
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Returns Policy</h3>
+            <p class="text-gray-600">{{ prod.returnInfo || 'You can return any unworn items within 30 days.' }}</p>
+          </div>
+
+          <!-- Reviews Tab -->
+          <div *ngIf="activeTabId() === 'reviews'" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <app-product-reviews *ngIf="reviews() as revData; else loadingReviews" [reviewsData]="revData"></app-product-reviews>
+            <ng-template #loadingReviews>
+              <div class="flex items-center justify-center p-12 text-gray-400">
+                Loading reviews...
+              </div>
+            </ng-template>
+          </div>
+
+        </div>
       </div>
 
     </div>

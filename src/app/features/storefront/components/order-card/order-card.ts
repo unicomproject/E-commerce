@@ -1,8 +1,8 @@
-import { Component, input } from '@angular/core';
+import { Component, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideClock, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCheckCircle2, lucideChevronRight, lucideCalendar, lucideMapPin, lucideShoppingBag } from '@ng-icons/lucide';
+import { lucideClock, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCheckCircle2, lucideChevronRight, lucideCalendar, lucideMapPin, lucideShoppingBag, lucideMoreVertical } from '@ng-icons/lucide';
 import { CustomerOrderSummaryReadModel } from '../../../../core/models/order.model';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 
@@ -10,12 +10,22 @@ import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pip
   selector: 'app-order-card',
   standalone: true,
   imports: [CommonModule, RouterModule, NgIconComponent, TenantCurrencyPipe],
-  viewProviders: [provideIcons({ lucideClock, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCheckCircle2, lucideChevronRight, lucideCalendar, lucideMapPin, lucideShoppingBag })],
+  viewProviders: [provideIcons({ lucideClock, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCheckCircle2, lucideChevronRight, lucideCalendar, lucideMapPin, lucideShoppingBag, lucideMoreVertical })],
   templateUrl: './order-card.html'
 })
 export class OrderCard {
   // Input Signal for the order data
   order = input.required<CustomerOrderSummaryReadModel>();
+
+  displayThumbnails = computed(() => {
+    const urls = this.order().thumbnailUrls || [];
+    return urls.slice(0, 2);
+  });
+
+  remainingThumbnailsCount = computed(() => {
+    const displayed = this.displayThumbnails().length;
+    return Math.max(0, (this.order().itemCount || 0) - displayed);
+  });
 
   getStatusPillClasses(status: string): string {
     switch (status) {

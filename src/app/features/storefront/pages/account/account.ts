@@ -4,6 +4,8 @@ import { RouterLink, Router } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CustomerLoginCustomerDto } from '../../../../core/models';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 import { 
   lucideUser, 
   lucideMail, 
@@ -17,7 +19,9 @@ import {
   lucideLock,
   lucideHelpCircle,
   lucideLogOut,
-  lucideHeadphones
+  lucideHeadphones,
+  lucideStar,
+  lucideHeart
 } from '@ng-icons/lucide';
 
 interface QuickAction {
@@ -31,7 +35,7 @@ interface QuickAction {
 @Component({
   selector: 'app-account',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgIconComponent],
+  imports: [CommonModule, RouterLink, NgIconComponent, PageHeaderComponent],
   templateUrl: './account.html',
   styleUrl: './account.css',
   viewProviders: [provideIcons({ 
@@ -47,7 +51,9 @@ interface QuickAction {
     lucideLock,
     lucideHelpCircle,
     lucideLogOut,
-    lucideHeadphones
+    lucideHeadphones,
+    lucideStar,
+    lucideHeart
   })]
 })
 export class Account implements OnInit {
@@ -56,11 +62,19 @@ export class Account implements OnInit {
   
   user: CustomerLoginCustomerDto | null = null;
 
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Home', link: '/' },
+    { label: 'My Account' }
+  ];
+
   quickActions: QuickAction[] = [
-    { label: 'Personal Information', icon: 'lucideUser', route: '/account/profile' },
-    { label: 'Address Book', icon: 'lucideMapPin', route: '/account/addresses' },
-    { label: 'My Orders', icon: 'lucideShoppingBag', route: '/account/orders' },
-    { label: 'Logout', icon: 'lucideLogOut', action: () => this.logout(), isDestructive: true },
+    { label: 'Your orders', icon: 'lucidePackage', route: '/account/orders' },
+
+    { label: 'Your profile', icon: 'lucideUser', route: '/account/profile' },
+    { label: 'Addresses', icon: 'lucideMapPin', route: '/account/addresses' },
+    { label: 'Your reviews', icon: 'lucideStar', route: '/account/reviews' },
+    { label: 'Wishlist', icon: 'lucideHeart', route: '/account/wishlist' },
+    { label: 'Sign Out', icon: 'lucideLogOut', action: () => this.logout(), isDestructive: true },
   ];
 
   ngOnInit() {

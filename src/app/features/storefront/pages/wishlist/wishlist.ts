@@ -6,11 +6,14 @@ import { lucideTrash2, lucideShoppingCart, lucideHeart, lucideChevronRight, luci
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
+import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
 
 @Component({
   selector: 'app-wishlist',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgIconComponent, TenantCurrencyPipe],
+  imports: [CommonModule, RouterLink, NgIconComponent, TenantCurrencyPipe, PageHeaderComponent, StarRatingComponent],
   templateUrl: './wishlist.html',
   viewProviders: [provideIcons({ lucideTrash2, lucideShoppingCart, lucideHeart, lucideChevronRight, lucideChevronDown, lucideFilter, lucideArrowLeft })]
 })
@@ -19,6 +22,7 @@ export class Wishlist implements OnInit {
   private cartService = inject(CartService);
 
   wishlist$ = this.wishlistService.wishlist$;
+  breadcrumbItems: BreadcrumbItem[] = [{ label: 'Home', link: '/' }, { label: 'My Account', link: '/account' }, { label: 'Wishlist' }];
 
   ngOnInit() {
     this.wishlistService.loadWishlist();

@@ -1,6 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideHeart, lucideMapPin, lucideShoppingCart, lucideSlidersHorizontal, lucideCheckCircle2, lucideSearch, lucideX, lucideArrowLeft } from '@ng-icons/lucide';
@@ -9,12 +12,13 @@ import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadc
 import { StorefrontSearchMatchReadModel, StorefrontProductListReadModel } from '../../../../core/models';
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { SearchBarComponent } from '../../../../layout/header/search-bar/search-bar';
 import { DEMO_SNEAKER } from '../../../../core/mocks/demo-product.mock';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent, ProductCardComponent, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent, ProductCardComponent, PageHeaderComponent, SearchBarComponent],
   templateUrl: './search.html',
   styleUrl: './search.css',
   viewProviders: [provideIcons({ lucideHeart, lucideMapPin, lucideShoppingCart, lucideSlidersHorizontal, lucideCheckCircle2, lucideSearch, lucideX, lucideArrowLeft })]
@@ -24,8 +28,12 @@ export class Search implements OnInit {
   private dataService = inject(StorefrontDataService);
   private router = inject(Router);
 
+  private destroyRef = inject(DestroyRef);
+  
   query = signal('');
   searchInput = signal('');
+  private searchSubject = new Subject<string>();
+  
   categorySlug = signal('');
   categoryId = signal('');
   loading = signal(true);
@@ -38,6 +46,14 @@ export class Search implements OnInit {
   breadcrumbItems = signal<BreadcrumbItem[]>([]);
 
   ngOnInit() {
+    this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(query => {
+      this.router.navigate(['/search'], { queryParams: { q: query, category: this.categorySlug(), categoryId: this.categoryId() } });
+    });
+
     this.route.queryParams.subscribe(params => {
       this.query.set(params['q'] || '');
       this.searchInput.set(this.query());
@@ -50,9 +66,9 @@ export class Search implements OnInit {
           next: (cat) => {
             if (cat && cat.id) {
                this.categoryId.set(cat.id);
-               this.breadcrumbItems.set([{ label: 'Home', link: '/' }, { label: 'Shop', link: '/categories' }]);
+               this.breadcrumbItems.set([{ label: 'Home', link: '/' }, { label: 'Products', link: '/categories' }]);
             } else {
-               this.breadcrumbItems.set([{ label: 'Home', link: '/' }, { label: this.query() ? 'Search Results' : 'Shop' }]);
+               this.breadcrumbItems.set([{ label: 'Home', link: '/' }, { label: this.query() ? 'Search Results' : 'Products' }]);
             }
             this.performSearch();
           },
@@ -99,8 +115,13 @@ export class Search implements OnInit {
     this.router.navigate(['/search'], { queryParams: { q: this.searchInput() || null }, queryParamsHandling: 'merge' });
   }
 
+  onSearchInput(query: string) {
+    this.searchInput.set(query);
+    this.searchSubject.next(query);
+  }
+
   onClearSearch() {
     this.searchInput.set('');
-    this.onSearchSubmit();
+    this.searchSubject.next('');
   }
 }

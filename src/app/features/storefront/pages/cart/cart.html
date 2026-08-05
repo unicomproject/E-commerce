@@ -2,17 +2,11 @@
   
   <ng-container *ngIf="(cart$ | async) as cart; else emptyState">
     
-    <!-- Header -->
-    <div class="mb-6 flex items-center gap-4">
-      <button onclick="history.back()" class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-white rounded-2xl shadow-sm text-brand-navy hover:bg-neutral-50 border border-neutral-100 transition-colors">
-        <ng-icon name="lucideArrowLeft" size="22" strokeWidth="1.5"></ng-icon>
-      </button>
-      <div class="flex items-baseline gap-3">
-        <h1 class="text-2xl lg:text-3xl font-extrabold text-brand-navy tracking-tight">
-          My Cart
-        </h1>
-        <span class="text-gray-500 text-lg">({{cart.totalQuantity}} items)</span>
-      </div>
+    <!-- Header Section -->
+    <div class="mb-4 lg:mb-6">
+      <app-page-header title="Your Cart" [breadcrumbs]="breadcrumbItems" [hideDesktopTitle]="true" customClasses="!px-0 !pt-0 !pb-0 !border-b-0">
+        <span class="text-[#4F46E5] font-bold text-lg lg:text-xl order-last ml-1">({{ cart.items.length }})</span>
+      </app-page-header>
     </div>
 
     <div *ngIf="cart.items.length === 0" class="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-200">
@@ -26,21 +20,45 @@
       </a>
     </div>
 
-    <div *ngIf="cart.items.length > 0" class="grid lg:grid-cols-12 gap-6 lg:gap-8 pb-64 lg:pb-0 items-start">
+    <div *ngIf="cart.items.length > 0" class="grid lg:grid-cols-12 gap-x-6 lg:gap-x-8 gap-y-2 md:gap-y-3 pb-64 lg:pb-0 items-start">
       
+      <!-- Top Row: Controls -->
+      <div class="lg:col-span-8 flex items-center justify-end gap-6">
+        <!-- Select All -->
+        <label class="flex items-center gap-2 cursor-pointer group">
+          <input type="checkbox" 
+                 [checked]="isAllSelected(cart.items)" 
+                 (change)="selectAll(cart.items)"
+                 class="w-[18px] h-[18px] rounded text-brand-orange border-gray-300 focus:ring-brand-orange accent-brand-orange transition-all cursor-pointer">
+          <span class="text-sm font-bold text-gray-700 group-hover:text-gray-900">Select All ({{ cart.items.length }})</span>
+        </label>
+        
+        <!-- Clear Cart -->
+        <button (click)="clearCart()" class="flex items-center gap-2 text-gray-500 hover:text-red-600 transition-colors">
+          <ng-icon name="lucideTrash2" size="18"></ng-icon>
+          <span class="text-sm font-bold">Clear Cart</span>
+        </button>
+      </div>
+
+      <!-- Top Row: Empty spacer for right column -->
+      <div class="hidden lg:block lg:col-span-4"></div>
+
       <!-- Cart Items List -->
       <div class="lg:col-span-8 flex flex-col gap-4">
         <app-cart-item 
           *ngFor="let item of cart.items" 
           [item]="item" 
+          [isSelected]="selectedItemIds().has(item.id)"
+          (onToggleSelect)="toggleSelection($event)"
           (onRemove)="removeItem($event)" 
-          (onUpdateQuantity)="updateQuantity($event.itemId, $event.quantity)">
+          (onUpdateQuantity)="updateQuantity($event.itemId, $event.quantity)"
+          class="block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         </app-cart-item>
       </div>
       
       <!-- Checkout Summary Block -->
       <div class="lg:col-span-4 sticky top-24">
-        <app-cart-summary [cart]="cart" (onCheckout)="startCheckout()"></app-cart-summary>
+        <app-cart-summary [cart]="cart" [selectedCount]="selectedItemIds().size" (onCheckout)="startCheckout()"></app-cart-summary>
       </div>
 
     </div>
@@ -48,13 +66,8 @@
 
   <ng-template #emptyState>
     <!-- Header -->
-    <div class="mb-6 flex items-center gap-4">
-      <button onclick="history.back()" class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-white rounded-2xl shadow-sm text-brand-navy hover:bg-neutral-50 border border-neutral-100 transition-colors">
-        <ng-icon name="lucideArrowLeft" size="22" strokeWidth="1.5"></ng-icon>
-      </button>
-      <h1 class="text-2xl lg:text-3xl font-extrabold text-brand-navy tracking-tight">
-        My Cart
-      </h1>
+    <div class="mb-6">
+      <app-page-header title="Your Cart" [breadcrumbs]="breadcrumbItems" customClasses="!px-0 !pt-0 !pb-0 !border-b-0"></app-page-header>
     </div>
     <div class="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-200">
       <div class="text-gray-400 mb-4 flex justify-center">
@@ -101,7 +114,7 @@
           <div class="text-sm text-gray-500 mt-0.5">
             Qty: {{item.quantity}}
           </div>
-          <div class="font-bold text-gray-900 text-lg mt-2 text-right">
+          <div class="font-bold text-brand-orange text-lg mt-2 text-right">
             {{ item.lineTotal | tenantCurrency:'symbol':'1.2-2' }}
           </div>
         </div>

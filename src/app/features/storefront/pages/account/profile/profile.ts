@@ -1,16 +1,18 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideUser, lucideMail, lucidePhone, lucideSave, lucideArrowLeft, lucideLoader2 } from '@ng-icons/lucide';
 import { CustomerProfileService } from '../../../../../core/services/customer-profile.service';
 import { ToastService } from '../../../../../core/services/toast.service';
+import { PageHeaderComponent } from '../../../../../shared/components/page-header/page-header.component';
+
 
 @Component({
   selector: 'app-personal-information',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, NgIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, PageHeaderComponent],
   templateUrl: './profile.html',
   viewProviders: [provideIcons({ 
     lucideUser, 
@@ -25,6 +27,13 @@ export class PersonalInformation implements OnInit {
   private fb = inject(FormBuilder);
   private profileService = inject(CustomerProfileService);
   private toastService = inject(ToastService);
+  private router = inject(Router);
+
+  goBack() {
+    this.router.navigate(['/account']);
+  }
+
+
 
   profileForm: FormGroup;
   isLoading = signal(true);

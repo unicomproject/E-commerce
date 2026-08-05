@@ -14,9 +14,9 @@
 
     <!-- Wishlist Button -->
     <button 
-      [class]="'absolute top-2 right-2 lg:top-3 lg:right-3 z-20 w-8 h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center transition-all shadow-sm border ' + (isInWishlist() ? 'border-brand-orange-light text-brand-orange' : 'border-neutral-100 text-neutral-800 hover:border-neutral-200')" 
+      [class]="'absolute top-2 right-2 lg:top-3 lg:right-3 z-20 w-8 h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center transition-all shadow-sm border group ' + (isInWishlist() ? 'border-brand-orange-light text-brand-orange hover:bg-red-50 hover:text-red-600 hover:border-red-200' : 'border-neutral-100 text-neutral-400 hover:text-brand-orange hover:border-brand-orange-light')" 
       (click)="toggleWishlist($event)">
-      <ng-icon name="lucideHeart" class="text-[16px] lg:text-[18px]" [attr.fill]="isInWishlist() ? 'currentColor' : 'none'"></ng-icon>
+      <ng-icon name="lucideHeart" class="text-[16px] lg:text-[18px] transition-colors" [class.fill-current]="isInWishlist()"></ng-icon>
     </button>
     
     <!-- Product Image -->
