@@ -1,9 +1,7 @@
 <div class="w-full lg:px-0">
     
     <!-- Header -->
-    <div class="mb-6 lg:mb-8">
-      <app-page-header title="My Account" customClasses="!px-0 !pt-0 !pb-0 !border-b-0"></app-page-header>
-    </div>
+    <app-page-header title="My Account" [noPadding]="true" customClasses="!px-0 py-4 !border-b-0"></app-page-header>
 
     <!-- Profile Card -->
     <div class="bg-white rounded-[24px] p-6 flex flex-col md:flex-row md:items-center gap-6 mb-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100 cursor-pointer hover:shadow-md transition-shadow" routerLink="/account/profile">

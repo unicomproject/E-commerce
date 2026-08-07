@@ -4,7 +4,7 @@
     
     <!-- Header Section -->
     <div class="mb-4 lg:mb-6">
-      <app-page-header title="Your Cart" [breadcrumbs]="breadcrumbItems" [hideDesktopTitle]="true" customClasses="!px-0 !pt-0 !pb-0 !border-b-0">
+      <app-page-header title="Your Cart" [breadcrumbs]="breadcrumbItems" [hideDesktopTitle]="true" [noPadding]="true" customClasses="!px-0 py-4 !border-b-0">
         <span class="text-[#4F46E5] font-bold text-lg lg:text-xl order-last ml-1">({{ cart.items.length }})</span>
       </app-page-header>
     </div>
@@ -67,7 +67,7 @@
   <ng-template #emptyState>
     <!-- Header -->
     <div class="mb-6">
-      <app-page-header title="Your Cart" [breadcrumbs]="breadcrumbItems" customClasses="!px-0 !pt-0 !pb-0 !border-b-0"></app-page-header>
+      <app-page-header title="Your Cart" [breadcrumbs]="breadcrumbItems" [noPadding]="true" customClasses="!px-0 py-4 !border-b-0"></app-page-header>
     </div>
     <div class="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-200">
       <div class="text-gray-400 mb-4 flex justify-center">

@@ -10,9 +10,9 @@ import { BreadcrumbsComponent, BreadcrumbItem } from '../breadcrumbs/breadcrumbs
   imports: [CommonModule, NgIconComponent, BreadcrumbsComponent],
   viewProviders: [provideIcons({ lucideArrowLeft })],
   template: `
-    <div class="sticky z-40 px-4 lg:px-8 pt-6 pb-4 bg-page-bg w-full max-w-[1600px] mx-auto flex items-center gap-4 transition-all duration-300" 
+    <div class="sticky z-40 bg-page-bg w-full max-w-[1600px] mx-auto flex items-center gap-3 transition-all duration-300" 
          [style.top.px]="isNavbarHidden() ? 0 : 80"
-         [ngClass]="customClasses()">
+         [ngClass]="noPadding() ? customClasses() : 'px-4 lg:px-8 py-4 ' + customClasses()">
       <button *ngIf="showBack()" (click)="onBack()" class="flex-shrink-0 w-10 h-10 flex lg:hidden items-center justify-center bg-white rounded-2xl shadow-sm text-brand-navy hover:bg-neutral-50 border border-neutral-100 transition-colors">
         <ng-icon name="lucideArrowLeft" size="22" strokeWidth="1.5"></ng-icon>
       </button>
@@ -20,7 +20,7 @@ import { BreadcrumbsComponent, BreadcrumbItem } from '../breadcrumbs/breadcrumbs
         <div class="hidden lg:block mb-1" *ngIf="breadcrumbs()">
           <app-breadcrumbs [items]="breadcrumbs()!"></app-breadcrumbs>
         </div>
-        <h1 *ngIf="title()" class="text-2xl lg:text-3xl font-bold text-brand-navy tracking-tight flex lg:hidden items-center gap-2">
+        <h1 *ngIf="title()" class="text-xl lg:text-3xl font-bold text-brand-navy tracking-tight flex lg:hidden items-center gap-2">
           <ng-content></ng-content>
           <span>{{ title() }}</span>
         </h1>
@@ -43,6 +43,7 @@ import { BreadcrumbsComponent, BreadcrumbItem } from '../breadcrumbs/breadcrumbs
 export class PageHeaderComponent {
   readonly title = input('');
   readonly subtitle = input('');
+  readonly noPadding = input(false);
   readonly showBack = input(true);
   readonly hideDesktopTitle = input(false);
   readonly customClasses = input('');
