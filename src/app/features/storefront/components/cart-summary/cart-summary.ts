@@ -19,11 +19,6 @@ import { lucideArrowRight } from '@ng-icons/lucide';
         <div class="text-gray-600 text-sm font-medium">Subtotal ({{ selectedCount() }} items)</div>
         <div class="text-gray-900 font-bold text-sm">{{cart().subtotal | tenantCurrency:'symbol':'1.2-2'}}</div>
       </div>
-      
-      <div class="flex justify-between items-center mb-4">
-        <div class="text-gray-600 text-sm font-medium">Shipping</div>
-        <div class="text-[#22C55E] font-bold text-sm">Free</div>
-      </div>
 
       @if (cart().discountTotal > 0) {
         <div class="flex justify-between items-center mb-6 bg-[#DCFCE7]/50 -mx-2 px-2 py-1.5 rounded">
@@ -41,14 +36,13 @@ import { lucideArrowRight } from '@ng-icons/lucide';
         <div class="flex justify-between items-start">
           <div>
             <div class="text-lg font-bold text-gray-900">Total</div>
-            <div class="text-[11px] text-gray-500 mt-0.5">Inclusive of all taxes</div>
           </div>
           <div class="text-xl font-bold text-brand-orange">{{cart().grandTotal | tenantCurrency:'symbol':'1.2-2'}}</div>
         </div>
       </div>
       
       <div class="flex flex-col gap-3">
-        <button (click)="onCheckout.emit()" class="w-full py-3.5 bg-brand-orange text-white font-bold rounded-lg shadow-sm hover:bg-brand-orange-dark transition-colors flex items-center justify-between px-6 text-[15px]">
+        <button (click)="onCheckout.emit()" [disabled]="selectedCount() === 0" class="w-full py-3.5 bg-brand-orange text-white font-bold rounded-lg shadow-sm transition-colors flex items-center justify-between px-6 text-[15px] hover:bg-brand-orange-dark disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-orange">
           <span>Proceed to Checkout</span>
           <ng-icon name="lucideArrowRight" size="18"></ng-icon>
         </button>

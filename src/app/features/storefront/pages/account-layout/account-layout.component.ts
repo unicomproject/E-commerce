@@ -59,7 +59,7 @@ export class AccountLayoutComponent {
     const url = this.currentUrl();
     const items: BreadcrumbItem[] = [
       { label: 'Home', link: '/' },
-      { label: 'Account', link: '/account' }
+      { label: 'Account', link: '/account/profile' }
     ];
     
     if (url.includes('/account/orders')) {

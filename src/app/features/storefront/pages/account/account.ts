@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -56,7 +56,7 @@ interface QuickAction {
     lucideHeart
   })]
 })
-export class Account implements OnInit {
+export class Account implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   
@@ -68,12 +68,12 @@ export class Account implements OnInit {
   ];
 
   quickActions: QuickAction[] = [
-    { label: 'Your orders', icon: 'lucidePackage', route: '/account/orders' },
-
     { label: 'Your profile', icon: 'lucideUser', route: '/account/profile' },
-    { label: 'Addresses', icon: 'lucideMapPin', route: '/account/addresses' },
+    { label: 'Your orders', icon: 'lucidePackage', route: '/account/orders' },
     { label: 'Your reviews', icon: 'lucideStar', route: '/account/reviews' },
     { label: 'Wishlist', icon: 'lucideHeart', route: '/account/wishlist' },
+    { label: 'Notifications', icon: 'lucideBell', route: '/account/notifications' },
+    { label: 'Addresses', icon: 'lucideMapPin', route: '/account/addresses' },
     { label: 'Sign Out', icon: 'lucideLogOut', action: () => this.logout(), isDestructive: true },
   ];
 
@@ -81,6 +81,24 @@ export class Account implements OnInit {
     this.authService.currentUser$.subscribe(user => {
       this.user = user;
     });
+    
+    // Redirect to profile on desktop since /account is mobile-only dashboard
+    this.checkDesktopRedirect();
+    window.addEventListener('resize', this.onResize.bind(this));
+  }
+  
+  ngOnDestroy() {
+    window.removeEventListener('resize', this.onResize.bind(this));
+  }
+
+  private onResize() {
+    this.checkDesktopRedirect();
+  }
+
+  private checkDesktopRedirect() {
+    if (window.innerWidth >= 1024) {
+      this.router.navigate(['/account/profile'], { replaceUrl: true });
+    }
   }
   
   logout() {

@@ -115,7 +115,9 @@ export class Header implements OnInit, AfterViewInit, AfterViewChecked {
   }
 
   logout() {
-    this.authService.logout().subscribe();
+    this.authService.logout().subscribe(() => {
+      this.router.navigate(['/']);
+    });
   }
 
   showComingSoon(feature: string) {

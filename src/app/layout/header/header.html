@@ -75,7 +75,7 @@
             <div class="flex flex-col items-end cursor-pointer">
               <span class="text-sm font-bold text-gray-900 leading-tight">{{ user.displayName }}</span>
             </div>
-            <a routerLink="/account" class="h-9 w-9 rounded-full bg-brand-orange text-white flex items-center justify-center font-bold shadow-sm hover:bg-brand-orange-dark transition-colors cursor-pointer relative z-10">
+            <a routerLink="/account/profile" class="h-9 w-9 rounded-full bg-brand-orange text-white flex items-center justify-center font-bold shadow-sm hover:bg-brand-orange-dark transition-colors cursor-pointer relative z-10">
               {{ user.displayName.charAt(0).toUpperCase() }}
             </a>
             
@@ -95,17 +95,13 @@
               
               <!-- Menu Links -->
               <div class="p-2 space-y-0.5">
+                <a routerLink="/account/profile" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-brand-orange-light/30 text-gray-700 hover:text-brand-orange transition-colors group/item">
+                  <ng-icon name="lucideUser" size="18" class="text-gray-400 group-hover/item:text-brand-orange transition-colors"></ng-icon>
+                  <span class="text-sm font-medium">Your profile</span>
+                </a>
                 <a routerLink="/account/orders" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-brand-orange-light/30 text-gray-700 hover:text-brand-orange transition-colors group/item">
                   <ng-icon name="lucidePackage" size="18" class="text-gray-400 group-hover/item:text-brand-orange transition-colors"></ng-icon>
                   <span class="text-sm font-medium">Your orders</span>
-                </a>
-                <a routerLink="/account/notifications" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-brand-orange-light/30 text-gray-700 hover:text-brand-orange transition-colors group/item">
-                  <ng-icon name="lucideBell" size="18" class="text-gray-400 group-hover/item:text-brand-orange transition-colors"></ng-icon>
-                  <span class="text-sm font-medium">Notifications</span>
-                </a>
-                <a routerLink="/account" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-brand-orange-light/30 text-gray-700 hover:text-brand-orange transition-colors group/item">
-                  <ng-icon name="lucideUser" size="18" class="text-gray-400 group-hover/item:text-brand-orange transition-colors"></ng-icon>
-                  <span class="text-sm font-medium">Your profile</span>
                 </a>
                 <a routerLink="/account/reviews" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-brand-orange-light/30 text-gray-700 hover:text-brand-orange transition-colors group/item">
                   <ng-icon name="lucideStar" size="18" class="text-gray-400 group-hover/item:text-brand-orange transition-colors"></ng-icon>
@@ -115,7 +111,11 @@
                   <ng-icon name="lucideHeart" size="18" class="text-gray-400 group-hover/item:text-brand-orange transition-colors"></ng-icon>
                   <span class="text-sm font-medium">Wishlist</span>
                 </a>
-                <a routerLink="/" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-brand-orange-light/30 text-gray-700 hover:text-brand-orange transition-colors group/item">
+                <a routerLink="/account/notifications" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-brand-orange-light/30 text-gray-700 hover:text-brand-orange transition-colors group/item">
+                  <ng-icon name="lucideBell" size="18" class="text-gray-400 group-hover/item:text-brand-orange transition-colors"></ng-icon>
+                  <span class="text-sm font-medium">Notifications</span>
+                </a>
+                <a routerLink="/account/addresses" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-brand-orange-light/30 text-gray-700 hover:text-brand-orange transition-colors group/item">
                   <ng-icon name="lucideMapPin" size="18" class="text-gray-400 group-hover/item:text-brand-orange transition-colors"></ng-icon>
                   <span class="text-sm font-medium">Addresses</span>
                 </a>

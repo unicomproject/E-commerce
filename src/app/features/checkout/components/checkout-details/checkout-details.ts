@@ -8,11 +8,12 @@ import { CartService } from '../../../../core/services/cart.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthModalService } from '../../../../core/services/auth-modal.service';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PhoneInputComponent } from '../../../../shared/components/phone-input/phone-input.component';
 
 @Component({
   selector: 'app-checkout-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, TenantCurrencyPipe],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, TenantCurrencyPipe, PhoneInputComponent],
   viewProviders: [provideIcons({ lucideShield, lucideShoppingBag, lucideChevronDown, lucideLock })],
   template: `
     <div class="animate-in fade-in duration-300">
@@ -57,32 +58,16 @@ import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pip
           <label class="block text-sm font-medium text-gray-700 mb-1">
             Mobile number <span class="text-brand-orange">*</span>
           </label>
-          <div class="flex flex-col md:flex-row gap-3">
-            <!-- Country Code Dropdown -->
-            <div class="relative w-full md:w-32 flex-shrink-0">
-              <div class="w-full px-3 py-2.5 rounded-lg border border-gray-300 flex items-center justify-between bg-white cursor-pointer hover:bg-gray-50">
-                <div class="flex items-center gap-2">
-                  <span class="text-lg leading-none">🇱🇰</span>
-                  <span class="text-gray-900 font-medium">+94</span>
-                </div>
-                <ng-icon name="lucideChevronDown" size="16" class="text-gray-500"></ng-icon>
-              </div>
-            </div>
-            <!-- Input -->
-            <div class="w-full relative">
-              <input type="tel" formControlName="mobile" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 font-bold text-gray-900 focus:ring-2 focus:ring-brand-orange focus:border-brand-orange outline-none transition-colors">
-              <div *ngIf="detailsForm.get('mobile')?.touched && detailsForm.get('mobile')?.invalid" class="text-red-500 text-xs mt-1 absolute -bottom-5">Mobile number is required.</div>
-            </div>
-          </div>
+          <app-phone-input
+            formControlName="mobile"
+            inputId="mobile"
+            placeholder="Phone number"
+            [hasError]="!!(detailsForm.get('mobile')?.touched && detailsForm.get('mobile')?.invalid)"
+          ></app-phone-input>
+          <div *ngIf="detailsForm.get('mobile')?.touched && detailsForm.get('mobile')?.invalid" class="text-red-500 text-xs mt-1">Mobile number is required.</div>
         </div>
 
-        <!-- Save Details Checkbox -->
-        <div class="mb-4">
-          <label class="flex items-center space-x-3 cursor-pointer group">
-            <input type="checkbox" formControlName="saveDetails" class="w-5 h-5 rounded border-gray-300 text-brand-orange focus:ring-brand-orange transition-colors">
-            <span class="text-gray-900 font-medium group-hover:text-brand-orange transition-colors">Save these details for faster checkout next time</span>
-          </label>
-        </div>
+
 
 
 
@@ -138,7 +123,6 @@ export class CheckoutDetailsComponent implements OnInit {
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     mobile: ['', Validators.required],
-    saveDetails: [true]
   });
 
   ngOnInit() {
