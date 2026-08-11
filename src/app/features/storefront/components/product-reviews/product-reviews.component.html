@@ -65,13 +65,50 @@
   </div>
 
   <!-- Filters Row -->
-  <div class="flex flex-wrap items-center gap-3 mb-6">
-    <button class="h-10 px-4 border border-gray-200 rounded-xl text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 bg-white shadow-sm">
-      Most Recent <ng-icon name="lucideChevronDown" size="16" class="text-gray-400"></ng-icon>
-    </button>
-    <button class="h-10 px-4 border border-gray-200 rounded-xl text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 bg-white shadow-sm">
-      <ng-icon name="lucideStar" size="16" class="text-brand-orange fill-brand-orange"></ng-icon> 5 Star <ng-icon name="lucideChevronDown" size="16" class="text-gray-400"></ng-icon>
-    </button>
+  <div class="flex flex-wrap items-center gap-3 mb-6 relative">
+    
+    <!-- Sort Dropdown -->
+    <div class="relative">
+      <button (click)="toggleSortDropdown()" class="h-10 px-4 border border-gray-200 rounded-xl text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 bg-white shadow-sm">
+        {{ activeSortLabel }} <ng-icon name="lucideChevronDown" size="16" class="text-gray-400"></ng-icon>
+      </button>
+      
+      <!-- Sort Menu -->
+      <div *ngIf="sortDropdownOpen()" class="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg z-50 overflow-hidden">
+        <button *ngFor="let option of sortOptions" 
+                (click)="selectSort(option.value)"
+                class="w-full text-left px-4 py-2.5 text-[13px] hover:bg-gray-50 flex items-center justify-between"
+                [class.font-bold]="activeSort() === option.value"
+                [class.text-brand-orange]="activeSort() === option.value">
+          {{ option.label }}
+          <ng-icon *ngIf="activeSort() === option.value" name="lucideCheck" size="14"></ng-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Rating Dropdown -->
+    <div class="relative">
+      <button (click)="toggleRatingDropdown()" class="h-10 px-4 border border-gray-200 rounded-xl text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 bg-white shadow-sm">
+        <ng-icon *ngIf="activeRating()" name="lucideStar" size="16" class="text-brand-orange fill-brand-orange"></ng-icon>
+        {{ activeRatingLabel }} <ng-icon name="lucideChevronDown" size="16" class="text-gray-400"></ng-icon>
+      </button>
+      
+      <!-- Rating Menu -->
+      <div *ngIf="ratingDropdownOpen()" class="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg z-50 overflow-hidden">
+        <button *ngFor="let option of ratingOptions" 
+                (click)="selectRating(option.value)"
+                class="w-full text-left px-4 py-2.5 text-[13px] hover:bg-gray-50 flex items-center justify-between"
+                [class.font-bold]="activeRating() === option.value"
+                [class.text-brand-orange]="activeRating() === option.value">
+          <span class="flex items-center gap-2">
+            <ng-icon *ngIf="option.value" name="lucideStar" size="14" class="text-brand-orange fill-brand-orange"></ng-icon>
+            {{ option.label }}
+          </span>
+          <ng-icon *ngIf="activeRating() === option.value" name="lucideCheck" size="14"></ng-icon>
+        </button>
+      </div>
+    </div>
+
   </div>
 
   <!-- Review List -->

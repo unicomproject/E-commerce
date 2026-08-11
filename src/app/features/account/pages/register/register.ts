@@ -51,9 +51,7 @@ export class RegisterComponent implements AfterViewInit, OnDestroy {
       Validators.required,
       Validators.minLength(8),
       Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)
-    ]],
-    agreeTerms: [false, Validators.requiredTrue],
-    sendOffers: [false]
+    ]]
   });
 
   showPassword = signal(false);
@@ -82,13 +80,13 @@ export class RegisterComponent implements AfterViewInit, OnDestroy {
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
-    const { email, password, agreeTerms, sendOffers } = this.registerForm.value;
+    const { email, password } = this.registerForm.value;
 
     this.authService.register({ 
       email: email!, 
       password: password!, 
-      agreeTerms: agreeTerms!, 
-      sendOffers: sendOffers! 
+      agreeTerms: true, 
+      sendOffers: false 
     }).subscribe({
         next: (response) => {
           this.isLoading.set(false);
@@ -130,19 +128,13 @@ export class RegisterComponent implements AfterViewInit, OnDestroy {
   }
 
   private onGoogleCredential(idToken: string): void {
-    if (this.registerForm.controls.agreeTerms.value !== true) {
-      this.registerForm.controls.agreeTerms.markAsTouched();
-      this.errorMessage.set('You must agree to the terms before signing up with Google.');
-      return;
-    }
-
     this.isGoogleLoading.set(true);
     this.errorMessage.set(null);
 
     this.authService.googleLogin({
       idToken,
       agreeTerms: true,
-      sendOffers: this.registerForm.controls.sendOffers.value === true
+      sendOffers: false
     }).subscribe({
       next: (response) => {
         this.isGoogleLoading.set(false);

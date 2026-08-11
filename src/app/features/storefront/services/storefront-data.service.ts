@@ -47,11 +47,15 @@ export class StorefrontDataService {
     return this.http.get<StorefrontProductDetailReadModel>(`${this.baseUrl}/catalog/products/${slug}`);
   }
 
-  getProductReviews(productId: string, page = 1, pageSize = 10, sort = 'newest'): Observable<ProductReviewsPageReadModel> {
+  getProductReviews(productId: string, page = 1, pageSize = 10, sort = 'newest', rating: number | null = null): Observable<ProductReviewsPageReadModel> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('pageSize', pageSize.toString())
       .set('sort', sort);
+      
+    if (rating !== null) {
+      params = params.set('rating', rating.toString());
+    }
       
     // Unwrap the response from the generic wrapper: Success(message, data)
     return this.http.get<{ data: ProductReviewsPageReadModel }>(`${this.baseUrl}/catalog/products/${productId}/reviews`, { params })

@@ -104,6 +104,18 @@ export class NotificationService {
       tap(response => {
         if (response.success && response.data) {
           const nextInbox = response.data;
+          
+          const oneDayAgo = new Date();
+          oneDayAgo.setHours(oneDayAgo.getHours() - 24);
+          
+          nextInbox.items = nextInbox.items.filter(item => {
+            if (item.isRead && item.readAt) {
+              const readDate = new Date(item.readAt);
+              return readDate >= oneDayAgo;
+            }
+            return true;
+          });
+
           if (page > 1) {
             const current = this.inbox();
             this.inbox.set({

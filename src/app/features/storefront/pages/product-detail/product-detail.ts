@@ -103,6 +103,9 @@ export class ProductDetail implements OnInit {
   // Tabs State
   activeTabId = signal<string>('reviews');
   reviews = signal<ProductReviewsPageReadModel | null>(null);
+  
+  reviewSort = signal<string>('newest');
+  reviewRating = signal<number | null>(null);
 
   tabs = computed<TabItem[]>(() => {
     const p = this.product();
@@ -283,7 +286,13 @@ export class ProductDetail implements OnInit {
       return;
     }
 
-    this.dataService.getProductReviews(productId).subscribe({
+    this.dataService.getProductReviews(
+      productId, 
+      1, 
+      10, 
+      this.reviewSort(), 
+      this.reviewRating()
+    ).subscribe({
       next: (reviewsPage) => {
         this.reviews.set(reviewsPage);
       },
@@ -291,6 +300,16 @@ export class ProductDetail implements OnInit {
         console.error('Error fetching product reviews', err);
       }
     });
+  }
+
+  onReviewFilterChange(filter: { sort: string, rating: number | null }) {
+    this.reviewSort.set(filter.sort);
+    this.reviewRating.set(filter.rating);
+    
+    const p = this.product();
+    if (p) {
+      this.loadReviews(p.id);
+    }
   }
 
   // Actions

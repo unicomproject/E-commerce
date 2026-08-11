@@ -31,7 +31,7 @@
         <app-breadcrumbs [items]="breadcrumbItems()"></app-breadcrumbs>
       </div>
       
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12 h-full lg:min-h-[calc(100vh-140px)]">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-0 lg:mb-12 h-full lg:min-h-[calc(100vh-140px)]">
         
         <!-- Left: Image Gallery -->
         <div class="lg:col-span-6 flex flex-col self-start z-10 w-full">
@@ -183,7 +183,7 @@
       </div>
 
       <!-- Tabs Navigation Section -->
-      <div class="max-w-4xl pt-8 pb-12">
+      <div class="max-w-4xl pt-0 lg:pt-8 pb-12">
         <app-tabs 
           [tabs]="tabs()" 
           [activeTabId]="activeTabId()" 
@@ -234,7 +234,12 @@
 
           <!-- Reviews Tab -->
           <div *ngIf="activeTabId() === 'reviews'" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <app-product-reviews *ngIf="reviews() as revData; else loadingReviews" [reviewsData]="revData"></app-product-reviews>
+            <app-product-reviews *ngIf="reviews() as revData; else loadingReviews" 
+                                 [reviewsData]="revData"
+                                 [activeSort]="reviewSort()"
+                                 [activeRating]="reviewRating()"
+                                 (onFilterChange)="onReviewFilterChange($event)">
+            </app-product-reviews>
             <ng-template #loadingReviews>
               <div class="flex items-center justify-center p-12 text-gray-400">
                 Loading reviews...

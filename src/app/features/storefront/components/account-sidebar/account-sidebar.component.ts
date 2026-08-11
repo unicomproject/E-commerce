@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideUser, lucideMapPin, lucideStar, lucidePackage, lucideShieldCheck, lucideLogOut, lucideChevronRight, lucideHeart, lucideBell } from '@ng-icons/lucide';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -14,17 +14,20 @@ import { AuthService } from '../../../../core/services/auth.service';
 })
 export class AccountSidebarComponent {
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   menuItems = [
-    { label: 'Your orders', icon: 'lucidePackage', route: '/account/orders' },
-
     { label: 'Your profile', icon: 'lucideUser', route: '/account/profile' },
-    { label: 'Addresses', icon: 'lucideMapPin', route: '/account/addresses' },
+    { label: 'Your orders', icon: 'lucidePackage', route: '/account/orders' },
     { label: 'Your reviews', icon: 'lucideStar', route: '/account/reviews' },
-    { label: 'Wishlist', icon: 'lucideHeart', route: '/account/wishlist' }
+    { label: 'Wishlist', icon: 'lucideHeart', route: '/account/wishlist' },
+    { label: 'Notifications', icon: 'lucideBell', route: '/account/notifications' },
+    { label: 'Addresses', icon: 'lucideMapPin', route: '/account/addresses' },
   ];
 
   logout() {
-    this.authService.logout();
+    this.authService.logout().subscribe(() => {
+      this.router.navigate(['/']);
+    });
   }
 }

@@ -1,12 +1,7 @@
-<div class="w-full pt-2 lg:pt-0 pb-20">
+<div class="w-full lg:pt-0 pb-20">
   
   <!-- Header Section -->
-  <div class="flex flex-row justify-between items-center mb-3">
-    <div>
-      <app-page-header title="My Orders" [hideDesktopTitle]="true" customClasses="!px-0 !pt-1 !pb-0 !border-b-0"></app-page-header>
-    </div>
-
-  </div>
+  <app-page-header title="My Orders" [hideDesktopTitle]="true" [noPadding]="true" customClasses="!px-0 py-4 !border-b-0 lg:hidden"></app-page-header>
 
   <!-- Status Tabs Scrollable -->
   <div class="flex overflow-x-auto hide-scrollbar space-x-3 mb-4">

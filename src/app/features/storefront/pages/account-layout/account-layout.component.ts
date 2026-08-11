@@ -10,7 +10,7 @@ import { filter } from 'rxjs';
   standalone: true,
   imports: [CommonModule, RouterOutlet, AccountSidebarComponent, BreadcrumbsComponent],
   template: `
-    <div class="bg-gray-50 min-h-[80vh] pb-12 pt-2 lg:pt-6">
+    <div class="bg-gray-50 min-h-[80vh] pb-12 lg:pt-6">
       <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8">
         
         <!-- Breadcrumb placed above the sidebar and main content -->
@@ -59,7 +59,7 @@ export class AccountLayoutComponent {
     const url = this.currentUrl();
     const items: BreadcrumbItem[] = [
       { label: 'Home', link: '/' },
-      { label: 'Account', link: '/account' }
+      { label: 'Account', link: '/account/profile' }
     ];
     
     if (url.includes('/account/orders')) {

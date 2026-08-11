@@ -1,8 +1,7 @@
-<div class="w-full px-4 md:px-8 pt-2 pb-20">
+<div class="w-full pb-20">
   
   <!-- Header Section -->
-  <app-page-header title="Order Details" [breadcrumbs]="breadcrumbItems()" customClasses="!px-0 !pt-4 !pb-0 !border-b-0"></app-page-header>
-  <p class="text-neutral-500 text-sm lg:ml-[56px] mt-0 mb-6 lg:hidden">Review your click & collect order information.</p>
+  <app-page-header title="Order Details" [hideDesktopTitle]="true" [noPadding]="true" customClasses="!px-0 py-4 !border-b-0 lg:hidden"></app-page-header>
 
   @if (isLoading()) {
     <div class="flex justify-center items-center py-20">

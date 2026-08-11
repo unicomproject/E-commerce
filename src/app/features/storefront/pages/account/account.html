@@ -1,12 +1,12 @@
 <div class="w-full lg:px-0">
     
     <!-- Header -->
-    <div class="mb-6 lg:mb-8">
-      <app-page-header title="My Account" customClasses="!px-0 !pt-0 !pb-0 !border-b-0"></app-page-header>
+    <div class="lg:hidden">
+      <app-page-header title="My Account" [noPadding]="true" customClasses="!px-0 py-4 !border-b-0"></app-page-header>
     </div>
 
     <!-- Profile Card -->
-    <div class="bg-white rounded-[24px] p-6 flex flex-col md:flex-row md:items-center gap-6 mb-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100 cursor-pointer hover:shadow-md transition-shadow" routerLink="/account/profile">
+    <div class="bg-white rounded-[24px] p-6 flex flex-col md:flex-row md:items-center gap-6 mb-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100 cursor-pointer hover:shadow-md transition-shadow lg:hidden" routerLink="/account/profile">
       <div class="flex flex-row items-center gap-5 flex-grow">
         <div class="flex-shrink-0">
           <div class="w-20 h-20 bg-[#fff0e6] rounded-full flex items-center justify-center text-brand-orange overflow-hidden">

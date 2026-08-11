@@ -3,7 +3,7 @@
   <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8 pt-2 pb-6">
 
     <!-- Header Section -->
-    <app-page-header customClasses="!px-0 !pt-2 !pb-0 !border-b-0 mb-2" [breadcrumbs]="breadcrumbItems()">
+    <app-page-header [noPadding]="true" customClasses="!px-0 py-4 !border-b-0" [breadcrumbs]="breadcrumbItems()">
       <!-- Search Input (Mobile only) -->
       <div class="relative flex-grow lg:hidden">
         <app-search-bar></app-search-bar>

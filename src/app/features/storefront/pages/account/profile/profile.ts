@@ -7,12 +7,13 @@ import { lucideUser, lucideMail, lucidePhone, lucideSave, lucideArrowLeft, lucid
 import { CustomerProfileService } from '../../../../../core/services/customer-profile.service';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { PageHeaderComponent } from '../../../../../shared/components/page-header/page-header.component';
+import { PhoneInputComponent } from '../../../../../shared/components/phone-input/phone-input.component';
 
 
 @Component({
   selector: 'app-personal-information',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, PageHeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, PageHeaderComponent, PhoneInputComponent],
   templateUrl: './profile.html',
   viewProviders: [provideIcons({ 
     lucideUser, 

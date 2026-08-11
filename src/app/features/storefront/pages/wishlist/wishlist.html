@@ -1,10 +1,7 @@
 <div class="w-full pb-24 lg:pb-12 pt-2 lg:pt-0">
     
     <!-- Header -->
-    <div class="mb-4 lg:mb-0 lg:hidden">
-      <app-page-header title="Wishlist" [hideDesktopTitle]="true" customClasses="!px-0 !pt-0 !pb-0 !border-b-0"></app-page-header>
-      <p class="text-gray-500 mt-2 text-sm ml-[56px]">Save your favourite items for later.</p>
-    </div>
+    <app-page-header title="Wishlist" [hideDesktopTitle]="true" [noPadding]="true" customClasses="!px-0 py-4 !border-b-0 lg:hidden"></app-page-header>
 
     <ng-container *ngIf="wishlist$ | async as wishlist">
       

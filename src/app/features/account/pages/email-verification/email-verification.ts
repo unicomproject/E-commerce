@@ -12,6 +12,7 @@ import {
 } from '@ng-icons/lucide';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthView, AuthModalService } from '../../../../core/services/auth-modal.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-email-verification',
@@ -32,6 +33,7 @@ export class EmailVerificationComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private authModalService = inject(AuthModalService);
+  private toastService = inject(ToastService);
   private isDestroyed = false;
 
   email = '';
@@ -127,6 +129,7 @@ export class EmailVerificationComponent implements OnInit, OnDestroy {
         next: (response) => {
           this.isLoading.set(false);
           if (response.success) {
+            this.toastService.success('Account created successfully. Your account is ready. You can now sign in.');
             this.switchView.emit('login');
           }
         },
