@@ -1,0 +1,92 @@
+<!-- Overlay -->
+<div class="fixed inset-0 bg-black/60 z-[100] transition-opacity duration-300"
+     [class.opacity-0]="!isOpen()"
+     [class.opacity-100]="isOpen()"
+     [class.pointer-events-none]="!isOpen()"
+     (click)="onClose()">
+</div>
+
+<!-- Modal -->
+<div class="fixed bottom-0 left-0 right-0 lg:left-1/2 lg:-translate-x-1/2 lg:w-[600px] z-[101] bg-white rounded-t-3xl shadow-lg max-h-[90vh] flex flex-col translate-y-full transition-transform duration-300 ease-out"
+     [class.!translate-y-0]="isOpen()"
+     [class.pointer-events-none]="!isOpen()">
+  
+  <!-- Handle -->
+  <div class="flex justify-center pt-2 pb-4">
+    <div class="w-9 h-1 bg-gray-300 rounded-full"></div>
+  </div>
+
+  <!-- Header -->
+  <div class="px-5 flex items-center justify-between pb-4">
+    <h2 class="text-[20px] font-semibold text-[#111111]">When would you like to collect?</h2>
+    <button (click)="onClose()" class="text-[#6B7280] hover:bg-gray-100 p-1.5 rounded-full transition-colors">
+      <ng-icon name="lucideX" class="text-[20px]"></ng-icon>
+    </button>
+  </div>
+
+  <!-- Content (Scrollable) -->
+  <div class="flex-1 overflow-y-auto px-5 pb-5 custom-scrollbar">
+
+    <div *ngIf="isLoading()" class="py-10 flex flex-col items-center justify-center">
+      <div class="w-8 h-8 border-4 border-[#FF6A00] border-t-transparent rounded-full animate-spin"></div>
+      <div class="mt-4 text-[#6B7280] text-sm">Loading collection times...</div>
+    </div>
+    
+    <ng-container *ngIf="!isLoading()">
+      
+      <!-- Date & Time Selection -->
+      <div class="mt-2 animation-fade-in">
+      
+      <!-- Select Date -->
+      <h3 class="text-[16px] font-semibold text-[#111111] mb-3">Select Date</h3>
+      <div class="grid grid-cols-4 sm:grid-cols-5 gap-2.5">
+        <button *ngFor="let d of dates()" 
+                (click)="selectDate(d.value)"
+                class="h-[72px] rounded-[12px] flex flex-col items-center justify-center transition-colors border"
+                [ngClass]="selectedDate() === d.value ? 'border-[#FF6A00] bg-[#FFF7F2] border-[1.5px]' : 'border-[#E5E7EB] bg-white'">
+          <span class="text-[14px] font-medium" [ngClass]="selectedDate() === d.value ? 'text-[#FF6A00]' : 'text-[#6B7280]'">{{d.label}}</span>
+          <span class="text-[20px] font-bold" [ngClass]="selectedDate() === d.value ? 'text-[#FF6A00]' : 'text-[#111111]'">{{d.day}}</span>
+          <span class="text-[12px] font-medium" [ngClass]="selectedDate() === d.value ? 'text-[#FF6A00]' : 'text-[#6B7280]'">{{d.month}}</span>
+        </button>
+      </div>
+
+      <!-- Select Time -->
+      <div class="flex justify-between items-end mt-6 mb-3">
+        <h3 class="text-[16px] font-semibold text-[#111111]">Select Time Slot</h3>
+        <span class="text-[12px] text-[#6B7280]">Store closes at <span class="font-bold text-[#FF6A00]">{{ closingTime() }}</span></span>
+      </div>
+      
+      <div class="grid grid-cols-3 gap-3">
+        <button *ngFor="let t of times()" 
+                (click)="selectTime(t.time)"
+                class="h-[52px] rounded-[12px] flex flex-col items-center justify-center transition-colors border"
+                [ngClass]="selectedTime() === t.time ? 'border-[#FF6A00] bg-[#FFF7F2] border-[1.5px]' : 'border-[#E5E7EB] bg-white hover:border-gray-300'">
+          <span class="text-[14px] font-medium" [ngClass]="selectedTime() === t.time ? 'text-[#FF6A00]' : 'text-[#111111]'">{{t.time}}</span>
+        </button>
+      </div>
+
+      <!-- Info Banner -->
+      <div class="mt-6 bg-[#FFF5ED] rounded-[12px] p-4 flex gap-3 items-start">
+        <ng-icon name="lucideClock" class="text-[#FF6A00] text-[20px] mt-0.5 flex-shrink-0"></ng-icon>
+        <div>
+          <div class="text-[14px] font-semibold text-[#111111]">Need it sooner?</div>
+          <div class="text-[13px] text-[#6B7280] mt-1">As soon as possible is currently available from <span class="font-semibold text-[#FF6A00]">{{ earliestTime() }}</span></div>
+        </div>
+      </div>
+
+    </div>
+    
+    </ng-container>
+
+  </div>
+
+  <!-- Bottom Action -->
+  <div class="p-5 border-t border-gray-100 bg-white shadow-[0_-4px_15px_-10px_rgba(0,0,0,0.1)]">
+    <button (click)="onConfirm()" 
+            [disabled]="!selectedTime()"
+            class="w-full h-[56px] rounded-[12px] bg-[#FF6A00] text-white font-semibold text-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+      Confirm Collection Time
+    </button>
+  </div>
+
+</div>

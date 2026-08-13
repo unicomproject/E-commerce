@@ -1,3 +1,4 @@
+import { MobileHeaderComponent } from '../../../../../shared/components/mobile-header/mobile-header.component';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -14,7 +15,7 @@ type Tab = 'ready' | 'reviewed';
 @Component({
   selector: 'app-customer-reviews',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgIconComponent, StarRatingComponent, PageHeaderComponent],
+  imports: [CommonModule, RouterLink, NgIconComponent, StarRatingComponent, MobileHeaderComponent],
   templateUrl: './reviews.component.html',
   viewProviders: [provideIcons({ lucideStar, lucidePackage, lucideChevronLeft, lucideEdit3, lucideMessageSquare, lucideChevronRight, lucideCheckCircle2, lucideChevronDown, lucideArrowLeft, lucideMoreVertical, lucideCalendar, lucideTruck })]
 })

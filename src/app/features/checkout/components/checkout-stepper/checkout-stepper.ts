@@ -1,5 +1,6 @@
-import { Component, input } from '@angular/core';
+import { Component, input, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CheckoutService } from '../../../../core/services/checkout.service';
 
 @Component({
   selector: 'app-checkout-stepper',
@@ -8,7 +9,7 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="flex items-center justify-center w-full mb-6">
       <div class="flex items-center w-full max-w-sm justify-between relative">
-        @for (step of steps; track step.num; let i = $index) {
+        @for (step of steps(); track step.num; let i = $index) {
           <!-- Step Circle -->
           <div class="flex flex-col items-center relative z-10 bg-white px-2">
             <div 
@@ -22,7 +23,7 @@ import { CommonModule } from '@angular/common';
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
               } @else {
-                {{ step.num }}
+                {{ step.displayNum }}
               }
             </div>
             <span 
@@ -36,7 +37,7 @@ import { CommonModule } from '@angular/common';
           </div>
 
           <!-- Connecting Line -->
-          @if (i < steps.length - 1) {
+          @if (i < steps().length - 1) {
             <div class="flex-1 h-[2px] mx-1 transition-colors duration-300 relative z-0 mt-[-16px]"
                  [ngClass]="{
                    'bg-brand-orange': currentStep() > step.num,
@@ -50,12 +51,21 @@ import { CommonModule } from '@angular/common';
   `
 })
 export class CheckoutStepperComponent {
+  private checkoutService = inject(CheckoutService);
   currentStep = input<number>(1);
   
-  steps = [
-    { num: 1, label: 'Details' },
-    { num: 2, label: 'Collection' },
-    { num: 3, label: 'Review' },
-    { num: 4, label: 'Confirm' }
-  ];
+  steps = computed(() => {
+    if (this.checkoutService.isFastTracked()) {
+      return [
+        { num: 3, displayNum: 1, label: 'Review' },
+        { num: 4, displayNum: 2, label: 'Confirm' }
+      ];
+    }
+    return [
+      { num: 1, displayNum: 1, label: 'Details' },
+      { num: 2, displayNum: 2, label: 'Collection' },
+      { num: 3, displayNum: 3, label: 'Review' },
+      { num: 4, displayNum: 4, label: 'Confirm' }
+    ];
+  });
 }

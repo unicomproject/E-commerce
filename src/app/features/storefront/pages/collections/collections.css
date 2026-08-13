@@ -1,7 +1,5 @@
 .collections-page {
-  padding: 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  /* Layout managed by HTML wrapper */
 }
 
 /* Breadcrumb */

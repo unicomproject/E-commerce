@@ -5,39 +5,53 @@ import { lucideStore, lucideClock, lucideChevronDown } from '@ng-icons/lucide';
 import { StorefrontDataService } from '../../services/storefront-data.service';
 import { Store } from '../../../../core/models';
 import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-selector-modal';
+import { CollectionTimeModalComponent } from '../collection-time-modal/collection-time-modal';
 
 @Component({
   selector: 'app-fulfillment-selector',
   standalone: true,
-  imports: [CommonModule, NgIcon, OutletSelectorModalComponent],
+  imports: [CommonModule, NgIcon, OutletSelectorModalComponent, CollectionTimeModalComponent],
   viewProviders: [provideIcons({ lucideStore, lucideClock, lucideChevronDown })],
   template: `
-    <div class="bg-white relative z-40">
-      <div class="py-2 px-3 lg:py-3 lg:px-4 w-full mx-auto">
-        <div class="flex items-center">
-          <button 
-            (click)="stores().length > 1 ? openOutletModal() : null" 
-            class="flex items-center gap-2.5 lg:gap-3 pr-4 pl-1.5 py-1.5 bg-neutral-100 rounded-full transition-all duration-300 group border border-transparent"
-            [ngClass]="{'hover:bg-neutral-200 active:scale-95 hover:border-neutral-300 cursor-pointer': stores().length > 1, 'cursor-default': stores().length <= 1}"
-          >
-            <!-- Circular Icon Container -->
-            <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-white flex items-center justify-center shadow-sm text-brand-orange group-hover:scale-110 transition-transform duration-300">
-              <ng-icon name="lucideStore" class="text-sm lg:text-base"></ng-icon>
-            </div>
-            
-            <!-- Text Content -->
-            <div class="flex flex-col text-left justify-center">
-              <span class="text-[9px] lg:text-[10px] text-neutral-500 font-bold uppercase tracking-widest leading-none mb-1">Pickup Store</span>
-              <span class="text-xs lg:text-sm font-extrabold text-brand-black leading-tight">
-                {{ selectedStore()?.name || 'Select Outlet' }}
-              </span>
-            </div>
+    <div class="relative z-40 w-full bg-white pb-2">
+      <div class="flex h-[56px] w-full items-center gap-3 rounded-xl border border-neutral-200 px-4">
 
-            <!-- Arrow -->
-            <ng-icon *ngIf="stores().length > 1" name="lucideChevronDown" class="text-neutral-400 group-hover:text-neutral-800 transition-colors ml-1 lg:ml-2 text-sm"></ng-icon>
+          <!-- Store Selector -->
+          <button
+            type="button"
+            (click)="stores().length > 1 ? openOutletModal() : null"
+            class="flex min-w-0 max-w-[50%] items-center gap-2 text-left transition-all duration-300 sm:gap-3"
+            [ngClass]="{'cursor-pointer': stores().length > 1, 'cursor-default': stores().length <= 1}"
+          >
+            <ng-icon name="lucideStore" class="shrink-0 text-[22px] leading-none text-brand-black"></ng-icon>
+            <span class="min-w-0 truncate text-[14px] leading-5 text-brand-black">
+              <span class="font-medium">Collect from:</span>
+              <span class="ml-1 font-bold">{{ selectedStore()?.name || 'Etihad Stadium Store' }}</span>
+            </span>
+            <ng-icon
+              name="lucideChevronDown"
+              class="shrink-0 text-sm leading-none text-brand-black"
+              [class.invisible]="stores().length <= 1"
+            ></ng-icon>
           </button>
+
+          <div class="h-8 w-px shrink-0 self-center bg-neutral-200"></div>
+
+          <!-- Time Selector -->
+          <button
+            type="button"
+            (click)="openTimeModal()"
+            class="flex min-w-0 max-w-[50%] cursor-pointer items-center gap-2 text-left transition-all duration-300 sm:gap-3"
+          >
+            <ng-icon name="lucideClock" class="shrink-0 text-[22px] leading-none text-brand-black"></ng-icon>
+            <span class="min-w-0 truncate text-[14px] leading-5 text-brand-black">
+              <span class="font-medium">Collection:</span>
+              <span class="ml-1 font-bold">{{ selectedTimeText() }}</span>
+            </span>
+            <ng-icon name="lucideChevronDown" class="shrink-0 text-sm leading-none text-brand-black"></ng-icon>
+          </button>
+
         </div>
-      </div>
     </div>
 
     <app-outlet-selector-modal
@@ -47,21 +61,33 @@ import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-se
       (close)="isOutletModalOpen.set(false)"
       (selectStore)="onStoreSelected($event)"
     ></app-outlet-selector-modal>
+
+    <app-collection-time-modal
+      [isOpen]="isTimeModalOpen()"
+      [outletId]="selectedStore()?.id || null"
+      (close)="isTimeModalOpen.set(false)"
+      (confirm)="onTimeConfirmed($event)"
+    ></app-collection-time-modal>
   `
 })
 export class FulfillmentSelector implements OnInit {
   private storefrontData = inject(StorefrontDataService);
   
-  stores = signal<Store[]>([]);
-  selectedStore = signal<Store | null>(null);
+  stores = this.storefrontData.availableStores;
   isOutletModalOpen = signal<boolean>(false);
+  isTimeModalOpen = signal<boolean>(false);
+
+  // Expose global state to template
+  selectedStore = this.storefrontData.selectedStore;
+  selectedTimeText = this.storefrontData.selectedTimeText;
 
   ngOnInit() {
     this.storefrontData.getStores().subscribe({
       next: (data) => {
-        this.stores.set(data);
+        this.storefrontData.availableStores.set(data);
         if (data.length > 0 && !this.selectedStore()) {
-          this.selectedStore.set(data[0]);
+          this.storefrontData.selectedStore.set(data[0]);
+          this.setDefaultTimeForStore(data[0].id);
         }
       },
       error: (err) => console.error('Failed to fetch stores', err)
@@ -72,8 +98,37 @@ export class FulfillmentSelector implements OnInit {
     this.isOutletModalOpen.set(true);
   }
 
+  openTimeModal() {
+    if (this.selectedStore()?.id) {
+      this.isTimeModalOpen.set(true);
+    }
+  }
+
   onStoreSelected(store: Store) {
-    this.selectedStore.set(store);
+    this.storefrontData.selectedStore.set(store);
     this.isOutletModalOpen.set(false);
+    this.setDefaultTimeForStore(store.id);
+  }
+
+  private setDefaultTimeForStore(storeId: string) {
+    this.storefrontData.getCollectionOptions(storeId, 7).subscribe(opts => {
+      const slot = this.storefrontData.resolveEarliestBookableSlot(opts);
+      if (slot) {
+        this.storefrontData.requestedCollectionAt.set(slot);
+        this.storefrontData.selectedTimeText.set('As soon as possible');
+      }
+    });
+  }
+
+  onTimeConfirmed(selection: { type: 'asap' | 'later', date?: string, time?: string, isoString?: string }) {
+    if (selection.type === 'asap') {
+      this.storefrontData.selectedTimeText.set('As soon as possible');
+      this.storefrontData.requestedCollectionAt.set(selection.isoString || null);
+    } else if (selection.type === 'later') {
+      const dateStr = selection.date === 'Today' ? 'Today' : selection.date;
+      this.storefrontData.selectedTimeText.set(`${selection.time}, ${dateStr}`);
+      this.storefrontData.requestedCollectionAt.set(selection.isoString || null);
+    }
+    this.isTimeModalOpen.set(false);
   }
 }

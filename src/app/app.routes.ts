@@ -11,6 +11,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/storefront/pages/categories/categories').then(m => m.Categories)
   },
   {
+    path: 'categories/:slug',
+    loadComponent: () => import('./features/storefront/pages/category-detail/category-detail').then(m => m.CategoryDetailComponent)
+  },
+  {
     path: 'collections/:slug',
     loadComponent: () => import('./features/storefront/pages/collections/collections').then(m => m.Collections)
   },
@@ -37,7 +41,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'wishlist',
-        loadComponent: () => import('./features/storefront/pages/wishlist/wishlist').then(m => m.Wishlist)
+        loadComponent: () => import('./features/wishlist/pages/wishlist/wishlist').then(m => m.Wishlist)
       },
       {
         path: 'orders',

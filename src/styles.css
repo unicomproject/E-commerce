@@ -5,24 +5,27 @@
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   
-  --color-brand-orange: #ff5b22;
-  --color-brand-orange-light: #fff3ef;
-  --color-brand-orange-dark: #e04815;
-  --color-brand-black: #111111;
-  --color-brand-gray: #f9fafb;
+  --color-brand-orange: #FF6A00;
+  --color-brand-orange-light: #FFF0E5;
+  --color-brand-orange-dark: #E65F00;
+  --color-brand-black: #000000;
+  --color-brand-dark-grey: #1A1A1A;
+  --color-brand-gray: #757575;
+  --color-brand-light-grey: #F5F5F5;
+  --color-brand-white: #FFFFFF;
   
   /* Secondary / Accent Colors */
-  --color-brand-navy: #0f172a;       /* Deep Navy Blue */
+  --color-brand-navy: #0f172a;
   --color-brand-navy-light: #1e293b; 
   --color-brand-teal: #0d9488;
   --color-brand-teal-light: #f0fdfa;
 
   /* Custom Theme Colors */
-  --color-page-bg: #f8f8f8;
-  --color-card-bg: #ffffff;
-  --color-card-border: #e8e8e8;
-  --color-soft-control-bg: #f5f5f5;
-  --color-border-color: #e6e6e6;
+  --color-page-bg: #FFFFFF;
+  --color-card-bg: #FFFFFF;
+  --color-card-border: #F5F5F5;
+  --color-soft-control-bg: #F5F5F5;
+  --color-border-color: #F5F5F5;
 }
 
 body {

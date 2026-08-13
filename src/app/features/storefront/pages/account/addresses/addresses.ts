@@ -7,13 +7,13 @@ import { lucideMapPin, lucidePlus, lucideTrash2, lucideEdit2, lucideCheck, lucid
 import { CustomerAddressService } from '../../../../../core/services/customer-address.service';
 import { CustomerAddressDto, CreateCustomerAddressRequest, UpdateCustomerAddressRequest } from '../../../../../core/models/customer-address.model';
 import { ToastService } from '../../../../../core/services/toast.service';
-import { PageHeaderComponent } from '../../../../../shared/components/page-header/page-header.component';
+import { MobileHeaderComponent } from '../../../../../shared/components/mobile-header/mobile-header.component';
 import { PhoneInputComponent } from '../../../../../shared/components/phone-input/phone-input.component';
 
 @Component({
   selector: 'app-addresses',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, PageHeaderComponent, PhoneInputComponent],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, PhoneInputComponent, MobileHeaderComponent],
   templateUrl: './addresses.html',
   viewProviders: [provideIcons({ lucideMapPin, lucidePlus, lucideTrash2, lucideEdit2, lucideCheck, lucideX })]
 })

@@ -1,51 +1,88 @@
-<a *ngIf="product() as product" [routerLink]="['/product', product.slug]" class="group flex flex-col cursor-pointer block h-full bg-card-bg rounded-2xl border border-card-border p-2 lg:p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-  <!-- Image Container -->
-  <div class="relative bg-neutral-50 rounded-xl overflow-hidden aspect-square mb-3">
-    
-    <!-- Top left badges -->
-    <div class="absolute top-2 left-2 lg:top-3 lg:left-3 z-20 flex flex-col gap-1.5 items-start">
-      <div *ngIf="product.isInStock === false" class="bg-[#FF4D4F] text-white text-[11px] lg:text-xs font-bold px-2 py-1 rounded-md tracking-wide shadow-sm">
-        Out of Stock
-      </div>
-      <div *ngIf="product.badge && product.isInStock !== false" class="bg-red-500 text-white text-[10px] lg:text-xs font-bold px-2 py-0.5 rounded-full tracking-wide">
-        {{ product.badge }}
-      </div>
-    </div>
+@if (product(); as product) {
+  <!-- ===================== GRID CARD ===================== -->
+  @if (layout() === 'grid') {
+    <a
+      [routerLink]="['/product', product.slug]"
+      class="group flex h-full flex-col overflow-hidden rounded-[12px] border border-[#EAEAEA] bg-white shadow-sm transition-shadow hover:shadow-md"
+    >
+      <div class="relative flex h-[160px] w-full flex-shrink-0 items-center justify-center overflow-hidden bg-[#F5F5F5] lg:h-[180px]">
+        <img
+          [src]="product.imageUrl || 'assets/placeholder-product.png'"
+          [alt]="product.name"
+          class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
 
-    <!-- Wishlist Button -->
-    <button 
-      [class]="'absolute top-2 right-2 lg:top-3 lg:right-3 z-20 w-8 h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center transition-all shadow-sm border group ' + (isInWishlist() ? 'border-brand-orange-light text-brand-orange hover:bg-red-50 hover:text-red-600 hover:border-red-200' : 'border-neutral-100 text-neutral-400 hover:text-brand-orange hover:border-brand-orange-light')" 
-      (click)="toggleWishlist($event)">
-      <ng-icon name="lucideHeart" class="text-[16px] lg:text-[18px] transition-colors" [class.fill-current]="isInWishlist()"></ng-icon>
-    </button>
-    
-    <!-- Product Image -->
-    <img [src]="product.imageUrl || 'assets/placeholder-product.png'" [alt]="product.name" class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-  </div>
-
-  <!-- Product Details -->
-  <div class="flex flex-col flex-grow px-1">
-    <h4 class="text-[15px] font-semibold text-neutral-900 mb-1 line-clamp-2 group-hover:text-brand-orange transition-colors">
-      {{ product.name }}
-    </h4>
-    
-    <!-- Price Row -->
-    <div class="flex items-center gap-2 mb-3">
-      <span class="text-lg font-bold text-brand-orange">
-        {{ product.price | tenantCurrency:'symbol':'1.0-0' }}
-      </span>
-      <span *ngIf="product.originalPrice" class="text-sm font-medium text-neutral-400 line-through">
-        {{ product.originalPrice | tenantCurrency:'symbol':'1.0-0' }}
-      </span>
-    </div>
-
-    <!-- Footer Row: Rating -->
-    <div class="flex items-center mt-auto">
-      <div class="flex items-center gap-1.5">
-        <ng-icon name="lucideStar" class="text-[#FFC107] text-[16px]" fill="currentColor"></ng-icon>
-        <span class="text-sm font-bold text-neutral-900">{{ product.rating || '0.0' }}</span>
-        <span class="text-sm font-medium text-neutral-500">({{ product.reviewCount || 0 }})</span>
+        <button
+          type="button"
+          class="absolute right-0 top-0 z-20 flex h-[44px] w-[44px] items-center justify-center transition-colors"
+          [class]="isInWishlist() ? 'text-[#FF6A00]' : 'text-[#666666] hover:text-[#FF6A00]'"
+          (click)="toggleWishlist($event)"
+          aria-label="Toggle wishlist"
+        >
+          <ng-icon name="lucideHeart" class="text-[20px]" [class.fill-current]="isInWishlist()"></ng-icon>
+        </button>
       </div>
-    </div>
-  </div>
-</a>
+
+      <div class="flex flex-1 flex-col p-3">
+        <!-- 1. Name -->
+        <h4 class="line-clamp-2 text-[14px] font-bold leading-snug text-[#111111] transition-colors group-hover:text-[#FF6A00] lg:text-[18px] lg:font-semibold lg:leading-[26px]">
+          {{ product.name }}
+        </h4>
+
+        <!-- 2. Price -->
+        <p class="mt-1 text-[14px] font-bold text-[#111111]">
+          {{ product.price | tenantCurrency:'symbol':'1.0-2' }}
+        </p>
+
+        <!-- 3. Stars + review count -->
+        <div class="mt-1.5 flex items-center gap-1">
+          <app-star-rating [rating]="ratingValue()" [size]="12"></app-star-rating>
+          <span class="text-[12px] font-normal text-[#111111]">({{ reviewCount() }})</span>
+        </div>
+      </div>
+    </a>
+  }
+
+  <!-- ===================== LIST CARD ===================== -->
+  @if (layout() === 'list') {
+    <a
+      [routerLink]="['/product', product.slug]"
+      class="group flex overflow-hidden rounded-[12px] border border-[#EAEAEA] bg-white shadow-sm transition-shadow hover:shadow-md"
+    >
+      <div class="relative h-[120px] w-[120px] flex-shrink-0 overflow-hidden bg-[#F5F5F5]">
+        <img
+          [src]="product.imageUrl || 'assets/placeholder-product.png'"
+          [alt]="product.name"
+          class="h-full w-full object-cover"
+          loading="lazy"
+        />
+      </div>
+
+      <div class="relative flex min-w-0 flex-1 flex-col justify-center p-3">
+        <button
+          type="button"
+          class="absolute right-0 top-0 z-20 flex h-[44px] w-[44px] items-center justify-center transition-colors"
+          [class]="isInWishlist() ? 'text-[#FF6A00]' : 'text-[#666666] hover:text-[#FF6A00]'"
+          (click)="toggleWishlist($event)"
+          aria-label="Toggle wishlist"
+        >
+          <ng-icon name="lucideHeart" class="text-[20px]" [class.fill-current]="isInWishlist()"></ng-icon>
+        </button>
+
+        <h4 class="pr-8 line-clamp-2 text-[14px] font-bold leading-snug text-[#111111] transition-colors group-hover:text-[#FF6A00]">
+          {{ product.name }}
+        </h4>
+
+        <p class="mt-1 text-[14px] font-bold text-[#111111]">
+          {{ product.price | tenantCurrency:'symbol':'1.0-2' }}
+        </p>
+
+        <div class="mt-1.5 flex items-center gap-1">
+          <app-star-rating [rating]="ratingValue()" [size]="12"></app-star-rating>
+          <span class="text-[12px] font-normal text-[#111111]">({{ reviewCount() }})</span>
+        </div>
+      </div>
+    </a>
+  }
+}

@@ -149,7 +149,7 @@ import {
       </div>
 
       <!-- Actions -->
-      <div class="space-y-3 pt-4 border-t border-gray-100 mt-6">
+      <div class="sticky bottom-0 bg-white pt-4 pb-4 md:pb-6 z-10 -mx-6 px-6 -mb-6 space-y-3 border-t border-gray-100 mt-6">
         <button 
           type="button" 
           [disabled]="checkoutService.isLoading() || !selectedTime()"

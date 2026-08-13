@@ -1,16 +1,12 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideTrash2 } from '@ng-icons/lucide';
-import { QuantityStepperComponent } from '../../../../shared/components/quantity-stepper/quantity-stepper.component';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 
 @Component({
   selector: 'app-cart-item',
   standalone: true,
-  imports: [CommonModule, NgIconComponent, QuantityStepperComponent, TenantCurrencyPipe],
-  templateUrl: './cart-item.html',
-  viewProviders: [provideIcons({ lucideTrash2 })]
+  imports: [CommonModule, TenantCurrencyPipe],
+  templateUrl: './cart-item.html'
 })
 export class CartItem {
   item = input.required<any>();
@@ -24,7 +20,13 @@ export class CartItem {
     this.onRemove.emit(this.item());
   }
 
-  updateQuantity(quantity: number) {
-    this.onUpdateQuantity.emit({ itemId: this.item().id, quantity });
+  increment() {
+    this.onUpdateQuantity.emit({ itemId: this.item().id, quantity: this.item().quantity + 1 });
+  }
+
+  decrement() {
+    if (this.item().quantity > 1) {
+      this.onUpdateQuantity.emit({ itemId: this.item().id, quantity: this.item().quantity - 1 });
+    }
   }
 }

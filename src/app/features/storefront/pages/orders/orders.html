@@ -1,7 +1,11 @@
 <div class="w-full lg:pt-0 pb-20">
-  
-  <!-- Header Section -->
-  <app-page-header title="My Orders" [hideDesktopTitle]="true" [noPadding]="true" customClasses="!px-0 py-4 !border-b-0 lg:hidden"></app-page-header>
+  <!-- Title -->
+  <div class="lg:hidden pt-4 pb-2 flex items-center gap-2">
+    <button routerLink="/account" class="flex-shrink-0 p-1.5 -ml-1.5 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-[#111111]">
+      <ng-icon name="lucideArrowLeft" class="text-[24px]"></ng-icon>
+    </button>
+    <h1 class="text-[20px] font-bold text-[#111111] leading-none pt-0.5 truncate">My Orders</h1>
+  </div>
 
   <!-- Status Tabs Scrollable -->
   <div class="flex overflow-x-auto hide-scrollbar space-x-3 mb-4">

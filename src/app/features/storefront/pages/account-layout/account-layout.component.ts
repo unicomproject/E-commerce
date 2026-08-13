@@ -10,7 +10,7 @@ import { filter } from 'rxjs';
   standalone: true,
   imports: [CommonModule, RouterOutlet, AccountSidebarComponent, BreadcrumbsComponent],
   template: `
-    <div class="bg-gray-50 min-h-[80vh] pb-12 lg:pt-6">
+    <div class="bg-page-bg min-h-[80vh] pb-12 lg:pt-6">
       <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8">
         
         <!-- Breadcrumb placed above the sidebar and main content -->

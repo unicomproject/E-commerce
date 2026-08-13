@@ -1,11 +1,12 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, Router, RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CustomerLoginCustomerDto } from '../../../../core/models';
-import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { BreadcrumbsComponent } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
+import { MobileHeaderComponent } from '../../../../shared/components/mobile-header/mobile-header.component';
 import { 
   lucideUser, 
   lucideMail, 
@@ -21,7 +22,8 @@ import {
   lucideLogOut,
   lucideHeadphones,
   lucideStar,
-  lucideHeart
+  lucideHeart,
+  lucideArrowLeft
 } from '@ng-icons/lucide';
 
 interface QuickAction {
@@ -35,7 +37,7 @@ interface QuickAction {
 @Component({
   selector: 'app-account',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgIconComponent, PageHeaderComponent],
+  imports: [CommonModule, RouterLink, RouterModule, NgIconComponent, MobileHeaderComponent],
   templateUrl: './account.html',
   styleUrl: './account.css',
   viewProviders: [provideIcons({ 
@@ -53,7 +55,8 @@ interface QuickAction {
     lucideLogOut,
     lucideHeadphones,
     lucideStar,
-    lucideHeart
+    lucideHeart,
+    lucideArrowLeft
   })]
 })
 export class Account implements OnInit, OnDestroy {

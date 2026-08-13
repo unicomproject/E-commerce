@@ -1,3 +1,5 @@
+import { StorefrontProductOptionReadModel } from './product-detail.model';
+
 export interface StorefrontSearchRequest {
   searchText?: string;
   minPrice?: number;
@@ -48,4 +50,5 @@ export interface StorefrontProductListReadModel {
   reviewCount: number;
   isInStock: boolean;
   badge?: string;
+  options: StorefrontProductOptionReadModel[];
 }

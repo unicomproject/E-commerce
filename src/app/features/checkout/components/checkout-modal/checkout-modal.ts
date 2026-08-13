@@ -20,50 +20,53 @@ import { CheckoutSuccessComponent } from '../checkout-success/checkout-success';
         class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-gray-900/40 backdrop-blur-sm transition-opacity duration-200"
         (click)="close()">
         
-        <!-- Modal Container (Bottom Sheet on Mobile) -->
-        <div class="relative w-full h-[95dvh] md:h-auto md:max-h-[95vh] md:max-w-[550px] bg-white rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col animate-in slide-in-from-bottom duration-300 md:slide-in-from-bottom-0 md:zoom-in-95"
+        <!-- Modal Container (Full Screen) -->
+        <div class="relative w-full h-[100dvh] md:h-screen md:max-h-none md:max-w-none bg-white shadow-none flex flex-col animate-in slide-in-from-bottom duration-300 md:slide-in-from-bottom-0 md:zoom-in-95"
              (click)="onModalClick($event)">
           
-          <!-- Mobile Drag Handle -->
-          <div class="w-full flex justify-center pt-3 pb-1 md:hidden">
-            <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
-          </div>
-
           <!-- Header -->
-          <div class="flex items-center justify-between px-6 pt-4 pb-2 border-b border-gray-100">
-            <!-- Close Button -->
-            <button (click)="close()" class="p-2 -ml-2 text-gray-500 hover:text-gray-900 rounded-full transition-colors">
-              <ng-icon name="lucideX" size="24"></ng-icon>
-            </button>
-            
-            <h2 class="text-xl font-bold text-gray-900">Checkout</h2>
-            
-            <!-- Secure Icon -->
-            <div class="flex items-center text-gray-500 text-sm font-medium">
-              <ng-icon name="lucideLock" size="16" class="mr-1"></ng-icon>
-              Secure
+          <div class="w-full border-b border-gray-100 flex justify-center">
+            <div class="w-full max-w-[550px] flex items-center justify-between px-6 pt-4 pb-2">
+              <!-- Close Button -->
+              <button (click)="close()" class="p-2 -ml-2 text-gray-500 hover:text-gray-900 rounded-full transition-colors">
+                <ng-icon name="lucideX" size="24"></ng-icon>
+              </button>
+              
+              <h2 class="text-xl font-bold text-gray-900">Checkout</h2>
+              
+              <!-- Secure Icon -->
+              <div class="flex items-center text-gray-500 text-sm font-medium">
+                <ng-icon name="lucideLock" size="16" class="mr-1"></ng-icon>
+                Secure
+              </div>
             </div>
           </div>
 
           <!-- Scrollable Content Views -->
-          <div class="w-full flex-1 overflow-y-auto p-6 pb-safe">
-            <app-checkout-stepper [currentStep]="checkoutService.currentStep()"></app-checkout-stepper>
-            
-            <!-- Dynamic Steps -->
-            @switch (checkoutService.currentStep()) {
-              @case (1) {
-                <app-checkout-details></app-checkout-details>
+          <div class="w-full flex-1 overflow-y-auto pb-safe flex justify-center">
+            <div class="w-full max-w-[550px] p-6">
+              
+              <!-- Sticky Stepper -->
+              <div class="sticky top-0 bg-white z-10 -mx-6 px-6 pt-6 pb-4 -mt-6">
+                <app-checkout-stepper [currentStep]="checkoutService.currentStep()"></app-checkout-stepper>
+              </div>
+              
+              <!-- Dynamic Steps -->
+              @switch (checkoutService.currentStep()) {
+                @case (1) {
+                  <app-checkout-details></app-checkout-details>
+                }
+                @case (2) {
+                  <app-checkout-collection></app-checkout-collection>
+                }
+                @case (3) {
+                  <app-checkout-review></app-checkout-review>
+                }
+                @case (4) {
+                  <app-checkout-success></app-checkout-success>
+                }
               }
-              @case (2) {
-                <app-checkout-collection></app-checkout-collection>
-              }
-              @case (3) {
-                <app-checkout-review></app-checkout-review>
-              }
-              @case (4) {
-                <app-checkout-success></app-checkout-success>
-              }
-            }
+            </div>
           </div>
 
         </div>

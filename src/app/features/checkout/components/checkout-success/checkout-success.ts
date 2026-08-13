@@ -121,7 +121,7 @@ import { CheckoutService } from '../../../../core/services/checkout.service';
       </div>
 
       <!-- Actions -->
-      <div class="w-full space-y-3">
+      <div class="sticky bottom-0 bg-white pt-4 pb-4 md:pb-6 z-10 -mx-6 px-6 -mb-6 w-full space-y-3 border-t border-gray-100 mt-2">
         <button 
           type="button" 
           (click)="viewOrder()"

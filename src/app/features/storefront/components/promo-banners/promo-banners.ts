@@ -1,42 +1,55 @@
 import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideShoppingBag, lucideTruck, lucideArrowRight } from '@ng-icons/lucide';
+import { lucideArrowRight } from '@ng-icons/lucide';
 import { Banner } from '../../../../core/models';
 
 @Component({
   selector: 'app-promo-banners',
   standalone: true,
   imports: [CommonModule, NgIcon],
-  viewProviders: [provideIcons({ lucideShoppingBag, lucideTruck, lucideArrowRight })],
+  viewProviders: [provideIcons({ lucideArrowRight })],
   template: `
-    <div class="px-4 py-4 w-full mx-auto" *ngIf="banners().length > 0">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-        
-        <a *ngFor="let banner of banners().slice(0, 2)" [href]="banner.linkUrl || '#'" class="bg-brand-orange-light rounded-2xl p-5 md:p-6 lg:p-8 flex flex-row items-center justify-between gap-4 md:gap-6 group cursor-pointer border border-transparent hover:border-brand-orange/20 transition-all hover:shadow-md">
-          <div class="flex-1 z-10 relative">
-            <div *ngIf="banner.subtitle" class="flex items-center gap-1.5 lg:gap-2 text-brand-orange font-bold text-[10px] md:text-xs lg:text-sm tracking-wider uppercase mb-2">
-              <ng-icon *ngIf="banner.subtitle.toLowerCase().includes('delivery')" name="lucideTruck"></ng-icon>
-              <ng-icon *ngIf="!banner.subtitle.toLowerCase().includes('delivery')" name="lucideShoppingBag"></ng-icon>
+    <div class="w-full min-w-0" *ngIf="banners().length > 0">
+      <div class="grid w-full min-w-0 grid-cols-2 gap-2 sm:gap-4 lg:gap-6">
+        <a
+          *ngFor="let banner of banners().slice(0, 2)"
+          [href]="banner.actionUrl || banner.linkUrl || '#'"
+          class="relative flex h-[130px] w-full min-w-0 flex-col overflow-hidden rounded-xl border border-transparent bg-brand-light-grey p-2 sm:p-4 shadow-sm transition-all hover:border-brand-orange/20 group md:h-[180px] md:p-6 lg:h-[190px] lg:p-5"
+        >
+          <div class="relative z-10 flex h-full w-[65%] min-w-0 flex-col lg:w-[60%]">
+            <div
+              *ngIf="banner.subtitle"
+              class="mb-1 flex items-center gap-1 text-[9px] font-bold uppercase text-brand-orange sm:text-[12px]"
+            >
               <span>{{ banner.subtitle }}</span>
             </div>
-            <h3 class="text-base md:text-xl lg:text-2xl lg:text-3xl font-extrabold text-brand-black leading-tight mb-1 lg:mb-2 lg:mb-4" [innerHTML]="banner.title">
-            </h3>
-            <p *ngIf="banner.description" class="text-neutral-500 text-xs md:text-sm mb-4 lg:mb-6">{{ banner.description }}</p>
-            <div class="mt-2 lg:mt-0 flex items-center gap-1.5 lg:gap-2 font-bold text-[10px] md:text-xs lg:text-sm lg:text-base text-brand-black group-hover:text-brand-orange transition-colors">
-              <span>{{ banner.buttonText || 'SHOP NOW' }}</span>
-              <ng-icon name="lucideArrowRight" class="group-hover:translate-x-1 transition-transform"></ng-icon>
+            <h3
+              class="mb-1 text-[11px] font-bold leading-tight text-brand-black text-pretty sm:text-[16px] md:mb-2 md:text-[22px] lg:text-[18px] lg:leading-[26px]"
+              [innerHTML]="formatTitle(banner.title)"
+            ></h3>
+            <p *ngIf="banner.description" class="mb-1 line-clamp-2 text-[9px] text-brand-gray sm:text-[12px] md:text-[14px] lg:text-[12px] lg:leading-4">
+              {{ banner.description }}
+            </p>
+            <div class="mt-auto flex items-center gap-1 text-[9px] font-bold text-brand-black transition-colors group-hover:text-brand-orange sm:text-[14px]">
+              <span>{{ banner.actionText || banner.buttonText || 'SHOP NOW' }}</span>
+              <span class="flex items-center text-brand-orange">
+                <ng-icon name="lucideArrowRight" class="transition-transform group-hover:translate-x-1" size="12"></ng-icon>
+              </span>
             </div>
           </div>
-          <div class="relative w-24 h-24 md:w-32 md:h-32 lg:w-48 lg:h-48 flex-shrink-0 transition-transform transform group-hover:scale-105 duration-300 rounded-xl overflow-hidden shadow-sm border border-black/5">
-            <img [src]="banner.imageUrl" [alt]="banner.title" class="w-full h-full object-cover group-hover:opacity-100" />
+          <div class="absolute bottom-0 right-0 z-0 h-24 w-24 shrink-0 transition-transform duration-300 group-hover:scale-105 sm:bottom-4 sm:right-4 sm:h-28 sm:w-28 md:h-36 md:w-36 lg:bottom-3 lg:right-3 lg:h-24 lg:w-24 mix-blend-multiply">
+            <img [src]="banner.imageUrl" [alt]="banner.title" class="h-full w-full object-contain" />
           </div>
         </a>
-
       </div>
     </div>
   `
 })
 export class PromoBanners {
   readonly banners = input<Banner[]>([]);
+
+  formatTitle(title: string): string {
+    return title ? title.replace(/<br\s*\/?>/gi, ' ') : '';
+  }
 }

@@ -3,6 +3,7 @@ export interface CreateStorefrontCheckoutFromCartRequest {
   pickupContactName?: string;
   pickupContactPhone?: string;
   pickupContactEmail?: string;
+  requestedCollectionAt?: string;
 }
 
 export interface UpdateStorefrontCheckoutCollectionRequest {

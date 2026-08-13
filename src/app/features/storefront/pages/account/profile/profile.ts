@@ -1,3 +1,4 @@
+import { MobileHeaderComponent } from '../../../../../shared/components/mobile-header/mobile-header.component';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -13,7 +14,7 @@ import { PhoneInputComponent } from '../../../../../shared/components/phone-inpu
 @Component({
   selector: 'app-personal-information',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, PageHeaderComponent, PhoneInputComponent],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, PhoneInputComponent, MobileHeaderComponent],
   templateUrl: './profile.html',
   viewProviders: [provideIcons({ 
     lucideUser, 

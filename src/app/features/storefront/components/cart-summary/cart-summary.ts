@@ -1,9 +1,10 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideArrowRight } from '@ng-icons/lucide';
+import { StorefrontCartReadModel } from '../../../../core/models/cart.model';
 
 @Component({
   selector: 'app-cart-summary',
@@ -15,35 +16,35 @@ import { lucideArrowRight } from '@ng-icons/lucide';
       
       <h2 class="text-xl font-bold text-gray-900 mb-6 hidden lg:block">Order Summary</h2>
 
-      <div class="flex justify-between items-center mb-4">
-        <div class="text-gray-600 text-sm font-medium">Subtotal ({{ selectedCount() }} items)</div>
-        <div class="text-gray-900 font-bold text-sm">{{cart().subtotal | tenantCurrency:'symbol':'1.2-2'}}</div>
-      </div>
-
-      @if (cart().discountTotal > 0) {
+      @if (selectedDiscountTotal() > 0) {
         <div class="flex justify-between items-center mb-6 bg-[#DCFCE7]/50 -mx-2 px-2 py-1.5 rounded">
           <div class="flex items-center gap-2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
             <span class="text-[#22C55E] text-sm font-bold">You saved</span>
           </div>
-          <div class="text-[#22C55E] font-bold text-sm">- {{cart().discountTotal | tenantCurrency:'symbol':'1.2-2'}}</div>
+          <div class="text-[#22C55E] font-bold text-sm">- {{ selectedDiscountTotal() | tenantCurrency:'symbol':'1.2-2' }}</div>
         </div>
-      } @else {
-        <div class="mb-6"></div>
       }
 
-      <div class="border-t border-gray-100 pt-4 pb-6">
+      <div class="pb-6">
         <div class="flex justify-between items-start">
           <div>
             <div class="text-lg font-bold text-gray-900">Total</div>
+            @if (selectedCount() > 0) {
+              <div class="text-xs text-gray-500 mt-0.5">{{ selectedCount() }} item{{ selectedCount() === 1 ? '' : 's' }} selected</div>
+            }
           </div>
-          <div class="text-xl font-bold text-brand-orange">{{cart().grandTotal | tenantCurrency:'symbol':'1.2-2'}}</div>
+          <div class="text-xl font-bold text-brand-orange">{{ selectedTotal() | tenantCurrency:'symbol':'1.2-2' }}</div>
         </div>
       </div>
       
       <div class="flex flex-col gap-3">
-        <button (click)="onCheckout.emit()" [disabled]="selectedCount() === 0" class="w-full py-3.5 bg-brand-orange text-white font-bold rounded-lg shadow-sm transition-colors flex items-center justify-between px-6 text-[15px] hover:bg-brand-orange-dark disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-orange">
-          <span>Proceed to Checkout</span>
+        <button
+          (click)="onCheckout.emit()"
+          [disabled]="selectedCount() === 0 || isStarting()"
+          class="w-full py-3.5 bg-brand-orange text-white font-bold rounded-lg shadow-sm transition-colors flex items-center justify-between px-6 text-[15px] hover:bg-brand-orange-dark disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-orange"
+        >
+          <span>{{ isStarting() ? 'Preparing checkout...' : 'Proceed to Checkout' }}</span>
           <ng-icon name="lucideArrowRight" size="18"></ng-icon>
         </button>
         <a routerLink="/search" class="w-full py-3.5 bg-white text-brand-orange border border-brand-orange/30 font-bold rounded-lg hover:bg-brand-orange/5 transition-colors flex items-center justify-center text-center text-[15px]">
@@ -54,7 +55,22 @@ import { lucideArrowRight } from '@ng-icons/lucide';
   `
 })
 export class CartSummary {
-  cart = input.required<any>();
+  cart = input.required<StorefrontCartReadModel>();
+  selectedItemIds = input<ReadonlySet<string>>(new Set());
   selectedCount = input<number>(0);
+  isStarting = input<boolean>(false);
   onCheckout = output<void>();
+
+  private selectedItems = computed(() => {
+    const ids = this.selectedItemIds();
+    return (this.cart()?.items ?? []).filter(item => ids.has(item.id));
+  });
+
+  readonly selectedTotal = computed(() =>
+    this.selectedItems().reduce((sum, item) => sum + (item.lineTotal ?? 0), 0)
+  );
+
+  readonly selectedDiscountTotal = computed(() =>
+    this.selectedItems().reduce((sum, item) => sum + (item.discountTotal ?? 0), 0)
+  );
 }

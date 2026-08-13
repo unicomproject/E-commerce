@@ -10,11 +10,11 @@ import { BreadcrumbsComponent, BreadcrumbItem } from '../breadcrumbs/breadcrumbs
   imports: [CommonModule, NgIconComponent, BreadcrumbsComponent],
   viewProviders: [provideIcons({ lucideArrowLeft })],
   template: `
-    <div class="sticky z-40 bg-page-bg w-full max-w-[1600px] mx-auto flex items-center gap-3 transition-all duration-300" 
+    <div class="sticky z-40 bg-page-bg w-full max-w-[1600px] mx-auto flex items-center gap-2 transition-all duration-300" 
          [style.top.px]="isNavbarHidden() ? 0 : 80"
          [ngClass]="noPadding() ? customClasses() : 'px-4 lg:px-8 py-4 ' + customClasses()">
-      <button *ngIf="showBack()" (click)="onBack()" class="flex-shrink-0 w-10 h-10 flex lg:hidden items-center justify-center bg-white rounded-2xl shadow-sm text-brand-navy hover:bg-neutral-50 border border-neutral-100 transition-colors">
-        <ng-icon name="lucideArrowLeft" size="22" strokeWidth="1.5"></ng-icon>
+      <button *ngIf="showBack()" (click)="onBack()" class="flex-shrink-0 p-1.5 -ml-1.5 flex lg:hidden items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-[#111111]">
+        <ng-icon name="lucideArrowLeft" class="text-[24px]"></ng-icon>
       </button>
       <div class="flex-grow flex flex-col justify-center">
         <div class="hidden lg:block mb-1" *ngIf="breadcrumbs()">

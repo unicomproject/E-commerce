@@ -1,9 +1,7 @@
 <div class="w-full pb-10 pt-4 lg:pt-0">
     
     <!-- Header (Mobile Only) -->
-    <div class="mb-6 lg:mb-0 lg:hidden">
-      <app-page-header [title]="isEditMode() ? 'Edit Review' : 'Write a Review'" [hideDesktopTitle]="true" [noPadding]="true" customClasses="!px-0 py-4 !border-b-0" (back)="goBack()"></app-page-header>
-    </div>
+        <app-mobile-header title="{{ isEditMode() ? 'Edit Review' : 'Write a Review' }}" (back)="goBack()"></app-mobile-header>
 
     <!-- Loading State -->
     <div *ngIf="isLoadingProduct()" class="py-12 flex justify-center">

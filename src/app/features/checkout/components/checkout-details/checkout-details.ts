@@ -88,7 +88,7 @@ import { PhoneInputComponent } from '../../../../shared/components/phone-input/p
         </div>
 
         <!-- Actions -->
-        <div class="space-y-2 pt-2">
+        <div class="sticky bottom-0 bg-white pt-4 pb-4 md:pb-6 z-10 -mx-6 px-6 -mb-6 space-y-2 border-t border-gray-100">
           <button 
             type="submit" 
             [disabled]="checkoutService.isLoading()"
@@ -96,14 +96,6 @@ import { PhoneInputComponent } from '../../../../shared/components/phone-input/p
           >
             <span *ngIf="checkoutService.isLoading()" class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></span>
             Continue to Collection Outlet
-          </button>
-          
-          <button 
-            type="button" 
-            (click)="checkoutService.closeCheckout()"
-            class="w-full py-3 bg-white text-brand-orange border-2 border-orange-100 font-bold text-lg rounded-xl hover:bg-orange-50 transition-colors"
-          >
-            Back to Cart
           </button>
         </div>
 

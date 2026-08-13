@@ -1,23 +1,29 @@
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
 import { Product } from '../../../../core/models/product.model';
 
 @Component({
   selector: 'app-product-grid',
-  imports: [CommonModule, ProductCardComponent],
+  imports: [CommonModule, ProductCardComponent, RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="px-4 pt-4 pb-8 w-full mx-auto">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl lg:text-2xl font-bold tracking-tight text-brand-black">{{ title() }}</h3>
-        <button class="text-brand-orange text-sm font-bold tracking-wide uppercase hover:text-brand-orange-dark transition-colors">
-          View All
-        </button>
+    <div class="flex w-full min-w-0 flex-col pb-4 lg:pb-0">
+      <div class="mb-4 mt-6 flex shrink-0 items-center justify-between gap-3 lg:mt-0 lg:mb-4">
+        <h3 class="min-w-0 text-[18px] font-bold tracking-tight text-[#111111] lg:text-[24px] lg:leading-8">{{ title() }}</h3>
+        <a routerLink="/search" class="shrink-0 text-[14px] font-bold text-[#FF6A00] hover:underline">
+          <span class="lg:hidden">View all</span>
+          <span class="hidden lg:inline">View all products →</span>
+        </a>
       </div>
-      
-      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 lg:gap-4">
-        <app-product-card *ngFor="let product of products()" [product]="product"></app-product-card>
+
+      <div class="grid w-full min-w-0 grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
+        <app-product-card
+          *ngFor="let product of products()"
+          [product]="product"
+          class="min-w-0"
+        ></app-product-card>
       </div>
     </div>
   `

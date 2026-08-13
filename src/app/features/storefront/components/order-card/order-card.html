@@ -18,7 +18,7 @@
     <div class="flex items-center gap-2">
       @for (url of displayThumbnails(); track url) {
         <div class="w-[72px] h-[72px] rounded-xl bg-neutral-50 border border-neutral-100 overflow-hidden flex items-center justify-center">
-          <img [src]="url" alt="Product thumbnail" class="w-full h-full object-contain mix-blend-multiply p-1">
+          <img [src]="url" alt="Product thumbnail" class="w-full h-full object-cover">
         </div>
       }
       @if (remainingThumbnailsCount() > 0) {

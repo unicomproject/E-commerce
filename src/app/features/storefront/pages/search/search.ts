@@ -1,29 +1,32 @@
-import { Component, OnInit, inject, signal, DestroyRef } from '@angular/core';
+import { Component, OnInit, inject, signal, DestroyRef, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideHeart, lucideMapPin, lucideShoppingCart, lucideSlidersHorizontal, lucideCheckCircle2, lucideSearch, lucideX, lucideArrowLeft } from '@ng-icons/lucide';
+import { lucideHeart, lucideMapPin, lucideShoppingCart, lucideSlidersHorizontal, lucideCheckCircle2, lucideSearch, lucideX, lucideArrowLeft, lucideLayoutGrid, lucideList, lucideLoader2 } from '@ng-icons/lucide';
 import { StorefrontDataService } from '../../services/storefront-data.service';
 import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 import { StorefrontSearchMatchReadModel, StorefrontProductListReadModel } from '../../../../core/models';
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
-import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { BreadcrumbsComponent } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
+import { FilterSortButtonComponent } from '../../../../shared/components/filter-sort-button/filter-sort-button.component';
 import { SearchBarComponent } from '../../../../layout/header/search-bar/search-bar';
 import { DEMO_SNEAKER } from '../../../../core/mocks/demo-product.mock';
+import { CategoryBottomSheetComponent } from '../../components/category-bottom-sheet/category-bottom-sheet';
+import { MobileHeaderComponent } from '../../../../shared/components/mobile-header/mobile-header.component';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent, ProductCardComponent, PageHeaderComponent, SearchBarComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NgIconComponent, SearchBarComponent, ProductCardComponent, FilterSortButtonComponent, BreadcrumbsComponent, MobileHeaderComponent],
   templateUrl: './search.html',
   styleUrl: './search.css',
-  viewProviders: [provideIcons({ lucideHeart, lucideMapPin, lucideShoppingCart, lucideSlidersHorizontal, lucideCheckCircle2, lucideSearch, lucideX, lucideArrowLeft })]
+  viewProviders: [provideIcons({ lucideHeart, lucideMapPin, lucideShoppingCart, lucideSlidersHorizontal, lucideCheckCircle2, lucideSearch, lucideX, lucideArrowLeft, lucideLayoutGrid, lucideList, lucideLoader2 })]
 })
-export class Search implements OnInit {
+export class Search implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private dataService = inject(StorefrontDataService);
   private router = inject(Router);
@@ -44,6 +47,27 @@ export class Search implements OnInit {
   totalCount = signal(0);
   
   breadcrumbItems = signal<BreadcrumbItem[]>([]);
+  layout = signal<'grid' | 'list'>('grid');
+
+  page = signal(1);
+  pageSize = signal(12);
+  hasMore = signal(true);
+  loadingMore = signal(false);
+
+  @ViewChild('scrollSentinel') scrollSentinel!: ElementRef;
+  private observer: IntersectionObserver | null = null;
+
+  setLayout(mode: 'grid' | 'list') {
+    this.layout.set(mode);
+  }
+
+  toggleLayout() {
+    this.layout.update(l => l === 'grid' ? 'list' : 'grid');
+  }
+
+  goBack() {
+    history.back();
+  }
 
   ngOnInit() {
     this.searchSubject.pipe(
@@ -59,6 +83,7 @@ export class Search implements OnInit {
       this.searchInput.set(this.query());
       this.categorySlug.set(params['category'] || '');
       this.categoryId.set(params['categoryId'] || '');
+      this.page.set(1);
       
       if (this.categorySlug() && !this.categoryId()) {
         this.loading.set(true);
@@ -84,9 +109,53 @@ export class Search implements OnInit {
     });
   }
 
+  ngAfterViewInit() {
+    this.setupIntersectionObserver();
+  }
+
+  ngOnDestroy() {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+  }
+
+  private setupIntersectionObserver() {
+    const options = {
+      root: null,
+      rootMargin: '100px',
+      threshold: 0.1
+    };
+
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !this.loading() && !this.loadingMore() && this.hasMore()) {
+          this.loadMore();
+        }
+      });
+    }, options);
+
+    if (this.scrollSentinel) {
+      this.observer.observe(this.scrollSentinel.nativeElement);
+    }
+  }
+
+  loadMore() {
+    if (!this.hasMore() || this.loadingMore()) return;
+    this.page.update(p => p + 1);
+    this.performSearch();
+  }
+
   performSearch() {
-    this.loading.set(true);
-    const request: any = {};
+    if (this.page() === 1) {
+      this.loading.set(true);
+    } else {
+      this.loadingMore.set(true);
+    }
+    
+    const request: any = {
+      page: this.page(),
+      pageSize: this.pageSize()
+    };
     if (this.query()) request.searchText = this.query();
     if (this.categoryId()) request.categoryId = this.categoryId();
 
@@ -97,16 +166,27 @@ export class Search implements OnInit {
             ...DEMO_SNEAKER,
             imageUrl: DEMO_SNEAKER.images[0]?.url || ''
           };
-          this.products.set([mockListItem, ...(res.products?.items || [])]);
+          
+          const newProducts = res.products?.items || [];
+          if (this.page() === 1) {
+             this.products.set([mockListItem, ...newProducts]);
+          } else {
+             this.products.update(p => [...p, ...newProducts]);
+          }
+          
           this.categories.set(res.categories || []);
           this.collections.set(res.collections || []);
           this.totalCount.set(res.totalCount || 0);
+          this.hasMore.set(res.products?.hasNextPage ?? false);
+          
           this.loading.set(false);
+          this.loadingMore.set(false);
         }, 600);
       },
       error: (err) => {
         console.error('Search error', err);
         this.loading.set(false);
+        this.loadingMore.set(false);
       }
     });
   }

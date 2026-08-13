@@ -8,13 +8,13 @@ import { QRCodeComponent } from 'angularx-qrcode';
 import { OrderItem } from '../../components/order-item/order-item';
 import { OrderTimeline } from '../../components/order-timeline/order-timeline';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
-import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+
 import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-order-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgIconComponent, QRCodeComponent, OrderItem, OrderTimeline, TenantCurrencyPipe, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, NgIconComponent, QRCodeComponent, OrderItem, OrderTimeline, TenantCurrencyPipe],
   viewProviders: [provideIcons({ lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCopy, lucideDownload, lucideHelpCircle, lucideTruck, lucideCalendar, lucideMapPin, lucideCreditCard, lucideFileText, lucideChevronDown, lucideChevronUp, lucideArrowLeft, lucideChevronRight })],
   templateUrl: './order-details.html',
   styleUrl: './order-details.css',

@@ -23,6 +23,7 @@ export class CheckoutService {
 
   // State
   isOpen = signal<boolean>(false);
+  isFastTracked = signal<boolean>(false);
   currentStep = signal<1 | 2 | 3 | 4>(1);
   sessionId = signal<string | null>(null);
   checkoutSession = signal<StorefrontCheckoutReadModel | null>(null);
@@ -39,12 +40,14 @@ export class CheckoutService {
 
   openCheckout() {
     this.isOpen.set(true);
+    this.isFastTracked.set(false);
     this.currentStep.set(1);
     this.error.set(null);
   }
 
   closeCheckout() {
     this.isOpen.set(false);
+    this.isFastTracked.set(false);
   }
 
   setStep(step: 1 | 2 | 3 | 4) {
@@ -53,24 +56,29 @@ export class CheckoutService {
   }
 
   // API Calls
-  createFromCart(request: CreateStorefrontCheckoutFromCartRequest, cartSessionId?: string): Observable<{ success: boolean, data?: StorefrontCheckoutReadModel, message?: string }> {
+  createFromCart(
+    request: CreateStorefrontCheckoutFromCartRequest,
+    cartSessionId?: string,
+    options?: { nextStep?: 1 | 2 | 3 | 4 }
+  ): Observable<{ success: boolean, data?: StorefrontCheckoutReadModel, message?: string }> {
     this.isLoading.set(true);
     this.error.set(null);
-    const options = cartSessionId
+    const nextStep = options?.nextStep ?? 2;
+    const httpOptions = cartSessionId
       ? { headers: { 'X-Cart-Session-Id': cartSessionId } }
       : undefined;
 
     return this.http.post<{ success: boolean, data: StorefrontCheckoutReadModel, message: string }>(
       `${this.baseUrl}/checkout/from-cart`, 
       request,
-      options
+      httpOptions
     ).pipe(
       tap(res => {
         this.isLoading.set(false);
         if (res.success && res.data) {
           this.sessionId.set(res.data.id);
           this.checkoutSession.set(res.data);
-          this.setStep(2);
+          this.setStep(nextStep);
         }
       }),
       catchError(err => {
@@ -79,6 +87,14 @@ export class CheckoutService {
         return of({ success: false, message: err.error?.message || 'Failed to start checkout' });
       })
     );
+  }
+
+  /** Open checkout directly on Order Review (fast-track UI). */
+  openReviewCheckout() {
+    this.isFastTracked.set(true);
+    this.currentStep.set(3);
+    this.isOpen.set(true);
+    this.error.set(null);
   }
 
   getSession(id: string): Observable<{ success: boolean, data?: StorefrontCheckoutReadModel }> {

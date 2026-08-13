@@ -10,11 +10,12 @@ import { Banner } from '../../../../core/models';
   imports: [CommonModule, NgIcon],
   viewProviders: [provideIcons({ lucideChevronLeft, lucideChevronRight })],
   template: `
-    <div class="px-4 py-6 w-full mx-auto" *ngIf="banners().length > 0 && activeBanner() as banner">
-      <div class="relative bg-brand-black rounded-2xl overflow-hidden shadow-2xl aspect-[4/3] md:aspect-[16/9] lg:aspect-[24/9] flex items-center group cursor-pointer">
+    <div class="mb-5 w-full min-w-0 px-0 lg:mb-0" *ngIf="banners().length > 0 && activeBanner() as banner">
+      <div class="relative flex h-[180px] w-full min-w-0 items-center overflow-hidden rounded-2xl bg-brand-dark-grey shadow-sm group cursor-pointer md:h-[320px] lg:h-[300px]">
         <!-- Background Image -->
-        <div class="absolute inset-0 w-full h-full opacity-60 mix-blend-screen bg-right bg-no-repeat bg-cover lg:bg-contain" [style.background-image]="'url(' + banner.imageUrl + ')'"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-brand-black via-brand-black/90 to-transparent"></div>
+        <div class="absolute inset-0 w-full h-full bg-center bg-no-repeat bg-cover" [style.background-image]="'url(' + banner.imageUrl + ')'"></div>
+        <!-- Subtle Gradient to protect text -->
+        <div class="absolute inset-0 bg-gradient-to-r from-brand-dark-grey via-brand-dark-grey/70 to-transparent pointer-events-none"></div>
 
         <!-- Desktop Navigation Arrows -->
         <button (click)="prev()" class="hidden lg:flex absolute left-4 z-20 w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all transform -translate-x-4 group-hover:translate-x-0">
@@ -25,23 +26,23 @@ import { Banner } from '../../../../core/models';
         </button>
 
         <!-- Content -->
-        <div class="relative z-10 px-6 lg:px-12 lg:px-20 max-w-lg lg:max-w-2xl">
-          <p *ngIf="banner.subtitle" class="text-brand-orange text-xs lg:text-sm lg:text-base font-bold tracking-widest uppercase mb-2 lg:mb-4">{{ banner.subtitle }}</p>
-          <h2 class="text-white text-3xl lg:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 lg:mb-6 tracking-tight" [innerHTML]="banner.title">
+        <div class="relative z-10 px-4 md:px-8 lg:px-12 max-w-[70%] lg:max-w-[50%]" *ngIf="banner.title || banner.subtitle || banner.description || banner.actionText || banner.buttonText">
+          <p *ngIf="banner.subtitle" class="text-brand-orange text-[12px] font-medium tracking-widest uppercase mb-1">{{ banner.subtitle }}</p>
+          <h2 *ngIf="banner.title" class="text-white text-[24px] md:text-[32px] lg:text-[48px] lg:leading-[56px] font-extrabold leading-tight mb-1" [innerHTML]="banner.title">
           </h2>
-          <p *ngIf="banner.description" class="text-neutral-300 text-sm lg:text-base lg:text-lg mb-8 max-w-xs lg:max-w-md">
+          <p *ngIf="banner.description" class="text-[#CCCCCC] text-[14px] lg:text-[14px] lg:leading-5 font-normal mb-4 line-clamp-2">
             {{ banner.description }}
           </p>
-          <a [href]="banner.linkUrl || '#'" class="inline-block bg-brand-orange hover:bg-brand-orange-dark text-white font-bold py-3 px-8 lg:py-4 lg:px-10 lg:text-lg rounded-lg transition-transform transform active:scale-95 shadow-lg shadow-brand-orange/30">
-            {{ banner.buttonText || 'SHOP NOW' }}
+          <a *ngIf="banner.actionText || banner.buttonText" [href]="banner.actionUrl || banner.linkUrl || '#'" class="inline-block bg-brand-orange hover:bg-brand-orange-dark text-white font-bold py-2 px-6 lg:py-2.5 lg:px-6 text-[14px] rounded-lg transition-transform transform active:scale-95 shadow-sm">
+            {{ banner.actionText || banner.buttonText }}
           </a>
         </div>
 
         <!-- Pagination Dots -->
-        <div class="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2">
+        <div class="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-[6px]">
           <button *ngFor="let item of banners(); let i = index" 
                   (click)="setSlide(i)"
-                  [ngClass]="i === activeIndex() ? 'w-2.5 h-2.5 lg:w-3 lg:h-3 bg-brand-orange scale-110' : 'w-2 h-2 lg:w-2.5 lg:h-2.5 bg-neutral-500 hover:bg-neutral-400'"
+                  [ngClass]="i === activeIndex() ? 'w-2 h-2 bg-brand-orange' : 'w-2 h-2 bg-neutral-500 hover:bg-neutral-400'"
                   class="rounded-full transition-all"></button>
         </div>
       </div>

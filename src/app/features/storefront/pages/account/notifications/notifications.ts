@@ -1,3 +1,4 @@
+import { MobileHeaderComponent } from '../../../../../shared/components/mobile-header/mobile-header.component';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
@@ -10,7 +11,7 @@ import { PageHeaderComponent } from '../../../../../shared/components/page-heade
 @Component({
   selector: 'app-account-notifications',
   standalone: true,
-  imports: [CommonModule, NgIconComponent, PageHeaderComponent],
+  imports: [CommonModule, NgIconComponent, MobileHeaderComponent],
   viewProviders: [provideIcons({ lucideBell, lucideCheckCheck, lucideChevronRight, lucideInbox, lucidePackage, lucideRefreshCw })],
   templateUrl: './notifications.html',
   host: { class: 'block w-full min-h-screen bg-page-bg pb-20' }

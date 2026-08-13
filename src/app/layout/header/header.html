@@ -1,15 +1,23 @@
-<header [class.-translate-y-full]="isNavbarHidden" class="backdrop-blur-md bg-white/70 border-b border-gray-200/50 shadow-sm transition-all duration-300">
+<header [class.-translate-y-full]="isNavbarHidden" class="bg-white border-b border-gray-200/50 shadow-sm transition-all duration-300">
+
   <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-20 gap-4 lg:gap-8">
+    <div class="flex justify-between items-center h-14 gap-4 lg:gap-8">
       
-      <!-- Left Side: Logo, Nav, Search -->
+      <!-- Left Side: Menu & Logo, Nav, Search -->
       <div class="flex items-center gap-4 lg:gap-8 flex-1">
         
         <!-- Mobile Menu & Logo -->
-        <div class="flex-shrink-0 flex items-center cursor-pointer gap-2 lg:gap-4">
+        <div class="flex-shrink-0 flex items-center cursor-pointer gap-3 lg:gap-4">
+          <!-- Mobile Hamburger (hidden on desktop) -->
+          <button class="lg:hidden p-1 text-brand-black hover:text-brand-orange">
+            <ng-icon name="lucideMenu" size="24"></ng-icon>
+          </button>
+          
           <!-- Logo -->
-          <div class="text-2xl lg:text-3xl font-extrabold tracking-tighter bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hover:scale-105 transition-transform">
-            Unified<span class="text-neutral-900">Commerce</span>
+          <div class="flex items-center gap-2">
+            <div class="text-[18px] lg:text-[24px] leading-tight font-extrabold tracking-tighter text-brand-black hover:scale-105 transition-transform uppercase">
+              ARENA<br/><span class="text-brand-black">STORE</span>
+            </div>
           </div>
         </div>
         
@@ -41,26 +49,22 @@
       <div class="flex items-center space-x-2 lg:space-x-4 flex-shrink-0">
         
         <!-- Notification (Mobile and Desktop) -->
-        <button (click)="openNotifications()" class="relative p-1 lg:p-2.5 text-neutral-600 hover:text-brand-orange focus:text-brand-orange active:text-brand-orange transition-all duration-300 hover:bg-brand-orange-light/50 focus:bg-brand-orange-light/50 active:bg-brand-orange-light/50 rounded-full group">
-          <ng-icon name="lucideBell" class="text-[20px] lg:text-[22px] transition-transform group-hover:scale-110" strokeWidth="1.5"></ng-icon>
+        <button (click)="openNotifications()" class="relative p-1 lg:p-2.5 text-brand-black hover:text-brand-orange focus:text-brand-orange active:text-brand-orange transition-all duration-300 rounded-full group">
+          <ng-icon name="lucideBell" class="text-[24px] transition-transform group-hover:scale-110" strokeWidth="1.5"></ng-icon>
           @if (notificationService.unreadCount() > 0) {
-            <span class="absolute top-0 right-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-orange px-1 text-[10px] font-bold text-white shadow-sm ring-1 ring-white lg:top-1 lg:right-1">
+            <span class="absolute top-0 right-0 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand-orange px-1 text-[10px] font-bold text-white shadow-sm ring-1 ring-white lg:top-1 lg:right-1">
               {{ notificationService.unreadCount() > 99 ? '99+' : notificationService.unreadCount() }}
             </span>
           }
         </button>
 
 
-        <!-- Orders (Mobile and Desktop) -->
-        <button (click)="openRecentOrders()" class="relative p-1 lg:p-2.5 text-neutral-600 hover:text-brand-orange focus:text-brand-orange active:text-brand-orange transition-all duration-300 hover:bg-brand-orange-light/50 focus:bg-brand-orange-light/50 active:bg-brand-orange-light/50 rounded-full group block">
-          <ng-icon name="lucideClock" class="text-[20px] lg:text-[22px] transition-transform group-hover:scale-110" strokeWidth="1.5"></ng-icon>
-        </button>
 
         <!-- Cart (Desktop Only) -->
-        <button #cartIconBtn routerLink="/cart" routerLinkActive="!text-brand-orange !bg-brand-orange-light/50" [class.animate-cart-jiggle]="cartAnimationService.desktopCartJiggle$()" class="hidden lg:block relative p-1 lg:p-2.5 text-neutral-600 hover:text-brand-orange focus:text-brand-orange transition-all duration-300 hover:bg-brand-orange-light/50 focus:bg-brand-orange-light/50 rounded-full group">
-          <ng-icon name="lucideShoppingCart" class="text-[20px] lg:text-[22px] transition-transform group-hover:scale-110" strokeWidth="1.5"></ng-icon>
+        <button #cartIconBtn routerLink="/cart" routerLinkActive="!text-brand-orange" [class.animate-cart-jiggle]="cartAnimationService.desktopCartJiggle$()" class="hidden lg:block relative p-1 lg:p-2.5 text-brand-black hover:text-brand-orange focus:text-brand-orange transition-all duration-300 rounded-full group">
+          <ng-icon name="lucideShoppingCart" class="text-[24px] transition-transform group-hover:scale-110" strokeWidth="1.5"></ng-icon>
           <ng-container *ngIf="totalItems$ | async as total">
-            <span *ngIf="total > 0" class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand-orange text-[10px] font-bold text-white shadow-sm ring-1 ring-white">
+            <span *ngIf="total > 0" class="absolute top-0 right-0 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-brand-orange text-[10px] font-bold text-white shadow-sm ring-1 ring-white lg:top-1 lg:right-1">
               {{ total }}
             </span>
           </ng-container>

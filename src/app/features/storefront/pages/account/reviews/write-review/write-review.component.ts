@@ -1,3 +1,4 @@
+import { MobileHeaderComponent } from '../../../../../../shared/components/mobile-header/mobile-header.component';
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
@@ -14,7 +15,7 @@ import { PageHeaderComponent } from '../../../../../../shared/components/page-he
 @Component({
   selector: 'app-write-review',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, NgIconComponent, PageHeaderComponent],
+  imports: [CommonModule, RouterLink, FormsModule, NgIconComponent, MobileHeaderComponent],
   templateUrl: './write-review.component.html',
   viewProviders: [provideIcons({ lucideArrowLeft, lucideStar, lucidePackage, lucideCheckCircle2, lucideCamera, lucideUploadCloud, lucideX, lucideThumbsUp, lucideThumbsDown, lucideEdit3, lucideSparkles, lucidePencil, lucideShieldCheck, lucideTruck, lucideHeadphones, lucideInfo })]
 })

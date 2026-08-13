@@ -1,6 +1,7 @@
 <div class="space-y-6 w-full">
-  <div class="mb-4 lg:mb-0 lg:hidden">
-    <app-page-header title="Personal Information" [hideDesktopTitle]="true" [noPadding]="true" customClasses="!px-0 py-4 !border-b-0 lg:hidden" (back)="goBack()"></app-page-header>
+  <div class="mb-4 lg:mb-0">
+    <!-- Header (Mobile Only) -->
+        <app-mobile-header title="Personal Information" (back)="goBack()"></app-mobile-header>
   </div>
 
   <!-- Profile Card Header -->

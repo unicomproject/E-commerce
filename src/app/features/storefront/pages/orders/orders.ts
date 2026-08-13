@@ -5,7 +5,7 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideChevronRight, lucideArrowLeft } from '@ng-icons/lucide';
 import { OrderService } from '../../../../core/services/order.service';
 import { OrderCard } from '../../components/order-card/order-card';
-import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+
 import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 export interface OrderTab {
@@ -19,7 +19,7 @@ export interface OrderTab {
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgIconComponent, OrderCard, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, NgIconComponent, OrderCard],
   viewProviders: [provideIcons({ lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideChevronRight, lucideArrowLeft })],
   templateUrl: './orders.html',
   styleUrl: './orders.css',

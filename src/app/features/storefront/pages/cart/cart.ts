@@ -1,3 +1,4 @@
+import { MobileHeaderComponent } from '../../../../shared/components/mobile-header/mobile-header.component';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -9,16 +10,17 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { AuthModalService } from '../../../../core/services/auth-modal.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
+import { StorefrontDataService } from '../../services/storefront-data.service';
 import { CartItem } from '../../components/cart-item/cart-item';
 import { CartSummary } from '../../components/cart-summary/cart-summary';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
-import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
-import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
+
+import { BreadcrumbItem, BreadcrumbsComponent } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgIconComponent, CartItem, CartSummary, TenantCurrencyPipe, PageHeaderComponent],
+  imports: [CommonModule, RouterLink, NgIconComponent, CartItem, CartSummary, TenantCurrencyPipe, BreadcrumbsComponent, MobileHeaderComponent],
   templateUrl: './cart.html',
   viewProviders: [provideIcons({ lucideTrash2, lucideCheckCircle2, lucideShoppingBag, lucideHeart, lucideX, lucideInfo, lucideArrowLeft })]
 })
@@ -29,10 +31,12 @@ export class Cart implements OnInit {
   private authService = inject(AuthService);
   private authModalService = inject(AuthModalService);
   private wishlistService = inject(WishlistService);
+  private storefrontData = inject(StorefrontDataService);
 
   cart$ = this.cartService.cart$;
   itemToRemove = signal<any | null>(null);
   selectedItemIds = signal<Set<string>>(new Set());
+  isCheckoutStarting = signal(false);
   
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Home', link: '/' },
@@ -86,8 +90,14 @@ export class Cart implements OnInit {
     return cartItems.every(item => this.selectedItemIds().has(item.id));
   }
 
-  clearCart() {
-    this.cartService.clearCart();
+  clearSelected() {
+    const selectedIds = [...this.selectedItemIds()];
+    if (selectedIds.length === 0) {
+      this.toastService.error('Please select items to remove');
+      return;
+    }
+
+    selectedIds.forEach(id => this.cartService.removeItem(id));
     this.selectedItemIds.set(new Set());
   }
 
@@ -130,10 +140,74 @@ export class Cart implements OnInit {
   }
 
   startCheckout() {
-    if (this.authService.isAuthenticated) {
-      this.checkoutService.openCheckout();
-    } else {
-      this.authModalService.open('login');
+    if (this.selectedItemIds().size === 0) {
+      this.toastService.error('Please select at least one item');
+      return;
     }
+
+    if (!this.authService.isAuthenticated) {
+      this.authModalService.open('login');
+      return;
+    }
+
+    if (this.isCheckoutStarting()) return;
+
+    const user = this.authService.currentUserSnapshot;
+    if (!user) {
+      this.authModalService.open('login');
+      return;
+    }
+
+    this.isCheckoutStarting.set(true);
+
+    // Resolve store (first from API if none selected on home) + earliest time if ASAP
+    this.storefrontData.prepareCheckoutDefaults().subscribe({
+      next: (defaults) => {
+        if (!defaults) {
+          this.isCheckoutStarting.set(false);
+          this.toastService.error('No collection times available for this store');
+          this.checkoutService.openCheckout();
+          return;
+        }
+
+        this.openOrderReview(defaults.store.id, defaults.collectionAt, user);
+      },
+      error: () => {
+        this.isCheckoutStarting.set(false);
+        this.toastService.error('Could not prepare checkout. Please try again.');
+        this.checkoutService.openCheckout();
+      }
+    });
+  }
+
+  private openOrderReview(storeId: string, collectionAt: string, user: { displayName?: string; email?: string; phone?: string }) {
+    const cartId = localStorage.getItem('cartSessionId') ?? undefined;
+
+    this.checkoutService.createFromCart(
+      {
+        selectedOutletId: storeId,
+        requestedCollectionAt: collectionAt,
+        pickupContactName: user.displayName || '',
+        pickupContactEmail: user.email || '',
+        pickupContactPhone: user.phone || ''
+      },
+      cartId,
+      { nextStep: 3 }
+    ).subscribe({
+      next: (res) => {
+        this.isCheckoutStarting.set(false);
+        if (res.success) {
+          this.checkoutService.openReviewCheckout();
+          this.toastService.success('Saved checkout details applied');
+        } else {
+          // Interceptor already toasts server message for 4xx
+          this.checkoutService.openCheckout();
+        }
+      },
+      error: () => {
+        this.isCheckoutStarting.set(false);
+        this.checkoutService.openCheckout();
+      }
+    });
   }
 }
