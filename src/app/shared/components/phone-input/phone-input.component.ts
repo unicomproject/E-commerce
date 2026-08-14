@@ -6,8 +6,9 @@ import {
   OnInit,
   HostListener,
   ElementRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import {
   COUNTRY_CODES,
@@ -18,9 +19,10 @@ import {
 } from '../../data/country-codes.data';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-phone-input',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -29,85 +31,7 @@ import {
     },
   ],
   host: { style: 'display: block' },
-  template: `
-    <div class="flex items-stretch gap-2">
-
-      <!-- Country Code Selector -->
-      <div class="relative flex-shrink-0" (click)="$event.stopPropagation()">
-        <button
-          type="button"
-          id="phone-country-btn"
-          (click)="toggleDropdown()"
-          class="h-full min-w-[96px] flex items-center gap-1.5 px-3 py-2.5 rounded-lg border transition-all text-sm font-medium"
-          [class]="isOpen() ? 'border-brand-orange ring-2 ring-brand-orange bg-white' : 'border-gray-300 bg-white hover:border-gray-400'"
-        >
-          <span class="text-lg leading-none">{{ selectedCountry().flag }}</span>
-          <span class="text-gray-700">{{ selectedCountry().dial }}</span>
-          <svg
-            class="w-3.5 h-3.5 text-gray-400 transition-transform ml-auto"
-            [class.rotate-180]="isOpen()"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-
-        <!-- Dropdown -->
-        <div
-          *ngIf="isOpen()"
-          class="absolute top-full mt-1 z-50 w-72 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden"
-        >
-          <!-- Search -->
-          <div class="p-2 border-b border-gray-100">
-            <input
-              type="text"
-              [(ngModel)]="searchQuery"
-              (input)="onSearch($event)"
-              placeholder="Search country or code..."
-              class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent"
-            />
-          </div>
-
-          <!-- List -->
-          <div class="overflow-y-auto max-h-56">
-            <button
-              *ngFor="let country of filteredCountries()"
-              type="button"
-              (click)="selectCountry(country)"
-              class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-brand-orange-light/30 transition-colors text-left"
-              [class.bg-brand-orange-light]="country.code === selectedCountry().code"
-            >
-              <span class="text-xl leading-none w-7 text-center flex-shrink-0">{{ country.flag }}</span>
-              <span class="text-sm text-gray-800 font-medium flex-1 truncate">{{ country.name }}</span>
-              <span class="text-xs text-gray-400 font-mono flex-shrink-0">{{ country.dial }}</span>
-            </button>
-            <p *ngIf="filteredCountries().length === 0" class="text-center text-sm text-gray-400 py-4">
-              No results found
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Phone Number Input -->
-      <input
-        type="tel"
-        inputmode="numeric"
-        pattern="[0-9+\-\s]*"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="none"
-        spellcheck="false"
-        [id]="inputId()"
-        [placeholder]="placeholder()"
-        [(ngModel)]="subscriberNumber"
-        (input)="onNumberChange()"
-        (keydown)="onKeyDown($event)"
-        (blur)="onTouched()"
-        class="flex-1 rounded-lg border border-gray-300 py-2.5 px-4 text-gray-900 font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
-        [class.border-red-500]="hasError()"
-      />
-    </div>
-  `,
+  templateUrl: './phone-input.component.html',
 })
 export class PhoneInputComponent implements ControlValueAccessor, OnInit {
   // Inputs
@@ -117,7 +41,7 @@ export class PhoneInputComponent implements ControlValueAccessor, OnInit {
   readonly hasError = input<boolean>(false);
 
   // Internal state
-  selectedCountry = signal<CountryCode>(COUNTRY_CODES.find(c => c.code === 'LK')!);
+  selectedCountry = signal<CountryCode>(COUNTRY_CODES.find((c) => c.code === 'LK')!);
   subscriberNumber = '';
   isOpen = signal(false);
   searchQuery = '';
@@ -143,7 +67,7 @@ export class PhoneInputComponent implements ControlValueAccessor, OnInit {
   }
 
   toggleDropdown() {
-    this.isOpen.update(v => !v);
+    this.isOpen.update((v) => !v);
     if (this.isOpen()) {
       this.searchQuery = '';
       this.filteredCountries.set(COUNTRY_CODES);
@@ -154,11 +78,11 @@ export class PhoneInputComponent implements ControlValueAccessor, OnInit {
     const q = (event.target as HTMLInputElement).value.toLowerCase();
     this.filteredCountries.set(
       COUNTRY_CODES.filter(
-        c =>
+        (c) =>
           c.name.toLowerCase().includes(q) ||
           c.dial.includes(q) ||
-          c.code.toLowerCase().includes(q)
-      )
+          c.code.toLowerCase().includes(q),
+      ),
     );
   }
 
@@ -176,8 +100,19 @@ export class PhoneInputComponent implements ControlValueAccessor, OnInit {
 
   onKeyDown(event: KeyboardEvent) {
     // Allow: backspace, delete, tab, escape, enter, home, end, arrow keys
-    const controlKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'Home', 'End',
-                         'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+    const controlKeys = [
+      'Backspace',
+      'Delete',
+      'Tab',
+      'Escape',
+      'Enter',
+      'Home',
+      'End',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+    ];
     if (controlKeys.includes(event.key)) return;
 
     // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+Z

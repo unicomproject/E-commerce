@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, output, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, output, signal , ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormArray, FormControl } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -15,6 +15,7 @@ import { AuthView, AuthModalService } from '../../../../core/services/auth-modal
 import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-email-verification',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgIconComponent],

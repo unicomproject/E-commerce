@@ -1,5 +1,5 @@
-import { Component, inject, output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, output, signal, ChangeDetectionStrategy } from '@angular/core';
+
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -7,23 +7,26 @@ import {
   lucideHelpCircle,
   lucideShieldCheck,
   lucidePackage,
-  lucideStar
+  lucideStar,
 } from '@ng-icons/lucide';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthView, AuthModalService } from '../../../../core/services/auth-modal.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
+  imports: [ReactiveFormsModule, NgIconComponent],
   templateUrl: './forgot-password.html',
-  viewProviders: [provideIcons({
-    lucideMail,
-    lucideHelpCircle,
-    lucideShieldCheck,
-    lucidePackage,
-    lucideStar
-  })]
+  viewProviders: [
+    provideIcons({
+      lucideMail,
+      lucideHelpCircle,
+      lucideShieldCheck,
+      lucidePackage,
+      lucideStar,
+    }),
+  ],
 })
 export class ForgotPasswordComponent {
   readonly switchView = output<AuthView>();
@@ -33,7 +36,7 @@ export class ForgotPasswordComponent {
   private authModalService = inject(AuthModalService);
 
   forgotPasswordForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]]
+    email: ['', [Validators.required, Validators.email]],
   });
 
   isLoading = signal(false);
@@ -50,19 +53,18 @@ export class ForgotPasswordComponent {
     const { email } = this.forgotPasswordForm.value;
     this.submittedEmail.set(email!);
 
-    this.authService.forgotPassword({ email: email! })
-      .subscribe({
-        next: (response) => {
-          this.isLoading.set(false);
-          if (response.success) {
-            this.emailSent.set(true);
-            this.authModalService.setPasswordResetContext(email!);
-          }
-        },
-        error: () => {
-          this.isLoading.set(false);
-          // AuthService already handles error toasts
+    this.authService.forgotPassword({ email: email! }).subscribe({
+      next: (response) => {
+        this.isLoading.set(false);
+        if (response.success) {
+          this.emailSent.set(true);
+          this.authModalService.setPasswordResetContext(email!);
         }
-      });
+      },
+      error: () => {
+        this.isLoading.set(false);
+        // AuthService already handles error toasts
+      },
+    });
   }
 }

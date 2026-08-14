@@ -1,0 +1,100 @@
+<div class="space-y-6 w-full lg:max-w-4xl mx-auto px-4 lg:px-0">
+  <div class="mb-4">
+        <app-mobile-header title="Notifications" (back)="goBack()"></app-mobile-header>
+  </div>
+
+  <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-end">
+
+
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        (click)="refresh()"
+        class="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-bold text-neutral-700 transition hover:border-brand-orange/40 hover:text-brand-orange">
+        <ng-icon name="lucideRefreshCw" size="16"></ng-icon>
+        Refresh
+      </button>
+      <button
+        type="button"
+        (click)="markAllRead()"
+        [disabled]="notificationService.unreadCount() === 0 || notificationService.marking()"
+        class="flex items-center gap-2 rounded-full bg-brand-orange px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-orange-dark disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-500 disabled:shadow-none">
+        <ng-icon name="lucideCheckCheck" size="16"></ng-icon>
+        Mark all read
+      </button>
+    </div>
+  </div>
+
+  <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div class="rounded-3xl border border-orange-100 bg-orange-50 p-5">
+      <p class="text-xs font-bold uppercase tracking-wide text-brand-orange">Unread</p>
+      <p class="mt-1 text-3xl font-extrabold text-neutral-900">{{ notificationService.unreadCount() }}</p>
+    </div>
+    <div class="rounded-3xl border border-neutral-100 bg-white p-5 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-wide text-neutral-400">Total loaded</p>
+      <p class="mt-1 text-3xl font-extrabold text-neutral-900">{{ notificationService.items().length }}</p>
+    </div>
+  </div>
+
+  @if (notificationService.loading() && notificationService.items().length === 0) {
+    <div class="flex justify-center py-20">
+      <div class="h-9 w-9 animate-spin rounded-full border-2 border-neutral-200 border-b-brand-orange"></div>
+    </div>
+  } @else if (notificationService.error()) {
+    <div class="rounded-3xl border border-red-100 bg-red-50 p-8 text-center">
+      <h3 class="text-lg font-extrabold text-red-700">Could not load notifications</h3>
+      <p class="mt-2 text-sm text-red-600">{{ notificationService.error() }}</p>
+      <button type="button" (click)="refresh()" class="mt-5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-red-600 shadow-sm">
+        Try again
+      </button>
+    </div>
+  } @else if (notificationService.items().length === 0) {
+    <div class="flex flex-col items-center justify-center rounded-3xl border border-dashed border-neutral-200 bg-white py-20 text-center shadow-sm">
+      <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-neutral-50 text-neutral-300">
+        <ng-icon name="lucideInbox" size="34"></ng-icon>
+      </div>
+      <h3 class="text-lg font-extrabold text-neutral-900">No notifications yet</h3>
+      <p class="mt-2 max-w-md text-sm text-neutral-500">When your order status changes, updates will show here.</p>
+    </div>
+  } @else {
+    <div class="space-y-3">
+      @for (item of notificationService.items(); track item.id) {
+        <button
+          type="button"
+          (click)="openNotification(item)"
+          class="group flex w-full gap-4 rounded-3xl border p-4 text-left shadow-sm transition hover:border-brand-orange/30 hover:bg-orange-50/40"
+          [ngClass]="item.isRead ? 'border-neutral-100 bg-white' : 'border-orange-100 bg-orange-50/70'">
+          <div class="mt-1 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl"
+               [ngClass]="item.isRead ? 'bg-neutral-100 text-neutral-500' : 'bg-brand-orange text-white'">
+            <ng-icon [name]="notificationIcon(item)" size="22"></ng-icon>
+          </div>
+
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+              <h4 class="text-base font-extrabold text-neutral-900">{{ item.title }}</h4>
+              @if (!item.isRead) {
+                <span class="mt-2 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-brand-orange"></span>
+              }
+            </div>
+            <p class="mt-1 text-sm leading-6 text-neutral-500">{{ item.body }}</p>
+            <p class="mt-3 text-xs font-semibold text-neutral-400">{{ item.createdAt | date:'medium' }}</p>
+          </div>
+
+          <ng-icon name="lucideChevronRight" size="20" class="mt-5 flex-shrink-0 text-neutral-300 transition group-hover:translate-x-1 group-hover:text-brand-orange"></ng-icon>
+        </button>
+      }
+    </div>
+
+    @if (notificationService.hasMore()) {
+      <div class="mt-5 flex justify-center">
+        <button
+          type="button"
+          (click)="loadMore()"
+          [disabled]="notificationService.loading()"
+          class="rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-bold text-neutral-700 shadow-sm transition hover:border-brand-orange/40 hover:text-brand-orange disabled:opacity-50">
+          Load more
+        </button>
+      </div>
+    }
+  }
+</div>

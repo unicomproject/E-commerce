@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, OnInit, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, DestroyRef } from '@angular/core';
+import { Component, HostListener, inject, OnInit, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, DestroyRef , ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -8,20 +8,21 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideSearch, lucideHeart, lucideShoppingCart, lucideShoppingBag, lucideUser, lucideMenu, lucidePackage, lucideLayoutGrid, lucideTag, lucideChevronDown, lucideLogOut, lucideMapPin, lucideShieldCheck, lucideBell, lucideClock, lucideX, lucideStar } from '@ng-icons/lucide';
 import { AuthModalService } from '../../core/services/auth-modal.service';
 import { AuthService } from '../../core/services/auth.service';
-import { CartService } from '../../core/services/cart.service';
-import { WishlistService } from '../../core/services/wishlist.service';
+import { CartService } from '../../features/cart/services/cart.service';
+import { WishlistService } from '../../features/wishlist/services/wishlist.service';
 import { CategoryMegaMenu } from './category-mega-menu/category-mega-menu';
-import { RecentOrdersBottomSheet } from '../../features/storefront/components/recent-orders-bottom-sheet/recent-orders-bottom-sheet';
+import { RecentOrdersBottomSheet } from '../../features/orders/components/recent-orders-bottom-sheet/recent-orders-bottom-sheet';
 import { ToastService } from '../../core/services/toast.service';
 import { CdkDrag } from '@angular/cdk/drag-drop';
-import { CartAnimationService } from '../../core/services/cart-animation.service';
+import { CartAnimationService } from '../../features/cart/services/cart-animation.service';
 import { SearchBarComponent } from './search-bar/search-bar';
 import { NotificationPanelComponent } from '../../shared/components/notification-panel/notification-panel';
-import { NotificationService } from '../../core/services/notification.service';
+import { NotificationService } from '../../features/account/services/notification.service';
 
-import { RecentOrdersModalService } from '../../core/services/recent-orders-modal.service';
+import { RecentOrdersModalService } from '../../features/orders/services/recent-orders-modal.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-header',
   standalone: true,
   imports: [CommonModule, FormsModule, NgIconComponent, RouterLink, CategoryMegaMenu, RecentOrdersBottomSheet, CdkDrag, SearchBarComponent, NotificationPanelComponent],
@@ -95,7 +96,7 @@ export class Header implements OnInit, AfterViewInit, AfterViewChecked {
     this.cartService.loadCart();
     this.authService.currentUser$
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(user => {
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
         if (user) {
           this.wishlistService.loadWishlist();
           this.notificationService.startPolling();
@@ -115,7 +116,7 @@ export class Header implements OnInit, AfterViewInit, AfterViewChecked {
   }
 
   logout() {
-    this.authService.logout().subscribe(() => {
+    this.authService.logout().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.router.navigate(['/']);
     });
   }

@@ -1,0 +1,19 @@
+<!-- Header (Mobile Only) -->
+    <div class="lg:hidden pt-4 pb-2 flex items-center gap-2" [class]="customClasses()">
+      <button
+        (click)="handleBack()"
+        class="flex-shrink-0 p-1.5 -ml-1.5 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-[#111111]"
+      >
+        <ng-icon name="lucideArrowLeft" class="text-[24px]"></ng-icon>
+      </button>
+      @if (title()) {
+        <h1 class="text-[20px] font-bold text-[#111111] leading-none pt-0.5 truncate">
+          {{ title() }}
+        </h1>
+      }
+      @if (hasContent) {
+        <div class="flex-grow flex items-center h-full">
+          <ng-content></ng-content>
+        </div>
+      }
+    </div>

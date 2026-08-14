@@ -1,14 +1,15 @@
-import { Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideMinus, lucidePlus } from '@ng-icons/lucide';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-quantity-stepper',
   standalone: true,
-  imports: [CommonModule, NgIconComponent],
+  imports: [NgIconComponent],
   templateUrl: './quantity-stepper.component.html',
-  viewProviders: [provideIcons({ lucideMinus, lucidePlus })]
+  viewProviders: [provideIcons({ lucideMinus, lucidePlus })],
 })
 export class QuantityStepperComponent {
   readonly quantity = input(1);

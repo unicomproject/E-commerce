@@ -1,43 +1,80 @@
 <div class="max-w-[500px] mx-auto px-4 py-6">
-
   <!-- Header -->
   <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Create account</h1>
-  <p class="text-gray-600 mb-5 text-sm md:text-base">Join Arena Store for faster checkout and order tracking.</p>
+  <p class="text-gray-600 mb-5 text-sm md:text-base">
+    Join Arena Store for faster checkout and order tracking.
+  </p>
 
-  <div *ngIf="errorMessage()" class="mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-medium">
-    {{ errorMessage() }}
-  </div>
+  @if (errorMessage()) {
+    <div
+      class="mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-medium"
+    >
+      {{ errorMessage() }}
+    </div>
+  }
 
   <!-- Register Form -->
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-3">
-
     <!-- Email -->
     <div>
-      <div class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow">
+      <div
+        class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow"
+      >
         <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
           <ng-icon name="lucideMail" size="20"></ng-icon>
         </div>
-        <input type="email" formControlName="email" placeholder="Email address" class="w-full py-3 pr-4 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base">
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="Email address"
+          class="w-full py-3 pr-4 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base"
+        />
       </div>
-      <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid" class="text-red-500 text-sm mt-1">Valid email address is required.</div>
+      @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+        <div class="text-red-500 text-sm mt-1">Valid email address is required.</div>
+      }
     </div>
 
     <!-- Password -->
     <div>
-      <div class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow">
+      <div
+        class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow"
+      >
         <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
           <ng-icon name="lucideLock" size="20"></ng-icon>
         </div>
-        <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="Password" class="w-full py-3 pr-12 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base">
-        <button type="button" (click)="togglePasswordVisibility()" class="absolute right-4 text-gray-500 hover:text-gray-700 flex items-center justify-center">
+        <input
+          [type]="showPassword() ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="Password"
+          class="w-full py-3 pr-12 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base"
+        />
+        <button
+          type="button"
+          (click)="togglePasswordVisibility()"
+          class="absolute right-4 text-gray-500 hover:text-gray-700 flex items-center justify-center"
+        >
           <ng-icon [name]="showPassword() ? 'lucideEyeOff' : 'lucideEye'" size="20"></ng-icon>
         </button>
       </div>
-      <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.errors as passwordErrors" class="text-red-500 text-sm mt-1">
-        <span *ngIf="passwordErrors['required']">Password is required.</span>
-        <span *ngIf="!passwordErrors['required'] && passwordErrors['minlength']">Password must be at least 8 characters.</span>
-        <span *ngIf="!passwordErrors['required'] && !passwordErrors['minlength'] && passwordErrors['pattern']">Password must contain letters and numbers.</span>
-      </div>
+      @if (
+        registerForm.get('password')?.touched && registerForm.get('password')?.errors;
+        as passwordErrors
+      ) {
+        <div class="text-red-500 text-sm mt-1">
+          @if (passwordErrors['required']) {
+            <span>Password is required.</span>
+          }
+          @if (!passwordErrors['required'] && passwordErrors['minlength']) {
+            <span>Password must be at least 8 characters.</span>
+          }
+          @if (
+            !passwordErrors['required'] && !passwordErrors['minlength'] && passwordErrors['pattern']
+          ) {
+            <span>Password must contain letters and numbers.</span>
+          }
+        </div>
+      }
       <p class="text-gray-500 text-xs mt-1.5">Use 8+ characters with letters and numbers.</p>
     </div>
 
@@ -48,11 +85,17 @@
         [disabled]="isLoading() || registerForm.invalid"
         class="w-full py-3 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed text-sm md:text-base"
       >
-        <span *ngIf="isLoading()" class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></span>
+        @if (isLoading()) {
+          <span
+            class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"
+          ></span>
+        }
         Create Account
       </button>
       <p class="text-center text-xs text-gray-500">
-        By creating an account, you agree to our <a href="#" class="text-gray-900 font-medium hover:underline">Terms & Conditions</a> and <a href="#" class="text-gray-900 font-medium hover:underline">Privacy Policy</a>
+        By creating an account, you agree to our
+        <a href="#" class="text-gray-900 font-medium hover:underline">Terms & Conditions</a> and
+        <a href="#" class="text-gray-900 font-medium hover:underline">Privacy Policy</a>
       </p>
     </div>
   </form>
@@ -71,20 +114,27 @@
     [class.opacity-60]="isGoogleLoading()"
     [class.pointer-events-none]="isGoogleLoading()"
   ></div>
-  <p *ngIf="isGoogleLoading()" class="mt-2 text-center text-sm text-gray-500">Signing up with Google...</p>
-  <p *ngIf="googleUnavailableMessage()" class="mt-2 text-center text-xs text-gray-500">{{ googleUnavailableMessage() }}</p>
-
-
+  @if (isGoogleLoading()) {
+    <p class="mt-2 text-center text-sm text-gray-500">Signing up with Google...</p>
+  }
+  @if (googleUnavailableMessage()) {
+    <p class="mt-2 text-center text-xs text-gray-500">{{ googleUnavailableMessage() }}</p>
+  }
 
   <!-- Footer Action -->
-  <div class="mt-8 border border-gray-200 rounded-lg p-6 flex items-center justify-between bg-white">
+  <div
+    class="mt-8 border border-gray-200 rounded-lg p-6 flex items-center justify-between bg-white"
+  >
     <div>
       <h3 class="text-lg font-bold text-gray-900">Already have an account?</h3>
       <p class="text-gray-500 text-sm mt-1">Sign in to continue shopping.</p>
     </div>
-    <button type="button" (click)="switchView.emit('login')" class="px-6 py-3 border border-brand-orange text-brand-orange font-bold rounded-lg hover:bg-brand-orange-light transition-colors">
+    <button
+      type="button"
+      (click)="switchView.emit('login')"
+      class="px-6 py-3 border border-brand-orange text-brand-orange font-bold rounded-lg hover:bg-brand-orange-light transition-colors"
+    >
       Sign In
     </button>
   </div>
-
 </div>

@@ -1,39 +1,52 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject, output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  ViewChild,
+  inject,
+  output,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { 
+import {
   lucideUser,
-  lucideMail, 
+  lucideMail,
   lucideSmartphone,
-  lucideLock, 
-  lucideEye, 
+  lucideLock,
+  lucideEye,
   lucideEyeOff,
   lucideGauge,
   lucideShoppingBag,
-  lucideStar
+  lucideStar,
 } from '@ng-icons/lucide';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthView, AuthModalService } from '../../../../core/services/auth-modal.service';
 import { GoogleIdentityService } from '../../../../core/services/google-identity.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
+  imports: [ReactiveFormsModule, NgIconComponent],
   templateUrl: './register.html',
-  viewProviders: [provideIcons({ 
-    lucideUser,
-    lucideMail, 
-    lucideSmartphone,
-    lucideLock, 
-    lucideEye, 
-    lucideEyeOff,
-    lucideGauge,
-    lucideShoppingBag,
-    lucideStar
-  })]
+  viewProviders: [
+    provideIcons({
+      lucideUser,
+      lucideMail,
+      lucideSmartphone,
+      lucideLock,
+      lucideEye,
+      lucideEyeOff,
+      lucideGauge,
+      lucideShoppingBag,
+      lucideStar,
+    }),
+  ],
 })
 export class RegisterComponent implements AfterViewInit, OnDestroy {
   readonly switchView = output<AuthView>();
@@ -47,11 +60,14 @@ export class RegisterComponent implements AfterViewInit, OnDestroy {
 
   registerForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [
-      Validators.required,
-      Validators.minLength(8),
-      Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)
-    ]]
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/),
+      ],
+    ],
   });
 
   showPassword = signal(false);
@@ -69,7 +85,7 @@ export class RegisterComponent implements AfterViewInit, OnDestroy {
   }
 
   togglePasswordVisibility() {
-    this.showPassword.update(v => !v);
+    this.showPassword.update((v) => !v);
   }
 
   onSubmit() {
@@ -82,26 +98,30 @@ export class RegisterComponent implements AfterViewInit, OnDestroy {
     this.errorMessage.set(null);
     const { email, password } = this.registerForm.value;
 
-    this.authService.register({ 
-      email: email!, 
-      password: password!, 
-      agreeTerms: true, 
-      sendOffers: false 
-    }).subscribe({
+    this.authService
+      .register({
+        email: email!,
+        password: password!,
+        agreeTerms: true,
+        sendOffers: false,
+      })
+      .subscribe({
         next: (response) => {
           this.isLoading.set(false);
           if (response.success) {
             this.authModalService.setPendingVerificationEmail(email!);
             this.switchView.emit('verify');
           } else {
-            this.errorMessage.set(response.message || 'Registration failed. Please check your details.');
+            this.errorMessage.set(
+              response.message || 'Registration failed. Please check your details.',
+            );
           }
         },
         error: (err) => {
           this.isLoading.set(false);
           this.errorMessage.set('An unexpected error occurred. Please try again.');
           console.error('Registration error', err);
-        }
+        },
       });
   }
 
@@ -120,7 +140,7 @@ export class RegisterComponent implements AfterViewInit, OnDestroy {
       await this.googleIdentityService.renderButton(
         container,
         (idToken) => this.onGoogleCredential(idToken),
-        'continue_with'
+        'continue_with',
       );
     } catch {
       this.googleUnavailableMessage.set('Google sign-up is unavailable right now.');
@@ -131,25 +151,29 @@ export class RegisterComponent implements AfterViewInit, OnDestroy {
     this.isGoogleLoading.set(true);
     this.errorMessage.set(null);
 
-    this.authService.googleLogin({
-      idToken,
-      agreeTerms: true,
-      sendOffers: false
-    }).subscribe({
-      next: (response) => {
-        this.isGoogleLoading.set(false);
-        if (response.success) {
-          this.authModalService.close();
-          return;
-        }
+    this.authService
+      .googleLogin({
+        idToken,
+        agreeTerms: true,
+        sendOffers: false,
+      })
+      .subscribe({
+        next: (response) => {
+          this.isGoogleLoading.set(false);
+          if (response.success) {
+            this.authModalService.close();
+            return;
+          }
 
-        this.errorMessage.set(this.resolveGoogleErrorMessage(response.errorCode, response.message));
-      },
-      error: () => {
-        this.isGoogleLoading.set(false);
-        this.errorMessage.set('Google sign-up failed. Please try again.');
-      }
-    });
+          this.errorMessage.set(
+            this.resolveGoogleErrorMessage(response.errorCode, response.message),
+          );
+        },
+        error: () => {
+          this.isGoogleLoading.set(false);
+          this.errorMessage.set('Google sign-up failed. Please try again.');
+        },
+      });
   }
 
   private resolveGoogleErrorMessage(errorCode?: string, message?: string): string {

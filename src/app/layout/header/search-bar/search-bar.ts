@@ -1,5 +1,14 @@
-import { Component, HostListener, inject, OnInit, ViewChild, ElementRef, DestroyRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  HostListener,
+  inject,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  DestroyRef,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, map, catchError } from 'rxjs/operators';
@@ -7,25 +16,30 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideSearch, lucideX } from '@ng-icons/lucide';
-import { StorefrontDataService } from '../../../features/storefront/services/storefront-data.service';
-import { StorefrontProductListReadModel, StorefrontSearchMatchReadModel, StorefrontSearchReadModel } from '../../../core/models';
+import { StorefrontDataService } from '../../../features/catalog/services/catalog.service';
+import {
+  StorefrontProductListReadModel,
+  StorefrontSearchMatchReadModel,
+  StorefrontSearchReadModel,
+} from '../../../core/models';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-search-bar',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent],
+  imports: [FormsModule, NgIconComponent],
   viewProviders: [provideIcons({ lucideSearch, lucideX })],
   templateUrl: './search-bar.html',
-  host: { class: 'w-full block relative' }
+  host: { class: 'w-full block relative' },
 })
 export class SearchBarComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
   public dataService = inject(StorefrontDataService);
-  
+
   @ViewChild('searchContainer') searchContainer!: ElementRef;
-  
+
   suggestedProducts: StorefrontProductListReadModel[] = [];
   suggestedCategories: StorefrontSearchMatchReadModel[] = [];
   isDropdownOpen = false;
@@ -35,7 +49,7 @@ export class SearchBarComponent implements OnInit {
   private searchSubject = new Subject<string>();
 
   ngOnInit() {
-    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       if (params['q'] && params['q'] !== this.searchQuery) {
         this.searchQuery = params['q'];
       } else if (!params['q'] && !params['category']) {
@@ -43,56 +57,58 @@ export class SearchBarComponent implements OnInit {
       }
     });
 
-    this.searchSubject.pipe(
-      debounceTime(200),
-      distinctUntilChanged(),
-      switchMap((query: string) => {
-        const q = query.trim();
-        if (q.length >= 1) {
-          this.isSearchLoading = true;
-          this.isDropdownOpen = true;
-          return this.dataService.autocompleteSearch(q, 10).pipe(
-            map((res: StorefrontSearchReadModel) => ({ query: q, res })),
-            catchError(() => {
-              this.isSearchLoading = false;
-              return of(null);
-            })
-          );
-        } else {
-          this.isDropdownOpen = false;
-          this.suggestedProducts = [];
-          this.suggestedCategories = [];
-          return of(null);
-        }
-      }),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(result => {
-      if (result) {
-        const queryLower = result.query.toLowerCase();
-        
-        let cats = result.res.categories || [];
-        cats.sort((a: StorefrontSearchMatchReadModel, b: StorefrontSearchMatchReadModel) => {
-          const aStarts = a.name.toLowerCase().startsWith(queryLower);
-          const bStarts = b.name.toLowerCase().startsWith(queryLower);
-          if (aStarts && !bStarts) return -1;
-          if (!aStarts && bStarts) return 1;
-          return 0;
-        });
-        this.suggestedCategories = cats;
+    this.searchSubject
+      .pipe(
+        debounceTime(200),
+        distinctUntilChanged(),
+        switchMap((query: string) => {
+          const q = query.trim();
+          if (q.length >= 1) {
+            this.isSearchLoading = true;
+            this.isDropdownOpen = true;
+            return this.dataService.autocompleteSearch(q, 10).pipe(
+              map((res: StorefrontSearchReadModel) => ({ query: q, res })),
+              catchError(() => {
+                this.isSearchLoading = false;
+                return of(null);
+              }),
+            );
+          } else {
+            this.isDropdownOpen = false;
+            this.suggestedProducts = [];
+            this.suggestedCategories = [];
+            return of(null);
+          }
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((result) => {
+        if (result) {
+          const queryLower = result.query.toLowerCase();
 
-        let prods = result.res.products?.items || [];
-        prods.sort((a: StorefrontProductListReadModel, b: StorefrontProductListReadModel) => {
-          const aStarts = a.name.toLowerCase().startsWith(queryLower);
-          const bStarts = b.name.toLowerCase().startsWith(queryLower);
-          if (aStarts && !bStarts) return -1;
-          if (!aStarts && bStarts) return 1;
-          return 0;
-        });
-        this.suggestedProducts = prods;
-        
-        this.isSearchLoading = false;
-      }
-    });
+          let cats = result.res.categories || [];
+          cats.sort((a: StorefrontSearchMatchReadModel, b: StorefrontSearchMatchReadModel) => {
+            const aStarts = a.name.toLowerCase().startsWith(queryLower);
+            const bStarts = b.name.toLowerCase().startsWith(queryLower);
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+            return 0;
+          });
+          this.suggestedCategories = cats;
+
+          let prods = result.res.products?.items || [];
+          prods.sort((a: StorefrontProductListReadModel, b: StorefrontProductListReadModel) => {
+            const aStarts = a.name.toLowerCase().startsWith(queryLower);
+            const bStarts = b.name.toLowerCase().startsWith(queryLower);
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+            return 0;
+          });
+          this.suggestedProducts = prods;
+
+          this.isSearchLoading = false;
+        }
+      });
   }
 
   onSearchInput(query: string) {
@@ -118,11 +134,11 @@ export class SearchBarComponent implements OnInit {
     if (!this.searchQuery) return `<b>${text}</b>`;
     const query = this.searchQuery.trim();
     if (!query) return `<b>${text}</b>`;
-    
+
     const regex = new RegExp(`(${query})`, 'gi');
     const parts = text.split(regex);
     let result = '';
-    
+
     for (let i = 0; i < parts.length; i++) {
       if (parts[i].toLowerCase() === query.toLowerCase()) {
         result += parts[i];
@@ -130,7 +146,7 @@ export class SearchBarComponent implements OnInit {
         result += `<b>${parts[i]}</b>`;
       }
     }
-    
+
     return result;
   }
 

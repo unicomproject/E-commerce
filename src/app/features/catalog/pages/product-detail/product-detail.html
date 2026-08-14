@@ -1,0 +1,365 @@
+<div class="product-page pb-24 lg:pb-12 bg-page-bg min-h-screen">
+  <!-- Removed old Page Title -->
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="w-full mx-auto px-4 py-8 animate-pulse">
+      <div class="h-4 bg-gray-200 rounded w-1/4 mb-8"></div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+        <div class="aspect-[4/5] bg-gray-200 rounded-xl"></div>
+        <div class="flex flex-col gap-4">
+          <div class="h-10 bg-gray-200 rounded w-3/4"></div>
+          <div class="h-6 bg-gray-200 rounded w-1/4"></div>
+          <div class="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div class="h-24 bg-gray-200 rounded w-full"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (!loading() && product(); as prod) {
+    <!-- Mobile/Tablet Header (Moved outside padding container to avoid double padding) -->
+    <div class="lg:hidden">
+      <app-page-header title="Product Details" [showBack]="true"></app-page-header>
+    </div>
+    <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8 pt-0 lg:pt-4 pb-6">
+      <!-- Breadcrumbs (Desktop Only) -->
+      <div class="hidden lg:block mb-6 lg:mb-8">
+        <app-breadcrumbs [items]="breadcrumbItems()"></app-breadcrumbs>
+      </div>
+      <div
+        class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-0 lg:mb-12 h-full lg:min-h-[calc(100vh-140px)]"
+      >
+        <!-- Left: Image Gallery -->
+        <div class="lg:col-span-6 flex flex-col self-start z-10 w-full">
+          <!-- Main Image -->
+          <div
+            class="relative bg-white rounded-3xl w-full aspect-square lg:aspect-[4/3] flex items-center justify-center mb-6 overflow-hidden border border-gray-100 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]"
+          >
+            <!-- Badge -->
+            @if (prod.badge) {
+              <div
+                class="absolute top-4 left-4 z-20 bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm"
+              >
+                {{ prod.badge }}
+              </div>
+            }
+            <button
+              class="absolute left-4 z-20 w-10 h-10 bg-white shadow-md rounded-full flex items-center justify-center text-gray-600 hover:text-black hover:scale-105 transition-all"
+              (click)="prevImage()"
+            >
+              <ng-icon name="lucideChevronLeft" size="20"></ng-icon>
+            </button>
+            @if (currentImage(); as img) {
+              <img
+                [src]="img.url"
+                [alt]="img.altText"
+                class="w-full h-full object-cover transition-all duration-300"
+              />
+            }
+            <button
+              class="absolute right-4 z-20 w-10 h-10 bg-white shadow-md rounded-full flex items-center justify-center text-gray-600 hover:text-black hover:scale-105 transition-all"
+              (click)="nextImage()"
+            >
+              <ng-icon name="lucideChevronRight" size="20"></ng-icon>
+            </button>
+            <!-- Wishlist Icon -->
+            <button
+              (click)="toggleWishlist()"
+              class="absolute top-4 right-4 p-2.5 bg-white rounded-full shadow-sm transition-all z-20 border border-gray-100 group"
+              [ngClass]="
+                isInWishlist() ? 'hover:bg-brand-orange-light' : 'hover:bg-brand-orange-light'
+              "
+            >
+              <ng-icon
+                name="lucideHeart"
+                size="20"
+                [class]="
+                  isInWishlist()
+                    ? 'text-brand-orange fill-brand-orange group-hover:text-brand-orange-dark group-hover:fill-brand-orange-dark transition-colors'
+                    : 'text-gray-400 group-hover:text-brand-orange transition-colors'
+                "
+              ></ng-icon>
+            </button>
+          </div>
+          <!-- Thumbnails Bar -->
+          @if (prod.images && prod.images.length > 1) {
+            <div class="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-none">
+              @for (img of prod.images; track img; let i = $index) {
+                <button
+                  (click)="setImage(i)"
+                  [class]="
+                    'flex-shrink-0 w-20 h-20 lg:w-24 lg:h-24 rounded-2xl border-2 overflow-hidden bg-white transition-all ' +
+                    (i === activeImageIndex()
+                      ? 'border-brand-orange shadow-sm'
+                      : 'border-gray-100 hover:border-gray-200 opacity-70 hover:opacity-100')
+                  "
+                >
+                  <img
+                    [src]="img.url"
+                    [alt]="img.altText"
+                    class="w-full h-full object-cover rounded-xl"
+                  />
+                </button>
+              }
+            </div>
+          }
+        </div>
+        <!-- Right: Product Info -->
+        <div class="lg:col-span-6 flex flex-col justify-start">
+          <!-- Title & Subtitle -->
+          <h1
+            class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-1 tracking-tight"
+          >
+            {{ prod.name }}
+          </h1>
+          <div class="text-sm text-gray-500 mb-1 flex items-center gap-2">
+            @if (prod.shortDescription) {
+              <span class="font-medium">{{ prod.shortDescription }}</span>
+            }
+            @if (prod.shortDescription && prod.brandName) {
+              <span class="text-gray-300">|</span>
+            }
+            @if (prod.brandName) {
+              <span class="font-medium">{{ prod.brandName }}</span>
+            }
+          </div>
+          <!-- Price Row -->
+          <div class="flex items-baseline flex-wrap gap-x-4 gap-y-1 mb-1">
+            <div class="text-3xl lg:text-[2rem] font-bold text-brand-orange tracking-tight">
+              {{ displayPrice() | tenantCurrency: 'symbol' : '1.2-2' }}
+            </div>
+            @if (originalPrice() && originalPrice()! > displayPrice()) {
+              <div class="text-lg text-gray-400 line-through font-medium">
+                {{ originalPrice() | tenantCurrency: 'symbol' : '1.2-2' }}
+              </div>
+            }
+            @if (originalPrice() && originalPrice()! > displayPrice()) {
+              <div class="text-sm font-bold text-red-500">
+                Save
+                {{ originalPrice()! - displayPrice() | tenantCurrency: 'symbol' : '1.0-0' }} ({{
+                  ((originalPrice()! - displayPrice()) / originalPrice()!) * 100 | number: '1.0-0'
+                }}%)
+              </div>
+            }
+          </div>
+          <!-- Rating -->
+          <div class="flex items-center gap-4 mb-2 text-sm border-b border-gray-100 pb-2">
+            <div class="flex items-center gap-2">
+              <div class="flex items-center text-brand-orange">
+                <app-star-rating [rating]="prod.rating" [size]="16"></app-star-rating>
+              </div>
+              <div class="font-bold text-gray-900">{{ prod.rating.toFixed(1) }}</div>
+              <a href="#reviews" class="text-brand-orange hover:underline"
+                >({{ prod.reviewCount }} reviews)</a
+              >
+            </div>
+          </div>
+          <!-- Full Description -->
+          @if (prod.longDescription) {
+            <div class="text-sm text-gray-600 leading-relaxed mb-2">
+              {{ prod.longDescription }}
+            </div>
+          }
+          <!-- Dynamic Options Selection -->
+          @if (prod.options && prod.options.length > 0) {
+            <div class="mb-2">
+              @for (option of prod.options; track option) {
+                <!-- Option Header -->
+                <div class="flex justify-between items-end mb-1 mt-2 first:mt-0">
+                  <span class="font-bold text-gray-900 text-sm"
+                    >{{ option.optionName }}:
+                    <span class="font-normal text-gray-600 ml-1">{{
+                      selectedOptionValueName(option.optionName) ||
+                        ('Select ' + option.optionName | lowercase)
+                    }}</span></span
+                  >
+                </div>
+                <!-- Option Values Grid -->
+                <div class="flex flex-wrap gap-3">
+                  @for (val of option.values; track val) {
+                    <!-- If it's a Color Option (render as swatch) -->
+                    @if (
+                      (option.optionName | lowercase).includes('color') ||
+                      (option.optionName | lowercase).includes('colour')
+                    ) {
+                      <button
+                        (click)="selectOption(option.optionName, val.id)"
+                        [class]="
+                          'w-10 h-10 rounded-full border-2 transition-all flex items-center justify-center relative ' +
+                          (selectedOptions()[option.optionName] === val.id
+                            ? 'border-brand-orange ring-2 ring-brand-orange/20 ring-offset-2 scale-105'
+                            : 'border-gray-200 hover:border-gray-300')
+                        "
+                      >
+                        <span
+                          class="w-8 h-8 rounded-full border border-black/10 block bg-gray-200"
+                          [style.backgroundColor]="val.colorHex || val.name"
+                        >
+                        </span>
+                      </button>
+                    }
+                    <!-- If it's NOT a Color Option (render as chip) -->
+                    @if (
+                      !(
+                        (option.optionName | lowercase).includes('color') ||
+                        (option.optionName | lowercase).includes('colour')
+                      )
+                    ) {
+                      <button
+                        (click)="selectOption(option.optionName, val.id)"
+                        [class]="
+                          'h-11 min-w-[3rem] px-4 flex items-center justify-center rounded-lg border-2 text-sm font-bold transition-all ' +
+                          (selectedOptions()[option.optionName] === val.id
+                            ? 'border-brand-orange text-brand-orange shadow-sm bg-orange-50/50'
+                            : 'border-gray-200 text-gray-700 hover:border-gray-300 bg-white')
+                        "
+                      >
+                        {{ val.displayName || val.name }}
+                      </button>
+                    }
+                  }
+                </div>
+              }
+            </div>
+          }
+          <!-- Quantity Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 pb-2 border-b border-gray-100">
+            <!-- Right: Quantity -->
+            <div>
+              <div class="flex items-center mb-1">
+                <span class="font-bold text-gray-900 text-sm">Quantity</span>
+              </div>
+              <!-- Stepper -->
+              <div class="h-11 max-w-[140px]">
+                <app-quantity-stepper
+                  [quantity]="quantity()"
+                  (quantityChange)="onQuantityChange($event)"
+                ></app-quantity-stepper>
+              </div>
+            </div>
+          </div>
+          <!-- Desktop Buttons -->
+          <div class="hidden lg:flex lg:flex-row gap-3 pt-0 mb-6">
+            <button
+              (click)="addToCart($event)"
+              [disabled]="!canAddToCart()"
+              class="flex-1 h-12 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ng-icon name="lucideShoppingCart" size="18"></ng-icon> Add to Cart
+            </button>
+            <button
+              (click)="buyNow($event)"
+              [disabled]="!canAddToCart()"
+              class="flex-1 h-12 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange-light/20 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed bg-white"
+            >
+              <ng-icon name="lucideRotateCcw" size="18"></ng-icon> Buy Now
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Tabs Navigation Section -->
+      <div class="max-w-4xl pt-0 lg:pt-8 pb-12">
+        <app-tabs
+          [tabs]="tabs()"
+          [activeTabId]="activeTabId()"
+          (activeTabIdChange)="activeTabId.set($event)"
+          theme="plain"
+          class="block border-b border-gray-200 mb-8"
+        ></app-tabs>
+        <!-- Tab Content Container -->
+        <div class="min-h-[400px]">
+          <!-- Product Details Tab -->
+          @if (activeTabId() === 'details') {
+            <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h3 class="text-xl font-bold text-gray-900 mb-4">About this product</h3>
+              <p class="mb-6 text-gray-600 leading-relaxed">
+                {{ prod.longDescription || prod.shortDescription }}
+              </p>
+              <h4 class="font-bold text-gray-900 mb-3">Highlights</h4>
+              <ul class="space-y-3 list-none pl-0">
+                @for (highlight of prod.highlights; track highlight) {
+                  <li class="flex items-start gap-3">
+                    <ng-icon
+                      name="lucideCheck"
+                      class="text-green-500 mt-1 flex-shrink-0"
+                      size="18"
+                    ></ng-icon>
+                    <span class="text-gray-600">{{ highlight }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+          <!-- Specifications Tab -->
+          @if (activeTabId() === 'specs') {
+            <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h3 class="text-xl font-bold text-gray-900 mb-4">Specifications</h3>
+              <div class="border border-gray-200 rounded-xl overflow-hidden">
+                <div class="grid grid-cols-3 border-b border-gray-100 p-4">
+                  <div class="col-span-1 text-sm font-bold text-gray-700">Brand</div>
+                  <div class="col-span-2 text-sm text-gray-600">{{ prod.brandName || 'N/A' }}</div>
+                </div>
+                <div class="grid grid-cols-3 border-b border-gray-100 p-4 bg-gray-50">
+                  <div class="col-span-1 text-sm font-bold text-gray-700">Category</div>
+                  <div class="col-span-2 text-sm text-gray-600">
+                    {{ prod.categoryName || 'General' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+          <!-- Delivery & Returns Tab -->
+          @if (activeTabId() === 'returns') {
+            <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h3 class="text-xl font-bold text-gray-900 mb-4">Delivery Options</h3>
+              <p class="text-gray-600 mb-8">
+                {{ prod.deliveryInfo || 'Standard delivery in 3-5 days.' }}
+              </p>
+              <h3 class="text-xl font-bold text-gray-900 mb-4">Returns Policy</h3>
+              <p class="text-gray-600">
+                {{ prod.returnInfo || 'You can return any unworn items within 30 days.' }}
+              </p>
+            </div>
+          }
+          <!-- Reviews Tab -->
+          @if (activeTabId() === 'reviews') {
+            <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              @if (reviews(); as revData) {
+                <app-product-reviews
+                  [reviewsData]="revData"
+                  [activeSort]="reviewSort()"
+                  [activeRating]="reviewRating()"
+                  (onFilterChange)="onReviewFilterChange($event)"
+                >
+                </app-product-reviews>
+              } @else {
+                <div class="flex items-center justify-center p-12 text-gray-400">
+                  Loading reviews...
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    <!-- Sticky Bottom Bar (Mobile Only) -->
+    <div
+      class="fixed bottom-[calc(72px+env(safe-area-inset-bottom))] left-0 right-0 bg-white border-t border-gray-200 p-4 flex gap-3 lg:hidden z-40 shadow-[0_-8px_20px_-10px_rgba(0,0,0,0.1)]"
+    >
+      <button
+        (click)="addToCart($event)"
+        [disabled]="!canAddToCart()"
+        class="flex-1 h-14 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange-light/20 rounded-xl font-bold text-[15px] transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <ng-icon name="lucideShoppingCart" size="18"></ng-icon> Add to Cart
+      </button>
+      <button
+        (click)="buyNow($event)"
+        [disabled]="!canAddToCart()"
+        class="flex-1 h-14 bg-brand-orange text-white rounded-xl font-bold text-[15px] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        Buy Now
+      </button>
+    </div>
+  }
+</div>

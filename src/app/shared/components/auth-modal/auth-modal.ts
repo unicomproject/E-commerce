@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+
 import { AuthModalService, AuthView } from '../../../core/services/auth-modal.service';
 import { LoginComponent } from '../../../features/account/pages/login/login';
 import { RegisterComponent } from '../../../features/account/pages/register/register';
@@ -10,19 +10,19 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideX } from '@ng-icons/lucide';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-auth-modal',
   standalone: true,
   imports: [
-    CommonModule, 
-    LoginComponent, 
-    RegisterComponent, 
-    ForgotPasswordComponent, 
-    EmailVerificationComponent, 
+    LoginComponent,
+    RegisterComponent,
+    ForgotPasswordComponent,
+    EmailVerificationComponent,
     ResetPasswordComponent,
-    NgIconComponent
+    NgIconComponent,
   ],
   templateUrl: './auth-modal.html',
-  viewProviders: [provideIcons({ lucideX })]
+  viewProviders: [provideIcons({ lucideX })],
 })
 export class AuthModalComponent {
   readonly authModalService = inject(AuthModalService);
