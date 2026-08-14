@@ -1,35 +1,48 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject, output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  ViewChild,
+  inject,
+  output,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { 
-  lucideMail, 
-  lucideLock, 
-  lucideEye, 
+import {
+  lucideMail,
+  lucideLock,
+  lucideEye,
   lucideEyeOff,
   lucidePackage,
   lucideMapPin,
-  lucideStar
+  lucideStar,
 } from '@ng-icons/lucide';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthView, AuthModalService } from '../../../../core/services/auth-modal.service';
 import { GoogleIdentityService } from '../../../../core/services/google-identity.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
+  imports: [ReactiveFormsModule, NgIconComponent],
   templateUrl: './login.html',
-  viewProviders: [provideIcons({ 
-    lucideMail, 
-    lucideLock, 
-    lucideEye, 
-    lucideEyeOff,
-    lucidePackage,
-    lucideMapPin,
-    lucideStar
-  })]
+  viewProviders: [
+    provideIcons({
+      lucideMail,
+      lucideLock,
+      lucideEye,
+      lucideEyeOff,
+      lucidePackage,
+      lucideMapPin,
+      lucideStar,
+    }),
+  ],
 })
 export class LoginComponent implements AfterViewInit, OnDestroy {
   readonly switchView = output<AuthView>();
@@ -44,7 +57,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
-    rememberMe: [false]
+    rememberMe: [false],
   });
 
   showPassword = signal(false);
@@ -62,7 +75,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
   }
 
   togglePasswordVisibility() {
-    this.showPassword.update(v => !v);
+    this.showPassword.update((v) => !v);
   }
 
   onSubmit() {
@@ -75,7 +88,8 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     this.errorMessage.set(null);
     const { email, password, rememberMe } = this.loginForm.value;
 
-    this.authService.login({ email: email!, password: password!, rememberMe: rememberMe! })
+    this.authService
+      .login({ email: email!, password: password!, rememberMe: rememberMe! })
       .subscribe({
         next: (response) => {
           this.isLoading.set(false);
@@ -97,7 +111,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
           this.isLoading.set(false);
           this.errorMessage.set('An unexpected error occurred. Please try again.');
           console.error('Login error', err);
-        }
+        },
       });
   }
 
@@ -116,7 +130,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
       await this.googleIdentityService.renderButton(
         container,
         (idToken) => this.onGoogleCredential(idToken),
-        'continue_with'
+        'continue_with',
       );
     } catch {
       this.googleUnavailableMessage.set('Google sign-in is unavailable right now.');
@@ -128,28 +142,29 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     this.errorMessage.set(null);
 
     const rememberMe = this.loginForm.controls.rememberMe.value === true;
-    this.authService.googleLogin({ idToken, rememberMe })
-      .subscribe({
-        next: (response) => {
-          this.isGoogleLoading.set(false);
-          if (response.success) {
-            this.authModalService.close();
-            return;
-          }
-
-          if (response.errorCode === 'customer_auth.terms_required') {
-            this.errorMessage.set('Please create an account and accept the terms before using Google sign-in.');
-            this.switchView.emit('register');
-            return;
-          }
-
-          this.errorMessage.set(this.resolveGoogleErrorMessage(response.errorCode, response.message));
-        },
-        error: () => {
-          this.isGoogleLoading.set(false);
-          this.errorMessage.set('Google sign-in failed. Please try again.');
+    this.authService.googleLogin({ idToken, rememberMe }).subscribe({
+      next: (response) => {
+        this.isGoogleLoading.set(false);
+        if (response.success) {
+          this.authModalService.close();
+          return;
         }
-      });
+
+        if (response.errorCode === 'customer_auth.terms_required') {
+          this.errorMessage.set(
+            'Please create an account and accept the terms before using Google sign-in.',
+          );
+          this.switchView.emit('register');
+          return;
+        }
+
+        this.errorMessage.set(this.resolveGoogleErrorMessage(response.errorCode, response.message));
+      },
+      error: () => {
+        this.isGoogleLoading.set(false);
+        this.errorMessage.set('Google sign-in failed. Please try again.');
+      },
+    });
   }
 
   private resolveGoogleErrorMessage(errorCode?: string, message?: string): string {

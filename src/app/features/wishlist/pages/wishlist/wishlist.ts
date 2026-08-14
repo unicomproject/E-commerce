@@ -1,16 +1,17 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit , ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideTrash2, lucideShoppingCart, lucideHeart, lucideChevronRight, lucideChevronDown, lucideFilter, lucideArrowLeft } from '@ng-icons/lucide';
-import { WishlistService } from '../../../../core/services/wishlist.service';
-import { CartService } from '../../../../core/services/cart.service';
+import { WishlistService } from '../../../../features/wishlist/services/wishlist.service';
+import { CartService } from '../../../../features/cart/services/cart.service';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-wishlist',
   standalone: true,
   imports: [CommonModule, RouterLink, NgIconComponent, TenantCurrencyPipe, PageHeaderComponent, StarRatingComponent],

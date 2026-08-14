@@ -1,8 +1,9 @@
-import { Component, input, inject, computed } from '@angular/core';
+import { Component, input, inject, computed , ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CheckoutService } from '../../../../core/services/checkout.service';
+import { CheckoutService } from '../../../../features/checkout/services/checkout.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-checkout-stepper',
   standalone: true,
   imports: [CommonModule],

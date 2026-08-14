@@ -1,5 +1,4 @@
-import { Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 export interface TabItem {
   id: string;
@@ -8,10 +7,11 @@ export interface TabItem {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-tabs',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './tabs.component.html'
+  imports: [],
+  templateUrl: './tabs.component.html',
 })
 export class TabsComponent {
   readonly tabs = input<TabItem[]>([]);
@@ -27,10 +27,20 @@ export class TabsComponent {
     const isActive = this.activeTabId() === id;
     if (this.theme() === 'shaded') {
       const base = 'whitespace-nowrap px-6 py-3 text-sm font-medium border-b-2 transition-colors ';
-      return base + (isActive ? 'border-brand-orange text-brand-orange bg-brand-orange-light/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300');
+      return (
+        base +
+        (isActive
+          ? 'border-brand-orange text-brand-orange bg-brand-orange-light/50'
+          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300')
+      );
     } else {
       const base = 'whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors ';
-      return base + (isActive ? 'border-brand-orange text-brand-orange' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300');
+      return (
+        base +
+        (isActive
+          ? 'border-brand-orange text-brand-orange'
+          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300')
+      );
     }
   }
 }

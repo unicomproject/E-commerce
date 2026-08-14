@@ -1,38 +1,73 @@
 <div #searchContainer class="w-full flex items-center relative">
-  <input type="text" [ngModel]="searchQuery" (ngModelChange)="onSearchInput($event)" (focus)="onSearchFocus()" (keyup.enter)="onSearchSubmit()" placeholder="Search products..." class="w-full h-10 pl-10 pr-10 rounded-xl bg-soft-control-bg border border-border-color text-neutral-900 placeholder-neutral-500 focus:bg-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/30 transition-all text-sm outline-none">
-  <ng-icon name="lucideSearch" class="absolute left-3 text-neutral-400 text-[18px]" strokeWidth="2"></ng-icon>
-  <button type="button" *ngIf="searchQuery" (click)="clearSearch()" class="absolute inset-y-0 right-0 pr-3 flex items-center z-10">
-    <div class="bg-neutral-400 rounded-full w-5 h-5 flex items-center justify-center hover:bg-neutral-500 transition-colors">
-      <ng-icon name="lucideX" class="text-white" size="14" strokeWidth="2.5"></ng-icon>
-    </div>
-  </button>
+  <input
+    type="text"
+    [ngModel]="searchQuery"
+    (ngModelChange)="onSearchInput($event)"
+    (focus)="onSearchFocus()"
+    (keyup.enter)="onSearchSubmit()"
+    placeholder="Search products..."
+    class="w-full h-10 pl-10 pr-10 rounded-xl bg-soft-control-bg border border-border-color text-neutral-900 placeholder-neutral-500 focus:bg-white focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/30 transition-all text-sm outline-none"
+  />
+  <ng-icon
+    name="lucideSearch"
+    class="absolute left-3 text-neutral-400 text-[18px]"
+    strokeWidth="2"
+  ></ng-icon>
+  @if (searchQuery) {
+    <button
+      type="button"
+      (click)="clearSearch()"
+      class="absolute inset-y-0 right-0 pr-3 flex items-center z-10"
+    >
+      <div
+        class="bg-neutral-400 rounded-full w-5 h-5 flex items-center justify-center hover:bg-neutral-500 transition-colors"
+      >
+        <ng-icon name="lucideX" class="text-white" size="14" strokeWidth="2.5"></ng-icon>
+      </div>
+    </button>
+  }
 
   <!-- Search Dropdown -->
-  <div *ngIf="isDropdownOpen" class="absolute top-12 left-0 w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
-    <div *ngIf="isSearchLoading" class="p-4 text-center text-sm text-gray-500">
-      Loading...
+  @if (isDropdownOpen) {
+    <div
+      class="absolute top-12 left-0 w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50"
+    >
+      @if (isSearchLoading) {
+        <div class="p-4 text-center text-sm text-gray-500">Loading...</div>
+      }
+      @if (!isSearchLoading && suggestedProducts.length === 0 && suggestedCategories.length === 0) {
+        <div class="p-4 text-center text-sm text-gray-500">
+          No results found for "{{ searchQuery }}"
+        </div>
+      }
+      <!-- Categories -->
+      @if (suggestedCategories.length > 0) {
+        <div class="border-b border-gray-100 p-2">
+          @for (cat of suggestedCategories; track cat) {
+            <div
+              (click)="onSuggestionClick('category', cat.slug)"
+              class="px-3 py-2 hover:bg-orange-50 cursor-pointer rounded-lg flex items-center gap-2 text-sm text-gray-700 transition-colors"
+            >
+              <ng-icon name="lucideSearch" class="text-gray-400" size="14"></ng-icon>
+              <span [innerHTML]="highlightMatch(cat.name)"></span>
+            </div>
+          }
+        </div>
+      }
+      <!-- Products -->
+      @if (suggestedProducts.length > 0) {
+        <div class="p-2">
+          @for (product of suggestedProducts; track product) {
+            <div
+              (click)="onSuggestionClick('product', product.name)"
+              class="px-3 py-2 hover:bg-orange-50 cursor-pointer rounded-lg flex items-center gap-2 text-sm text-gray-700 transition-colors"
+            >
+              <ng-icon name="lucideSearch" class="text-gray-400" size="14"></ng-icon>
+              <span [innerHTML]="highlightMatch(product.name)"></span>
+            </div>
+          }
+        </div>
+      }
     </div>
-    
-    <div *ngIf="!isSearchLoading && suggestedProducts.length === 0 && suggestedCategories.length === 0" class="p-4 text-center text-sm text-gray-500">
-      No results found for "{{searchQuery}}"
-    </div>
-
-    <!-- Categories -->
-    <div *ngIf="suggestedCategories.length > 0" class="border-b border-gray-100 p-2">
-      <div *ngFor="let cat of suggestedCategories" (click)="onSuggestionClick('category', cat.slug)" class="px-3 py-2 hover:bg-orange-50 cursor-pointer rounded-lg flex items-center gap-2 text-sm text-gray-700 transition-colors">
-        <ng-icon name="lucideSearch" class="text-gray-400" size="14"></ng-icon>
-        <span [innerHTML]="highlightMatch(cat.name)"></span>
-      </div>
-    </div>
-
-    <!-- Products -->
-    <div *ngIf="suggestedProducts.length > 0" class="p-2">
-      <div *ngFor="let product of suggestedProducts" (click)="onSuggestionClick('product', product.name)" class="px-3 py-2 hover:bg-orange-50 cursor-pointer rounded-lg flex items-center gap-2 text-sm text-gray-700 transition-colors">
-        <ng-icon name="lucideSearch" class="text-gray-400" size="14"></ng-icon>
-        <span [innerHTML]="highlightMatch(product.name)"></span>
-      </div>
-    </div>
-
-
-  </div>
+  }
 </div>

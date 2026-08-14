@@ -1,0 +1,241 @@
+<div class="w-full">
+  <!-- Rating Summary Card -->
+  <div class="border border-gray-100 rounded-2xl bg-white shadow-sm p-5 lg:p-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+      <!-- Left: Score -->
+      <div class="flex flex-col lg:border-r lg:border-gray-100 lg:pr-8">
+        <h3 class="text-[15px] font-bold text-gray-900 mb-2">Customer Rating</h3>
+        <div class="text-5xl lg:text-6xl font-extrabold text-brand-navy mb-2 tracking-tight">
+          {{ reviewsData().summary.averageRating.toFixed(1) }}
+        </div>
+        <app-star-rating
+          [rating]="reviewsData().summary.averageRating"
+          [size]="20"
+          class="mb-1.5"
+        ></app-star-rating>
+        <div class="text-[13px] text-gray-500">
+          Based on {{ reviewsData().summary.totalReviews }} reviews
+        </div>
+      </div>
+
+      <!-- Right: Distribution -->
+      <div class="flex flex-col gap-2.5">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 w-8 text-[13px] font-bold text-gray-700">
+            5 <ng-icon name="lucideStar" size="12" class="text-brand-orange"></ng-icon>
+          </div>
+          <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              class="h-full bg-brand-orange rounded-full"
+              [style.width.%]="getPercentage(reviewsData().summary.fiveStarCount)"
+            ></div>
+          </div>
+          <div class="w-8 text-right text-[13px] text-gray-500">
+            {{ reviewsData().summary.fiveStarCount }}
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 w-8 text-[13px] font-bold text-gray-700">
+            4 <ng-icon name="lucideStar" size="12" class="text-brand-orange"></ng-icon>
+          </div>
+          <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              class="h-full bg-brand-orange rounded-full"
+              [style.width.%]="getPercentage(reviewsData().summary.fourStarCount)"
+            ></div>
+          </div>
+          <div class="w-8 text-right text-[13px] text-gray-500">
+            {{ reviewsData().summary.fourStarCount }}
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 w-8 text-[13px] font-bold text-gray-700">
+            3 <ng-icon name="lucideStar" size="12" class="text-brand-orange"></ng-icon>
+          </div>
+          <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              class="h-full bg-brand-orange rounded-full"
+              [style.width.%]="getPercentage(reviewsData().summary.threeStarCount)"
+            ></div>
+          </div>
+          <div class="w-8 text-right text-[13px] text-gray-500">
+            {{ reviewsData().summary.threeStarCount }}
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 w-8 text-[13px] font-bold text-gray-700">
+            2 <ng-icon name="lucideStar" size="12" class="text-brand-orange"></ng-icon>
+          </div>
+          <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              class="h-full bg-brand-orange rounded-full"
+              [style.width.%]="getPercentage(reviewsData().summary.twoStarCount)"
+            ></div>
+          </div>
+          <div class="w-8 text-right text-[13px] text-gray-500">
+            {{ reviewsData().summary.twoStarCount }}
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 w-8 text-[13px] font-bold text-gray-700">
+            1 <ng-icon name="lucideStar" size="12" class="text-brand-orange"></ng-icon>
+          </div>
+          <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              class="h-full bg-brand-orange rounded-full"
+              [style.width.%]="getPercentage(reviewsData().summary.oneStarCount)"
+            ></div>
+          </div>
+          <div class="w-8 text-right text-[13px] text-gray-500">
+            {{ reviewsData().summary.oneStarCount }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Write a review button -->
+    @if (reviewsData().canWriteReview) {
+      <button
+        class="w-full mt-6 h-12 border-2 border-brand-orange text-brand-orange rounded-xl font-bold text-[15px] hover:bg-brand-orange-light/10 transition-colors flex items-center justify-center gap-2"
+      >
+        <ng-icon name="lucidePenSquare" size="18"></ng-icon> Write a Review
+      </button>
+    }
+  </div>
+
+  <!-- Filters Row -->
+  <div class="flex flex-wrap items-center gap-3 mb-6 relative">
+    <!-- Sort Dropdown -->
+    <div class="relative">
+      <button
+        (click)="toggleSortDropdown()"
+        class="h-10 px-4 border border-gray-200 rounded-xl text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 bg-white shadow-sm"
+      >
+        {{ activeSortLabel }}
+        <ng-icon name="lucideChevronDown" size="16" class="text-gray-400"></ng-icon>
+      </button>
+
+      <!-- Sort Menu -->
+      @if (sortDropdownOpen()) {
+        <div
+          class="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg z-50 overflow-hidden"
+        >
+          @for (option of sortOptions; track option) {
+            <button
+              (click)="selectSort(option.value)"
+              class="w-full text-left px-4 py-2.5 text-[13px] hover:bg-gray-50 flex items-center justify-between"
+              [class.font-bold]="activeSort() === option.value"
+              [class.text-brand-orange]="activeSort() === option.value"
+            >
+              {{ option.label }}
+              @if (activeSort() === option.value) {
+                <ng-icon name="lucideCheck" size="14"></ng-icon>
+              }
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Rating Dropdown -->
+    <div class="relative">
+      <button
+        (click)="toggleRatingDropdown()"
+        class="h-10 px-4 border border-gray-200 rounded-xl text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 bg-white shadow-sm"
+      >
+        @if (activeRating()) {
+          <ng-icon
+            name="lucideStar"
+            size="16"
+            class="text-brand-orange fill-brand-orange"
+          ></ng-icon>
+        }
+        {{ activeRatingLabel }}
+        <ng-icon name="lucideChevronDown" size="16" class="text-gray-400"></ng-icon>
+      </button>
+
+      <!-- Rating Menu -->
+      @if (ratingDropdownOpen()) {
+        <div
+          class="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg z-50 overflow-hidden"
+        >
+          @for (option of ratingOptions; track option) {
+            <button
+              (click)="selectRating(option.value)"
+              class="w-full text-left px-4 py-2.5 text-[13px] hover:bg-gray-50 flex items-center justify-between"
+              [class.font-bold]="activeRating() === option.value"
+              [class.text-brand-orange]="activeRating() === option.value"
+            >
+              <span class="flex items-center gap-2">
+                @if (option.value) {
+                  <ng-icon
+                    name="lucideStar"
+                    size="14"
+                    class="text-brand-orange fill-brand-orange"
+                  ></ng-icon>
+                }
+                {{ option.label }}
+              </span>
+              @if (activeRating() === option.value) {
+                <ng-icon name="lucideCheck" size="14"></ng-icon>
+              }
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Review List -->
+  <div class="flex flex-col gap-4">
+    @for (review of reviewsData().items; track review) {
+      <div
+        class="p-5 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
+      >
+        <!-- Header: Avatar, Name, Date, Stars -->
+        <div class="flex justify-between items-start mb-4">
+          <!-- Avatar & Name -->
+          <div class="flex gap-3.5">
+            <div
+              class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-lg flex-shrink-0"
+            >
+              {{ review.customerDisplayName.charAt(0).toUpperCase() }}
+            </div>
+            <div class="flex flex-col justify-center">
+              <div class="font-bold text-gray-900 text-[15px] leading-tight mb-1">
+                {{ review.customerDisplayName }}
+              </div>
+              <div class="text-[13px] text-gray-500 leading-none">
+                {{ review.createdAt | date: 'mediumDate' }}
+              </div>
+            </div>
+          </div>
+          <!-- Stars -->
+          <div class="flex flex-col items-end">
+            <div class="flex items-center gap-1.5">
+              <app-star-rating [rating]="review.ratingValue" [size]="14"></app-star-rating>
+              <span class="text-[13px] font-bold text-gray-600">{{
+                review.ratingValue.toFixed(1)
+              }}</span>
+            </div>
+          </div>
+        </div>
+        <!-- Body -->
+        <h4 class="font-bold text-[15px] text-gray-900 mb-2">{{ review.reviewTitle }}</h4>
+        <p class="text-[14px] text-gray-600 leading-relaxed">{{ review.reviewText }}</p>
+        <!-- Footer: More Options (Since helpful/reply is omitted) -->
+        <div class="flex justify-end mt-4 pt-4 border-t border-gray-50">
+          <button
+            class="text-gray-400 hover:text-gray-600 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-50"
+          >
+            <ng-icon name="lucideMoreVertical" size="18"></ng-icon>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

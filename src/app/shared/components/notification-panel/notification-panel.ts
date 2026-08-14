@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject , ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideBell, lucideCheckCheck, lucideChevronRight, lucideInbox, lucidePackage, lucideRefreshCw, lucideX } from '@ng-icons/lucide';
-import { NotificationInboxItemResponse } from '../../../core/models/notification.model';
-import { NotificationService } from '../../../core/services/notification.service';
+import { NotificationInboxItemResponse } from '../../../features/account/models/notification.model';
+import { NotificationService } from '../../../features/account/services/notification.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-notification-panel',
   standalone: true,
   imports: [CommonModule, NgIconComponent],

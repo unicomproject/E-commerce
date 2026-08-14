@@ -1,0 +1,155 @@
+<div class="space-y-6 w-full">
+  <div class="mb-4 lg:mb-0">
+    <!-- Header (Mobile Only) -->
+    <app-mobile-header title="Personal Information" (back)="goBack()"></app-mobile-header>
+  </div>
+
+  <!-- Profile Card Header -->
+  @if (!isLoading()) {
+    <div
+      class="bg-white rounded-[24px] p-6 flex flex-col md:flex-row md:items-center gap-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100"
+    >
+      <div class="flex flex-row items-center gap-5 flex-grow">
+        <div class="flex-shrink-0">
+          <div
+            class="w-20 h-20 bg-[#fff0e6] rounded-full flex items-center justify-center text-brand-orange overflow-hidden"
+          >
+            <ng-icon name="lucideUser" size="40" strokeWidth="1.5"></ng-icon>
+          </div>
+        </div>
+        <div class="flex-grow space-y-1">
+          <h2 class="text-xl font-bold text-gray-900">
+            {{ profileForm.get('firstName')?.value }} {{ profileForm.get('lastName')?.value }}
+          </h2>
+          <div class="text-gray-500 text-sm">
+            {{ profileForm.get('email')?.value }}
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div
+      class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 flex flex-col items-center justify-center"
+    >
+      <ng-icon name="lucideLoader2" size="48" class="text-brand-orange animate-spin mb-4"></ng-icon>
+      <p class="text-gray-500 font-medium">Loading profile details...</p>
+    </div>
+  }
+
+  <!-- Form Content -->
+  @if (!isLoading()) {
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 lg:p-8">
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- First Name -->
+          <div class="space-y-2">
+            <label for="firstName" class="block text-sm font-medium text-gray-700"
+              >First Name <span class="text-red-500">*</span></label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"
+              >
+                <ng-icon name="lucideUser" size="18"></ng-icon>
+              </div>
+              <input
+                type="text"
+                id="firstName"
+                formControlName="firstName"
+                class="pl-10 w-full rounded-lg border border-gray-300 py-2.5 px-4 text-gray-900 font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
+                [ngClass]="{
+                  'border-red-500 focus:ring-red-500':
+                    profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched,
+                }"
+                placeholder="Enter your first name"
+              />
+            </div>
+            @if (profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched) {
+              <p class="text-sm text-red-500">First name is required</p>
+            }
+          </div>
+          <!-- Last Name -->
+          <div class="space-y-2">
+            <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"
+              >
+                <ng-icon name="lucideUser" size="18"></ng-icon>
+              </div>
+              <input
+                type="text"
+                id="lastName"
+                formControlName="lastName"
+                class="pl-10 w-full rounded-lg border border-gray-300 py-2.5 px-4 text-gray-900 font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
+                placeholder="Enter your last name"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Email -->
+          <div class="space-y-2">
+            <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"
+              >
+                <ng-icon name="lucideMail" size="18"></ng-icon>
+              </div>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                class="pl-10 w-full rounded-lg border border-gray-300 py-2.5 px-4 text-gray-900 font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent transition-shadow"
+                [ngClass]="{
+                  'border-red-500 focus:ring-red-500':
+                    profileForm.get('email')?.invalid && profileForm.get('email')?.touched,
+                }"
+                placeholder="Enter your email address"
+              />
+            </div>
+            @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
+              <p class="text-sm text-red-500">Please enter a valid email</p>
+            }
+          </div>
+          <!-- Phone -->
+          <div class="space-y-2">
+            <label for="phone" class="block text-sm font-medium text-gray-700"
+              >Phone Number <span class="text-red-500">*</span></label
+            >
+            <app-phone-input
+              formControlName="phone"
+              inputId="phone"
+              placeholder="Phone number"
+              [hasError]="
+                !!(profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched)
+              "
+            ></app-phone-input>
+            @if (profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched) {
+              <p class="text-sm text-red-500">Phone number is required</p>
+            }
+          </div>
+        </div>
+        <div class="pt-6 border-t border-gray-100 flex justify-end">
+          <button
+            type="submit"
+            [disabled]="isSaving() || profileForm.invalid"
+            class="flex items-center gap-2 px-6 py-2.5 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark focus:outline-none focus:ring-4 focus:ring-brand-orange/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            @if (!isSaving()) {
+              <ng-icon name="lucideSave" size="20"></ng-icon>
+            }
+            @if (isSaving()) {
+              <ng-icon name="lucideLoader2" size="20" class="animate-spin"></ng-icon>
+            }
+            {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

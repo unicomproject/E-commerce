@@ -1,16 +1,13 @@
-import { Component, input } from '@angular/core';
+import { Component, input , ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TenantCurrencyPipe } from '../price/../../pipes/tenant-currency.pipe';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-price',
   standalone: true,
   imports: [CommonModule, TenantCurrencyPipe],
-  template: `
-    <span [ngClass]="className()">
-      {{ value() | tenantCurrency:'symbol':format() }}
-    </span>
-  `
+  templateUrl: './price.component.html'
 })
 export class PriceComponent {
   readonly value = input(0);

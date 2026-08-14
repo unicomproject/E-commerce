@@ -1,20 +1,22 @@
-import { Component, computed, inject, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, computed, inject, input, ChangeDetectionStrategy } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+
 import { RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideHeart } from '@ng-icons/lucide';
 import { StorefrontProductListReadModel } from '../../../core/models';
-import { WishlistService } from '../../../core/services/wishlist.service';
+import { WishlistService } from '../../../features/wishlist/services/wishlist.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TenantCurrencyPipe } from '../../pipes/tenant-currency.pipe';
 import { StarRatingComponent } from '../star-rating/star-rating.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-product-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgIconComponent, TenantCurrencyPipe, StarRatingComponent],
+  imports: [RouterLink, NgIconComponent, TenantCurrencyPipe, StarRatingComponent, NgOptimizedImage],
   viewProviders: [provideIcons({ lucideHeart })],
-  templateUrl: './product-card.component.html'
+  templateUrl: './product-card.component.html',
 })
 export class ProductCardComponent {
   readonly product = input.required<StorefrontProductListReadModel | any>();
@@ -27,7 +29,7 @@ export class ProductCardComponent {
     const list = this.wishlistSig();
     const product = this.product();
     if (!list || !product) return false;
-    return list.items.some(i => i.productId === product.id);
+    return list.items.some((i) => i.productId === product.id);
   });
 
   readonly ratingValue = computed(() => {
@@ -48,7 +50,7 @@ export class ProductCardComponent {
 
     if (this.isInWishlist()) {
       const list = this.wishlistSig();
-      const item = list?.items.find(i => i.productId === product.id);
+      const item = list?.items.find((i) => i.productId === product.id);
       if (item) {
         this.wishlistService.removeItem(item.id);
       }
