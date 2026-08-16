@@ -1,0 +1,126 @@
+<div
+  class="p-2.5 sm:p-3 lg:p-4 flex flex-row items-center gap-2.5 sm:gap-4 bg-white relative group transition-colors"
+>
+  <!-- Custom Checkbox -->
+  <label class="flex-shrink-0 cursor-pointer self-center">
+    <input
+      type="checkbox"
+      [checked]="isSelected()"
+      (change)="onToggleSelect.emit(item().id)"
+      class="hidden"
+    />
+    <!-- Visual Checkbox -->
+    <div
+      class="w-[20px] h-[20px] rounded flex items-center justify-center transition-colors border"
+      [ngClass]="isSelected() ? 'bg-[#FF6A00] border-[#FF6A00]' : 'bg-white border-[#CBD5E1]'"
+    >
+      @if (isSelected()) {
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="white"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      }
+    </div>
+  </label>
+
+  <!-- Product Image -->
+  <div
+    class="relative w-[76px] h-[76px] sm:w-[84px] sm:h-[84px] lg:w-[96px] lg:h-[96px] bg-[#F8FAFC] rounded-[10px] overflow-hidden flex-shrink-0 border border-[#F1F5F9]"
+  >
+    @if (item().imageUrl) {
+      <img [ngSrc]="item().imageUrl" [alt]="item().name" class="object-cover" fill />
+    }
+  </div>
+
+  <!-- Details Container -->
+  <div class="flex-1 flex justify-between items-center min-w-0 h-[76px] sm:h-[84px] lg:h-[96px]">
+    <!-- Left side: Name, Options, Prices -->
+    <div class="flex flex-col justify-center h-full min-w-0 flex-1 pr-1 sm:pr-2">
+      <!-- Title -->
+      <h3
+        class="text-[13px] sm:text-[14px] lg:text-[15px] text-[#64748B] font-medium leading-tight truncate"
+      >
+        {{ item().name }}
+      </h3>
+
+      <!-- Options -->
+      @if (item().options?.length) {
+        <div
+          class="text-[12px] sm:text-[13px] lg:text-[14px] text-[#64748B] font-medium leading-tight mt-0.5 sm:mt-1 truncate"
+        >
+          @for (opt of item().options; track opt.name; let last = $last) {
+            <span>{{ opt.name }}:{{ opt.value }}</span>
+            @if (!last) {
+              <span class="mx-0.5">,</span>
+            }
+          }
+        </div>
+      }
+
+      <!-- Prices -->
+      <div class="mt-1 sm:mt-1.5 flex flex-col">
+        <span
+          class="text-[15px] sm:text-[16px] lg:text-[17px] font-bold text-[#F43F5E] leading-none tracking-tight"
+        >
+          {{ item().unitPrice | tenantCurrency: 'symbol' : '1.0-0' }}
+        </span>
+        @if (item().originalPrice) {
+          <span class="text-[12px] sm:text-[13px] text-[#94A3B8] line-through mt-0.5 leading-none">
+            {{ item().originalPrice | tenantCurrency: 'symbol' : '1.0-0' }}
+          </span>
+        }
+      </div>
+    </div>
+
+    <!-- Right side: Quantity Stepper -->
+    <div class="flex items-center ml-1 sm:ml-2">
+      <button
+        (click)="decrement()"
+        class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-md bg-[#F8FAFC] text-[#64748B] hover:bg-[#F1F5F9] transition-colors disabled:opacity-50 shrink-0"
+        [disabled]="item().quantity <= 1"
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
+
+      <div
+        class="w-6 sm:w-8 text-center font-medium text-[13px] sm:text-[14px] text-[#334155] shrink-0"
+      >
+        {{ item().quantity }}
+      </div>
+
+      <button
+        (click)="increment()"
+        class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-md bg-[#F8FAFC] text-[#64748B] hover:bg-[#F1F5F9] transition-colors shrink-0"
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

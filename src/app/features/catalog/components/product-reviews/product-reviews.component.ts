@@ -1,5 +1,6 @@
 import { Component, input, output, signal , ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { 
   lucideStar,
@@ -15,7 +16,7 @@ import { StarRatingComponent } from '../../../../shared/components/star-rating/s
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-product-reviews',
   standalone: true,
-  imports: [CommonModule, NgIconComponent, StarRatingComponent, DatePipe],
+  imports: [CommonModule, RouterLink, NgIconComponent, StarRatingComponent, DatePipe],
   templateUrl: './product-reviews.component.html',
   viewProviders: [provideIcons({ 
     lucideStar,
@@ -27,9 +28,11 @@ import { StarRatingComponent } from '../../../../shared/components/star-rating/s
 })
 export class ProductReviewsComponent {
   readonly reviewsData = input.required<ProductReviewsPageReadModel>();
+  readonly productSlug = input<string>('');
   
   readonly activeSort = input<string>('newest');
   readonly activeRating = input<number | null>(null);
+  readonly isSummaryMode = input<boolean>(true);
   
   readonly onFilterChange = output<{ sort: string, rating: number | null }>();
 
@@ -56,8 +59,9 @@ export class ProductReviewsComponent {
     return this.sortOptions.find(o => o.value === this.activeSort())?.label || 'Sort';
   }
 
-  get activeRatingLabel(): string {
-    return this.ratingOptions.find(o => o.value === this.activeRating())?.label || 'All Stars';
+  get activeRatingLabel() {
+    const val = this.activeRating();
+    return val ? `${val} Star` : 'All Stars';
   }
 
   getPercentage(count: number): number {

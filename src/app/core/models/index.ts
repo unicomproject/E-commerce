@@ -7,6 +7,6 @@ export * from '../../features/catalog/models/product-detail.model';
 export * from './auth.model';
 export * from '../../features/cart/models/cart.model';
 export * from '../../features/checkout/models/checkout.model';
-export * from '../../features/account/models/customer-profile.model';
+export * from '../../features/customer/models/customer-profile.model';
 export * from '../../features/wishlist/models/wishlist.models';
-export * from '../../features/account/models/notification.model';
+export * from '../../features/customer/models/notification.model';

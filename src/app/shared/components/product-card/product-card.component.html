@@ -7,7 +7,7 @@
     >
       <div class="relative flex h-[160px] w-full flex-shrink-0 items-center justify-center overflow-hidden bg-[#F5F5F5] lg:h-[180px]">
         <img
-          [ngSrc]="product.imageUrl || 'assets/placeholder-product.png'"
+          [ngSrc]="product.imageUrl || '/assets/placeholder-product.png'"
           [alt]="product.name"
           class="object-cover transition-transform duration-300 group-hover:scale-105"
           fill
@@ -52,7 +52,7 @@
     >
       <div class="relative h-[120px] w-[120px] flex-shrink-0 overflow-hidden bg-[#F5F5F5]">
         <img
-          [ngSrc]="product.imageUrl || 'assets/placeholder-product.png'"
+          [ngSrc]="product.imageUrl || '/assets/placeholder-product.png'"
           [alt]="product.name"
           class="object-cover"
           fill

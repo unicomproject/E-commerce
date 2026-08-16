@@ -1,0 +1,58 @@
+<!-- Overlay -->
+<div
+  class="fixed inset-0 bg-black/60 z-[60] transition-opacity duration-300"
+  [class.opacity-0]="!isOpen()"
+  [class.opacity-100]="isOpen()"
+  [class.pointer-events-none]="!isOpen()"
+  (click)="onClose()"
+></div>
+
+<!-- Bottom Sheet -->
+<div
+  class="fixed bottom-0 left-0 right-0 z-[70] bg-white rounded-t-3xl transition-transform duration-300 ease-out transform"
+  [class.translate-y-full]="!isOpen()"
+  [class.translate-y-0]="isOpen()"
+>
+  <!-- Handle -->
+  <div class="w-full flex justify-center pt-3 pb-1" (click)="onClose()">
+    <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
+  </div>
+
+  <div class="px-5 pb-8 pt-2">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-[20px] font-bold text-[#111111]">Sort by</h2>
+      <button (click)="onClose()" class="p-2 -mr-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+        <ng-icon name="lucideX" size="24"></ng-icon>
+      </button>
+    </div>
+
+    <!-- Options -->
+    <div class="flex flex-col gap-2">
+      <button 
+        (click)="selectSort('price_asc')"
+        class="flex items-center justify-between p-4 rounded-2xl border transition-all"
+        [ngClass]="activeSort() === 'price_asc' ? 'border-brand-orange bg-brand-orange/5' : 'border-gray-100 bg-white hover:border-gray-200'"
+      >
+        <span class="font-medium" [ngClass]="activeSort() === 'price_asc' ? 'text-brand-orange' : 'text-gray-700'">
+          Price: Low to High
+        </span>
+        @if (activeSort() === 'price_asc') {
+          <ng-icon name="lucideCheck" size="20" class="text-brand-orange"></ng-icon>
+        }
+      </button>
+
+      <button 
+        (click)="selectSort('price_desc')"
+        class="flex items-center justify-between p-4 rounded-2xl border transition-all"
+        [ngClass]="activeSort() === 'price_desc' ? 'border-brand-orange bg-brand-orange/5' : 'border-gray-100 bg-white hover:border-gray-200'"
+      >
+        <span class="font-medium" [ngClass]="activeSort() === 'price_desc' ? 'text-brand-orange' : 'text-gray-700'">
+          Price: High to Low
+        </span>
+        @if (activeSort() === 'price_desc') {
+          <ng-icon name="lucideCheck" size="20" class="text-brand-orange"></ng-icon>
+        }
+      </button>
+    </div>
+  </div>
+</div>

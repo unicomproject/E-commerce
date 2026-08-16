@@ -24,6 +24,7 @@ export class CheckoutService {
   // State
   isOpen = signal<boolean>(false);
   isFastTracked = signal<boolean>(false);
+  requiresDetails = signal<boolean>(false);
   currentStep = signal<1 | 2 | 3 | 4>(1);
   sessionId = signal<string | null>(null);
   checkoutSession = signal<StorefrontCheckoutReadModel | null>(null);
@@ -41,6 +42,7 @@ export class CheckoutService {
   openCheckout() {
     this.isOpen.set(true);
     this.isFastTracked.set(false);
+    this.requiresDetails.set(false);
     this.currentStep.set(1);
     this.error.set(null);
   }
@@ -48,6 +50,7 @@ export class CheckoutService {
   closeCheckout() {
     this.isOpen.set(false);
     this.isFastTracked.set(false);
+    this.requiresDetails.set(false);
   }
 
   setStep(step: 1 | 2 | 3 | 4) {
@@ -92,7 +95,17 @@ export class CheckoutService {
   /** Open checkout directly on Order Review (fast-track UI). */
   openReviewCheckout() {
     this.isFastTracked.set(true);
+    this.requiresDetails.set(false);
     this.currentStep.set(3);
+    this.isOpen.set(true);
+    this.error.set(null);
+  }
+
+  /** Open fast-track checkout but starting at Details step because they are missing. */
+  openCheckoutWithDetails() {
+    this.isFastTracked.set(true);
+    this.requiresDetails.set(true);
+    this.currentStep.set(1);
     this.isOpen.set(true);
     this.error.set(null);
   }

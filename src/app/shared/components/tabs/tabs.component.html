@@ -5,7 +5,7 @@
     [class.px-2]="theme() === 'plain'"
     [class.pb-px]="theme() === 'shaded'"
   >
-    @for (tab of tabs(); track tab) {
+    @for (tab of tabs(); track tab.id) {
       <button (click)="selectTab(tab.id)" [class]="getTabClass(tab.id)">
         {{ tab.label }}
         @if (tab.count !== undefined) {

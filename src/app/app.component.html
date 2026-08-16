@@ -1,0 +1,14 @@
+<div class="min-h-screen bg-page-bg flex flex-col font-sans text-neutral-900 pb-24 pb-safe lg:pb-0">
+  <app-header></app-header>
+  <main class="flex-grow">
+    <router-outlet></router-outlet>
+  </main>
+
+  <app-bottom-nav></app-bottom-nav>
+  <app-toast></app-toast>
+  @defer (on idle) {
+    <app-auth-modal></app-auth-modal>
+    <app-checkout-modal></app-checkout-modal>
+    <app-category-bottom-sheet></app-category-bottom-sheet>
+  }
+</div>

@@ -1,49 +1,58 @@
-<div
-      class="sticky z-40 bg-page-bg w-full max-w-[1600px] mx-auto flex items-center gap-2 transition-all duration-300"
-      [style.top.px]="isNavbarHidden() ? 0 : 80"
+    <div
+      class="w-full max-w-[1600px] mx-auto transition-all duration-300"
+      [class.sticky]="isSticky()"
+      [class.z-40]="isSticky()"
+      [class.bg-page-bg]="!isTransparent()"
+      [style.top.px]="isSticky() ? (isNavbarHidden() ? 0 : 80) : null"
       [ngClass]="noPadding() ? customClasses() : 'px-4 lg:px-8 py-4 ' + customClasses()"
     >
-      @if (showBack()) {
-        <button
-          (click)="onBack()"
-          class="flex-shrink-0 p-1.5 -ml-1.5 flex lg:hidden items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-[#111111]"
-        >
-          <ng-icon name="lucideArrowLeft" class="text-[24px]"></ng-icon>
-        </button>
+      <div class="flex items-center gap-2 w-full">
+        @if (showBack()) {
+          <button
+            (click)="onBack()"
+            class="flex-shrink-0 p-1.5 -ml-1.5 flex lg:hidden items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-[#111111]"
+          >
+            <ng-icon name="lucideArrowLeft" class="text-[24px]"></ng-icon>
+          </button>
+        }
+        
+        <div class="flex-grow flex flex-col justify-center">
+          @if (breadcrumbs()) {
+            <div class="hidden lg:block mb-1">
+              <app-breadcrumbs [items]="breadcrumbs()!"></app-breadcrumbs>
+            </div>
+          }
+          @if (title()) {
+            <h1
+              class="text-xl lg:text-3xl font-bold text-brand-navy tracking-tight flex lg:hidden items-center gap-2"
+            >
+            <ng-content></ng-content>
+            <span>{{ title() }}</span>
+          </h1>
+        }
+          @if (title() && !hideDesktopTitle()) {
+            <h1
+              class="hidden lg:flex text-3xl font-bold text-brand-navy tracking-tight items-center gap-2"
+            >
+              <ng-content></ng-content>
+              <span>{{ title() }}</span>
+            </h1>
+          }
+          @if (!title()) {
+            <div class="flex items-center gap-2">
+              <ng-content></ng-content>
+            </div>
+          }
+        </div>
+        
+        <!-- Optional Actions Slot -->
+        <div class="flex-shrink-0">
+          <ng-content select="[actions]"></ng-content>
+        </div>
+      </div>
+      
+      <!-- Subtitle is placed below the main title row and indented on mobile if back button is present -->
+      @if (subtitle()) {
+        <p class="text-gray-500 text-sm lg:text-base mt-0.5 lg:ml-0" [class.ml-[36px]]="showBack()">{{ subtitle() }}</p>
       }
-      <div class="flex-grow flex flex-col justify-center">
-        @if (breadcrumbs()) {
-          <div class="hidden lg:block mb-1">
-            <app-breadcrumbs [items]="breadcrumbs()!"></app-breadcrumbs>
-          </div>
-        }
-        @if (title()) {
-          <h1
-            class="text-xl lg:text-3xl font-bold text-brand-navy tracking-tight flex lg:hidden items-center gap-2"
-          >
-            <ng-content></ng-content>
-            <span>{{ title() }}</span>
-          </h1>
-        }
-        @if (title() && !hideDesktopTitle()) {
-          <h1
-            class="hidden lg:flex text-3xl font-bold text-brand-navy tracking-tight items-center gap-2"
-          >
-            <ng-content></ng-content>
-            <span>{{ title() }}</span>
-          </h1>
-        }
-        @if (subtitle()) {
-          <p class="text-gray-500 text-sm lg:text-base mt-1">{{ subtitle() }}</p>
-        }
-        @if (!title()) {
-          <div class="flex items-center gap-2">
-            <ng-content></ng-content>
-          </div>
-        }
-      </div>
-      <!-- Optional Actions Slot -->
-      <div class="flex-shrink-0">
-        <ng-content select="[actions]"></ng-content>
-      </div>
     </div>

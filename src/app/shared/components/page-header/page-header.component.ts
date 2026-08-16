@@ -25,6 +25,8 @@ export class PageHeaderComponent {
   readonly noPadding = input(false);
   readonly showBack = input(true);
   readonly hideDesktopTitle = input(false);
+  readonly isSticky = input(true);
+  readonly isTransparent = input(false);
   readonly customClasses = input('');
   readonly breadcrumbs = input<BreadcrumbItem[]>();
   readonly back = output<void>();

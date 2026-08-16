@@ -28,8 +28,10 @@
   --color-border-color: #F5F5F5;
 }
 
-body {
-  @apply bg-page-bg text-brand-black antialiased;
+@layer base {
+  body {
+    @apply bg-page-bg text-brand-black antialiased overflow-x-hidden w-full max-w-[100vw];
+  }
 }
 
 /* Ensure ng-icon SVGs inherit fill colors when fill classes are applied */

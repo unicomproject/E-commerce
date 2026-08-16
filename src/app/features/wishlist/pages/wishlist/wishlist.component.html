@@ -1,0 +1,155 @@
+<div class="w-full pb-24 lg:pb-12 pt-2 lg:pt-0">
+  <!-- Title -->
+  <div class="lg:hidden pt-4 pb-2 flex items-center gap-2 sticky top-0 z-40 bg-page-bg -mx-4 px-4">
+    <button routerLink="/account" class="flex-shrink-0 p-1.5 -ml-1.5 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-[#111111]">
+      <ng-icon name="lucideArrowLeft" class="text-[24px]"></ng-icon>
+    </button>
+    <h1 class="text-[20px] font-bold text-[#111111] leading-none pt-0.5 truncate">Wishlist</h1>
+  </div>
+
+  @if (wishlist$ | async; as wishlist) {
+    <!-- Empty State -->
+    @if (wishlist.items.length === 0) {
+      <div
+        class="bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100 flex flex-col items-center"
+      >
+        <div
+          class="w-24 h-24 bg-brand-orange-light/30 text-brand-orange rounded-full flex items-center justify-center mb-6"
+        >
+          <ng-icon name="lucideHeart" size="48"></ng-icon>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Your wishlist is empty</h2>
+        <p class="text-gray-500 mb-8 max-w-md">
+          Looks like you haven't added any items to your wishlist yet. Explore our products and find
+          something you love!
+        </p>
+        <a
+          routerLink="/"
+          class="px-8 py-4 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold transition-colors"
+          >Start Shopping</a
+        >
+      </div>
+    }
+    <!-- Wishlist Grid -->
+    @if (wishlist.items.length > 0) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+        @for (item of wishlist.items; track item.id) {
+          <div
+            class="bg-white rounded-xl p-2 sm:p-3 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-gray-100/80 flex flex-row gap-2 sm:gap-3 relative group hover:border-brand-orange/30 transition-colors"
+          >
+            <!-- Image (Left) -->
+            <a [routerLink]="['/product', item.productSlug]" class="shrink-0 block">
+              <div
+                class="relative w-[90px] h-[90px] sm:w-[120px] sm:h-[120px] rounded-lg sm:rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center"
+              >
+                <img
+                  [ngSrc]="item.imageUrl || 'assets/images/placeholder.webp'"
+                  [alt]="item.productName"
+                  fill
+                  priority
+                  class="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+            </a>
+            <!-- Details & Actions (Right) -->
+            <div class="flex-1 flex flex-col justify-between py-1 sm:py-1.5">
+              <!-- Top: Title, Variant -->
+              <div class="flex justify-between items-start gap-3">
+                <div class="flex-1">
+                  <!-- 1. Name -->
+                  <h3
+                    class="font-bold text-gray-900 text-[13px] sm:text-[15px] leading-tight sm:leading-snug mb-1.5 line-clamp-2"
+                  >
+                    <a
+                      [routerLink]="['/product', item.productSlug]"
+                      class="hover:text-brand-orange transition-colors"
+                    >
+                      {{ item.productName }}
+                    </a>
+                  </h3>
+                  <!-- 2. Price -->
+                  <div
+                    class="font-extrabold text-brand-orange text-sm sm:text-lg leading-none mb-1.5"
+                  >
+                    {{ item.price | tenantCurrency: 'symbol' : '1.2-2' }}
+                  </div>
+                  <!-- 3. Rating -->
+                  <div class="flex items-center gap-1.5 mb-1.5">
+                    <app-star-rating [rating]="item.rating || 0" [size]="14"></app-star-rating>
+                    <span class="text-[11px] sm:text-xs font-bold text-gray-900">{{
+                      item.rating || 0 | number: '1.1-1'
+                    }}</span>
+                    <a
+                      [routerLink]="['/product', item.productSlug]"
+                      fragment="reviews"
+                      class="text-[10px] sm:text-[11px] text-brand-orange hover:underline"
+                      >({{ item.reviewCount || 0 }} reviews)</a
+                    >
+                  </div>
+                  <!-- 4. Variant -->
+                  @if (item.variantName) {
+                    <p class="text-[11px] sm:text-xs text-gray-500 mb-1.5">
+                      {{ item.variantName }}
+                    </p>
+                  }
+                  <!-- 5. Stock -->
+                  <div
+                    class="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold"
+                    [ngClass]="item.isInStock ? 'text-gray-500' : 'text-red-500'"
+                  >
+                    <div
+                      class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full"
+                      [ngClass]="item.isInStock ? 'bg-green-500' : 'bg-red-500'"
+                    ></div>
+                    {{ item.isInStock ? 'In stock' : 'Out of stock' }}
+                  </div>
+                </div>
+                <!-- Top Right Icon (Trash) -->
+                <button
+                  (click)="$event.preventDefault(); removeItem(item.id)"
+                  class="shrink-0 w-7 h-7 sm:w-8 sm:h-8 border border-gray-200 rounded-md sm:rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all shadow-sm bg-white"
+                  title="Remove from Wishlist"
+                >
+                  <ng-icon name="lucideTrash2" size="15"></ng-icon>
+                </button>
+              </div>
+              <!-- Bottom: Cart Button -->
+              <div class="flex flex-row flex-wrap items-end justify-end mt-3 sm:mt-auto gap-2">
+                <button
+                  [disabled]="!item.isInStock"
+                  (click)="moveToCart(item)"
+                  class="ml-auto px-3 py-1.5 sm:px-3 sm:py-2 bg-transparent border border-brand-orange text-brand-orange hover:bg-brand-orange-light/10 rounded-md sm:rounded-lg font-bold text-[11px] sm:text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap shrink-0"
+                >
+                  <ng-icon name="lucideShoppingCart" size="14"></ng-icon>
+                  Move to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+    <!-- Bottom Banner -->
+    @if (wishlist.items.length > 0) {
+      <div
+        class="mt-8 bg-brand-orange-light/20 rounded-2xl border border-brand-orange-light p-6 flex flex-col md:flex-row items-center justify-between gap-6"
+      >
+        <div class="flex items-center gap-4 text-center md:text-left">
+          <div class="hidden md:flex text-brand-orange opacity-50">
+            <ng-icon name="lucideHeart" size="40"></ng-icon>
+          </div>
+          <div>
+            <h4 class="font-bold text-gray-900 text-lg">Love an item you recently viewed?</h4>
+            <p class="text-gray-500 text-sm">Keep browsing and add more to your wishlist.</p>
+          </div>
+        </div>
+        <a
+          routerLink="/"
+          class="w-full md:w-auto px-6 py-3 bg-white border border-brand-orange text-brand-orange hover:bg-brand-orange-light/20 font-bold rounded-lg transition-colors text-center"
+        >
+          Continue Shopping
+        </a>
+      </div>
+    }
+  }
+</div>

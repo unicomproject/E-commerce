@@ -1,5 +1,5 @@
 <nav class="flex items-center text-sm text-gray-500 flex-wrap gap-y-1">
-      @for (item of items(); track item; let last = $last; let i = $index) {
+      @for (item of items(); track item.label; let last = $last; let i = $index) {
         @if (item.link) {
           <a [routerLink]="item.link" class="hover:text-gray-900 transition-colors">{{
             item.label

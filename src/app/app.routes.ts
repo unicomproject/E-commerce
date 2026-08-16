@@ -12,11 +12,12 @@ export const routes: Routes = [
   },
   {
     path: 'reset-password',
-    loadComponent: () => import('./features/account/pages/reset-password/reset-password').then(m => m.ResetPasswordComponent)
+    loadComponent: () => import('./features/auth/pages/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
   },
   {
     path: 'account',
-    loadChildren: () => import('./features/account/account.routes').then(m => m.routes),
+    loadChildren: () => import('./features/customer/customer.routes').then(m => m.routes),
     canActivate: [authGuard]
   }
 ];
+
