@@ -18,13 +18,14 @@ import { CheckoutService } from '../../../../features/checkout/services/checkout
 import { StorefrontDataService } from '../../../catalog/services/catalog.service';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
 import { CollectionTimeModalComponent } from '../collection-time-modal/collection-time-modal.component';
+import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-selector-modal.component';
 import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-checkout-review',
   standalone: true,
-  imports: [NgIconComponent, TenantCurrencyPipe, CollectionTimeModalComponent],
+  imports: [NgIconComponent, TenantCurrencyPipe, CollectionTimeModalComponent, OutletSelectorModalComponent],
   viewProviders: [
     provideIcons({
       lucideUser,
@@ -42,13 +43,7 @@ import { ToastService } from '../../../../core/services/toast.service';
   ],
   template: `
     <div class="animate-in fade-in duration-300">
-      <!-- Header -->
-      <div class="pt-2 pb-4 flex items-center gap-2 sticky top-0 z-40 bg-white">
-        <button (click)="goBack()" class="lg:hidden flex-shrink-0 p-1.5 -ml-1.5 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-[#111111]">
-          <ng-icon name="lucideArrowLeft" class="text-[24px]"></ng-icon>
-        </button>
-        <h1 class="text-[20px] font-bold text-[#111111] leading-none pt-0.5 truncate">Order Review</h1>
-      </div>
+      <!-- Header removed -->
 
       <!-- Content below header -->
       @if (checkoutService.checkoutSession() !== null) {
@@ -100,7 +95,7 @@ import { ToastService } from '../../../../core/services/toast.service';
                   checkoutService.checkoutSession()!.selectedOutletName
                 }}</span>
               </div>
-              @if (storefrontData.availableStores().length > 1) {
+              @if (checkoutService.availableStores().length > 1) {
                 <button
                   (click)="editCollection()"
                   class="text-brand-orange text-sm font-medium flex items-center hover:underline"
@@ -109,18 +104,18 @@ import { ToastService } from '../../../../core/services/toast.service';
                 </button>
               }
             </div>
-            <div class="w-full border-t border-gray-100 pl-8"></div>
-            <div class="flex items-center gap-3 text-gray-700">
-              <ng-icon name="lucideMapPin" size="18" class="text-gray-400 shrink-0"></ng-icon>
-              <span class="text-sm">Pick up from the collection point</span>
-            </div>
+
             <div class="w-full border-t border-gray-100 pl-8"></div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3 text-gray-900 font-medium">
                 <ng-icon name="lucideCalendar" size="18" class="text-gray-400 shrink-0"></ng-icon>
                 <span class="text-sm">
-                  {{ formatDate(checkoutService.checkoutSession()!.requestedCollectionAt!) }} •
-                  {{ formatTime(checkoutService.checkoutSession()!.requestedCollectionAt!) }}
+                  @if (checkoutService.checkoutSession()?.requestedCollectionAt) {
+                    {{ formatDate(checkoutService.checkoutSession()!.requestedCollectionAt!) }} •
+                    {{ formatTime(checkoutService.checkoutSession()!.requestedCollectionAt!) }}
+                  } @else {
+                    <span class="text-brand-orange font-semibold cursor-pointer" (click)="openTimeModal()">Select a collection time</span>
+                  }
                 </span>
               </div>
               <button
@@ -132,15 +127,7 @@ import { ToastService } from '../../../../core/services/toast.service';
             </div>
           </div>
         </div>
-        <!-- Collection Alert Banner -->
-        <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-start gap-3 mb-6">
-          <div class="text-blue-500 mt-0.5 shrink-0">
-            <ng-icon name="lucideInfo" size="18"></ng-icon>
-          </div>
-          <div class="text-[13px] text-blue-800 font-medium leading-tight pt-0.5">
-            Please confirm your collection date and time before ordering.
-          </div>
-        </div>
+
 
         <!-- Your Items -->
         <div class="mb-6">
@@ -254,6 +241,14 @@ import { ToastService } from '../../../../core/services/toast.service';
         (close)="isTimeModalOpen.set(false)"
         (confirm)="onTimeConfirmed($event)"
       ></app-collection-time-modal>
+
+      <app-outlet-selector-modal
+        [isOpen]="isOutletModalOpen()"
+        [stores]="checkoutService.availableStores()"
+        [selectedStoreId]="checkoutService.checkoutSession()?.selectedOutletId || null"
+        (close)="isOutletModalOpen.set(false)"
+        (selectStore)="onOutletSelected($event)"
+      ></app-outlet-selector-modal>
     </div>
   `,
 })
@@ -263,14 +258,31 @@ export class CheckoutReviewComponent {
   toastService = inject(ToastService);
 
   isTimeModalOpen = signal(false);
+  isOutletModalOpen = signal(false);
 
   goBack() {
-    this.checkoutService.setStep(2);
+    this.checkoutService.setStep(1); // Since step 2 is removed, go back to step 1
   }
 
   editCollection() {
-    this.checkoutService.isFastTracked.set(false);
-    this.checkoutService.setStep(2);
+    this.isOutletModalOpen.set(true);
+  }
+
+  onOutletSelected(store: any) {
+    this.isOutletModalOpen.set(false);
+    const currentCollectionTime = this.checkoutService.checkoutSession()?.requestedCollectionAt || '';
+    
+    this.checkoutService
+      .updateCollection({
+        selectedOutletId: store.id,
+        requestedCollectionAt: currentCollectionTime
+      })
+      .subscribe({
+        next: () => {
+          // Open time modal so user can pick a new time for the newly selected outlet
+          this.isTimeModalOpen.set(true);
+        },
+      });
   }
 
   onConfirmOrder() {

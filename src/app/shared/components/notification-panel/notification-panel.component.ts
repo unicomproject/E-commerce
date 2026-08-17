@@ -42,9 +42,15 @@ export class NotificationPanelComponent implements OnInit {
     this.notificationService.markAllAsRead().subscribe();
   }
 
-  loadMore(event: Event): void {
-    event.stopPropagation();
-    this.notificationService.loadNextPage().subscribe();
+  onScroll(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target) return;
+
+    if (target.scrollHeight - target.scrollTop - target.clientHeight < 50) {
+      if (this.notificationService.hasMore() && !this.notificationService.loading()) {
+        this.notificationService.loadNextPage().subscribe();
+      }
+    }
   }
 
   openNotification(item: NotificationInboxItemResponse): void {

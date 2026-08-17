@@ -66,14 +66,15 @@ export interface CustomerResendEmailVerificationRequest {
   email: string;
 }
 
-export interface CustomerForgotPasswordRequest {
+export interface CustomerRequestOtpRequest {
   email: string;
 }
 
-export interface CustomerResetPasswordRequest {
+export interface CustomerVerifyOtpRequest {
   email: string;
-  token: string;
-  newPassword: string;
+  code: string;
+  deviceName?: string;
+  rememberMe: boolean;
 }
 
 export interface CustomerGoogleLoginRequest {
@@ -82,6 +83,20 @@ export interface CustomerGoogleLoginRequest {
   rememberMe: boolean;
   agreeTerms: boolean;
   sendOffers: boolean;
+}
+
+export interface CustomerLoginCustomerDto {
+  id: string;
+  tenantId: string;
+  displayName: string;
+  email?: string;
+  phone?: string;
+}
+
+export interface CustomerLoginResponse {
+  accessToken: string;
+  accessTokenExpiresAt: string;
+  customer: CustomerLoginCustomerDto;
 }
 
 export interface CustomerLoginCustomerDto {

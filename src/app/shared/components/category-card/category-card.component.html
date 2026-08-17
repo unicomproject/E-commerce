@@ -8,7 +8,11 @@
       <div
         class="w-[48px] h-[48px] bg-[#F7F7F7] rounded-xl flex-shrink-0 flex items-center justify-center relative overflow-hidden">
         @if (cat.imageUrl) {
-          <img [ngSrc]="cat.imageUrl" [alt]="cat.name" class="w-full h-full object-cover mix-blend-multiply" fill />
+          <app-lazy-media-image
+            class="absolute inset-0 block h-full w-full"
+            [src]="cat.imageUrl"
+            [alt]="cat.name"
+          />
         }
         @if (!cat.imageUrl) {
           <div class="w-full h-full flex items-center justify-center text-gray-400">
@@ -49,11 +53,10 @@
       <div
         class="item-image-wrapper bg-gray-100 rounded-xl relative overflow-hidden aspect-square relative flex items-center justify-center mb-3">
         @if (cat.imageUrl) {
-          <img [ngSrc]="cat.imageUrl"
+          <app-lazy-media-image
+            class="absolute inset-0 block h-full w-full mix-blend-multiply"
+            [src]="cat.imageUrl"
             [alt]="cat.name"
-            class="w-full h-full object-cover mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-            fill
           />
         }
         @if (!cat.imageUrl) {
@@ -99,11 +102,10 @@
       <div
         class="h-[220px] bg-[#F7F7F7] w-full flex items-center justify-center relative relative overflow-hidden">
         @if (cat.imageUrl) {
-          <img [ngSrc]="cat.imageUrl"
+          <app-lazy-media-image
+            class="absolute inset-0 block h-full w-full mix-blend-multiply"
+            [src]="cat.imageUrl"
             [alt]="cat.name"
-            class="w-full h-full object-cover mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-            fill
           />
         }
         @if (!cat.imageUrl) {

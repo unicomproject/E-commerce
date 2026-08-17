@@ -1,12 +1,13 @@
 import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { LazyMediaImageComponent } from '../../../../shared/components/lazy-media-image/lazy-media-image.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-cart-item',
   standalone: true,
-  imports: [CommonModule, TenantCurrencyPipe, NgOptimizedImage],
+  imports: [CommonModule, TenantCurrencyPipe, LazyMediaImageComponent],
   templateUrl: './cart-item.component.html'
 })
 export class CartItem {

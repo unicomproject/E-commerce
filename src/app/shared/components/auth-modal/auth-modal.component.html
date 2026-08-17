@@ -22,22 +22,8 @@
         </button>
       </div>
       <!-- Scrollable Content Views -->
-      <div class="w-full flex-1 overflow-y-auto pb-safe">
-        @if (authModalService.view() === 'login') {
-          <app-login (switchView)="switchView($event)"></app-login>
-        }
-        @if (authModalService.view() === 'register') {
-          <app-register (switchView)="switchView($event)"></app-register>
-        }
-        @if (authModalService.view() === 'forgot-password') {
-          <app-forgot-password (switchView)="switchView($event)"></app-forgot-password>
-        }
-        @if (authModalService.view() === 'verify') {
-          <app-email-verification (switchView)="switchView($event)"></app-email-verification>
-        }
-        @if (authModalService.view() === 'reset-password') {
-          <app-reset-password (switchView)="switchView($event)"></app-reset-password>
-        }
+      <div class="w-full flex-1 overflow-y-auto pb-12 pb-safe">
+        <app-login></app-login>
       </div>
     </div>
   </div>

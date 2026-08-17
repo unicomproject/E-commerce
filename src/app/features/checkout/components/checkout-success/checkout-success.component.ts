@@ -28,10 +28,10 @@ import { CheckoutService } from '../../../../features/checkout/services/checkout
     }),
   ],
   template: `
-    <div class="animate-in zoom-in-95 duration-500 flex flex-col items-center pt-4">
+    <div class="animate-in zoom-in-95 duration-500 flex flex-col pt-4">
       <!-- Success Icon -->
       <div
-        class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mb-6"
+        class="w-20 h-20 mx-auto bg-green-100 text-green-500 rounded-full flex items-center justify-center mb-6"
       >
         <ng-icon name="lucideCheckCircle2" size="48"></ng-icon>
       </div>
@@ -40,7 +40,7 @@ import { CheckoutService } from '../../../../features/checkout/services/checkout
       <div class="text-center mb-8">
         <h2 class="text-3xl font-bold text-gray-900 mb-2">Order Submitted!</h2>
         <p class="text-gray-500">
-          Order ID
+          Order Number
           <span class="font-bold text-gray-900">{{
             checkoutService.checkoutSession()?.order?.orderNumber ||
               checkoutService.checkoutSession()?.checkoutNumber
@@ -178,12 +178,12 @@ import { CheckoutService } from '../../../../features/checkout/services/checkout
 
       <!-- Actions -->
       <div
-        class="sticky bottom-0 bg-white pt-4 pb-4 md:pb-6 z-10 -mx-6 px-6 -mb-6 w-full space-y-3 border-t border-gray-100 mt-2"
+        class="sticky bottom-0 z-10 pt-4 pb-4 md:pb-6 -mx-6 px-6 -mb-6 space-y-3 mt-6"
       >
         <button
           type="button"
           (click)="viewOrder()"
-          class="w-full py-4 bg-brand-orange text-white font-bold text-lg rounded-xl hover:bg-brand-orange-dark transition-colors"
+          class="w-full py-3.5 bg-brand-orange text-white font-bold text-[15px] rounded-lg shadow-sm hover:bg-brand-orange-dark transition-colors flex items-center justify-center"
         >
           View Order Details
         </button>
@@ -191,7 +191,7 @@ import { CheckoutService } from '../../../../features/checkout/services/checkout
         <button
           type="button"
           (click)="continueShopping()"
-          class="w-full py-4 bg-white text-gray-900 border-2 border-gray-200 font-bold text-lg rounded-xl hover:bg-gray-50 transition-colors"
+          class="w-full py-3.5 bg-white text-brand-orange border border-brand-orange/30 font-bold text-[15px] rounded-lg hover:bg-brand-orange/5 transition-colors flex items-center justify-center"
         >
           Continue Shopping
         </button>
@@ -204,13 +204,18 @@ export class CheckoutSuccessComponent {
   router = inject(Router);
 
   viewOrder() {
+    const orderId = this.checkoutService.checkoutSession()?.order?.id;
     this.checkoutService.closeCheckout();
-    // this.router.navigate(['/account/orders.component', this.checkoutService.checkoutSession()?.id]);
+    if (orderId) {
+      this.router.navigate(['/account/orders', orderId]);
+    } else {
+      this.router.navigate(['/account/orders']);
+    }
   }
 
   continueShopping() {
     this.checkoutService.closeCheckout();
-    // this.router.navigate(['/']);
+    this.router.navigate(['/search']);
   }
 
   formatTime(isoString: string): string {

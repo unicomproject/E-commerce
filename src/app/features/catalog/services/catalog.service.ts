@@ -115,15 +115,14 @@ export class StorefrontDataService {
 
   getStores(): Observable<Store[]> {
     return this.http.get<Store[]>(`${this.baseUrl}/fulfillment/stores`).pipe(
-      map(stores => stores.map((s, index) => ({
-        ...s,
-        imageUrl: index === 0
-          ? 'https://images.unsplash.com/photo-1555529733-0e670560f4e1?w=400&h=300&fit=crop'
-          : 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop',
-        statusText: index === 3 ? 'Busy' : 'Open',
-        closingTime: `Closes ${9 + index}:00 PM`,
-        isRecommended: index === 0
-      })))
+      map((stores) =>
+        stores.map((store, index) => ({
+          ...store,
+          statusText: store.isOpen ? 'Open' : 'Closed',
+          closingTime: store.closingTime ? `Closes ${store.closingTime}` : undefined,
+          isRecommended: store.isDefault === true || (index === 0 && stores.every((item) => !item.isDefault)),
+        })),
+      ),
     );
   }
 

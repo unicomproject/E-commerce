@@ -1,16 +1,17 @@
 import { Component, input, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Category } from '../../../../core/models';
+import { LazyMediaImageComponent } from '../../../../shared/components/lazy-media-image/lazy-media-image.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-category-strip',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgOptimizedImage],
+  imports: [CommonModule, RouterModule, LazyMediaImageComponent],
   template: `
     @if (categories().length > 0) {
-      <div class="mb-5 w-full min-w-0 lg:mb-0">
+      <div class="w-full min-w-0">
         <div class="mb-4 mt-2 flex items-center justify-between gap-3 lg:mt-0">
           <h3
             class="min-w-0 text-[18px] font-bold tracking-tight text-brand-black lg:text-[24px] lg:leading-8"
@@ -26,19 +27,24 @@ import { Category } from '../../../../core/models';
           </a>
         </div>
         <!-- Always allow horizontal scroll inside strip — never expand page width -->
-        <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-2 pt-2 lg:gap-6 lg:pb-0 lg:pt-0">
+        <div class="grid grid-cols-5 gap-1 px-1 pb-2 pt-2 md:flex md:gap-4 md:overflow-x-auto md:hide-scrollbar md:px-0 lg:gap-6 lg:pb-0 lg:pt-0">
           @for (cat of categories().slice(0, 6); track cat; let i = $index) {
             <a
               [routerLink]="['/search']"
               [queryParams]="{ category: cat.slug }"
               [ngClass]="i >= 5 ? 'hidden md:flex' : 'flex'"
-              class="group w-[72px] flex-shrink-0 flex-col items-center md:w-[100px] lg:w-[96px]"
+              class="group flex w-full flex-col items-center md:w-[100px] md:flex-shrink-0 lg:w-[96px]"
             >
               <div
-                class="relative flex h-[64px] w-[64px] items-center justify-center overflow-hidden rounded-full bg-brand-light-grey transition-transform duration-300 group-hover:scale-105 md:h-[90px] md:w-[90px] lg:h-[96px] lg:w-[96px]"
+                class="relative flex aspect-square w-full max-w-[64px] items-center justify-center overflow-hidden rounded-full bg-brand-light-grey transition-transform duration-300 group-hover:scale-105 md:h-[90px] md:w-[90px] md:max-w-none lg:h-[96px] lg:w-[96px]"
               >
                 @if (cat.imageUrl) {
-                  <img [ngSrc]="cat.imageUrl" [alt]="cat.name" class="object-cover transition-transform duration-300 group-hover:scale-110" fill />
+                  <app-lazy-media-image
+                    class="absolute inset-0 block h-full w-full"
+                    [src]="cat.imageUrl"
+                    [alt]="cat.name"
+                    [priority]="true"
+                  />
                 }
                 @if (!cat.imageUrl) {
                   <div
@@ -62,7 +68,7 @@ import { Category } from '../../../../core/models';
                 }
               </div>
               <span
-                class="mt-2 text-center text-[12px] font-medium leading-tight text-brand-black md:text-[14px] lg:text-[12px] lg:leading-4"
+                class="mt-1 w-full truncate text-center text-[10px] font-medium leading-tight text-brand-black md:mt-2 md:text-[14px] md:tracking-normal lg:text-[12px] lg:leading-4"
               >
                 {{ cat.name }}
               </span>

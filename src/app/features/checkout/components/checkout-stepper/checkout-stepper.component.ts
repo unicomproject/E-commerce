@@ -72,9 +72,8 @@ export class CheckoutStepperComponent {
     }
     return [
       { num: 1, displayNum: 1, label: 'Details' },
-      { num: 2, displayNum: 2, label: 'Collection' },
-      { num: 3, displayNum: 3, label: 'Review' },
-      { num: 4, displayNum: 4, label: 'Confirm' }
+      { num: 3, displayNum: 2, label: 'Review' },
+      { num: 4, displayNum: 3, label: 'Confirm' }
     ];
   });
 }

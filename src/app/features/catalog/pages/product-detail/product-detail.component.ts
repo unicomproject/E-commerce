@@ -189,6 +189,15 @@ export class ProductDetail implements OnInit {
     return (this.product() as any)?.originalPrice;
   });
 
+  discountPercentage = computed<number | null>(() => {
+    const op = this.originalPrice();
+    const p = this.displayPrice();
+    if (op && op > p) {
+      return Math.round(((op - p) / op) * 100);
+    }
+    return null;
+  });
+
   breadcrumbItems = computed<BreadcrumbItem[]>(() => {
     const p = this.product();
     if (!p) return [{ label: 'Home', link: '/' }];

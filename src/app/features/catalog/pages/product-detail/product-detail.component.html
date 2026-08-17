@@ -63,6 +63,15 @@
                 {{ prod.badge }}
               </div>
             }
+            @if (discountPercentage()) {
+              <div
+                class="absolute left-4 z-20 bg-[#FF6A00] text-white text-xs font-bold px-3 py-1.5 rounded-[4px] shadow-sm"
+                [class.top-12]="prod.badge"
+                [class.top-4]="!prod.badge"
+              >
+                -{{ discountPercentage() }}%
+              </div>
+            }
             <button
               class="absolute left-4 z-20 w-10 h-10 bg-white shadow-md rounded-full flex items-center justify-center text-gray-600 hover:text-black hover:scale-105 transition-all"
               (click)="prevImage()"
@@ -250,7 +259,7 @@
                 <span class="font-bold text-gray-900 text-sm">Quantity</span>
               </div>
               <!-- Stepper -->
-              <div class="h-11 max-w-[140px]">
+              <div class="h-12 max-w-[140px]">
                 <app-quantity-stepper
                   [quantity]="quantity()"
                   (quantityChange)="onQuantityChange($event)"
@@ -259,20 +268,13 @@
             </div>
           </div>
           <!-- Desktop Buttons -->
-          <div class="hidden lg:flex lg:flex-row gap-3 pt-0 mb-6">
+          <div class="hidden lg:flex lg:flex-row gap-3 pt-4 mb-6">
             <button
               (click)="addToCart($event)"
               [disabled]="!canAddToCart()"
-              class="flex-1 h-12 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full h-12 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold text-sm transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm hover:shadow-lg hover:-translate-y-0.5 shadow-brand-orange/20 hover:shadow-brand-orange/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
             >
               <ng-icon name="lucideShoppingCart" size="18"></ng-icon> Add to Cart
-            </button>
-            <button
-              (click)="buyNow($event)"
-              [disabled]="!canAddToCart()"
-              class="flex-1 h-12 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange-light/20 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed bg-white"
-            >
-              <ng-icon name="lucideRotateCcw" size="18"></ng-icon> Buy Now
             </button>
           </div>
         </div>
@@ -347,21 +349,14 @@
     </div>
     <!-- Sticky Bottom Bar (Mobile Only) -->
     <div
-      class="fixed bottom-[calc(72px+env(safe-area-inset-bottom))] left-0 right-0 bg-white border-t border-gray-200 p-4 flex gap-3 lg:hidden z-40 shadow-[0_-8px_20px_-10px_rgba(0,0,0,0.1)]"
+      class="fixed bottom-[calc(72px+env(safe-area-inset-bottom))] left-0 right-0 p-4 lg:hidden z-40 pointer-events-none"
     >
       <button
         (click)="addToCart($event)"
         [disabled]="!canAddToCart()"
-        class="flex-1 h-14 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange-light/20 rounded-xl font-bold text-[15px] transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        class="pointer-events-auto w-full h-14 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold text-[15px] transition-colors flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <ng-icon name="lucideShoppingCart" size="18"></ng-icon> Add to Cart
-      </button>
-      <button
-        (click)="buyNow($event)"
-        [disabled]="!canAddToCart()"
-        class="flex-1 h-14 bg-brand-orange text-white rounded-xl font-bold text-[15px] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-      >
-        Buy Now
+        <ng-icon name="lucideShoppingCart" size="20"></ng-icon> Add to Cart
       </button>
     </div>
   }

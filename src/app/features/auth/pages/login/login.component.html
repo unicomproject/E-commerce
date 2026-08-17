@@ -1,26 +1,30 @@
-<div class="max-w-[500px] mx-auto px-4 py-6">
+<div class="max-w-[500px] mx-auto px-4 pt-4 pb-10 md:py-6">
   <!-- Header -->
-  <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Welcome back</h1>
-  <p class="text-gray-600 mb-5 text-sm md:text-base">
-    Sign in to view orders, loyalty rewards and faster checkout.
+  <div class="flex items-center mb-1">
+    @if (isOtpStep()) {
+      <button
+        (click)="goBack()"
+        class="mr-3 p-1 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+      >
+        <ng-icon name="lucideArrowLeft" size="20"></ng-icon>
+      </button>
+    }
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Sign in or Create Account</h1>
+  </div>
+  
+  <p class="text-gray-600 mb-4 text-sm md:text-base">
+    @if (!isOtpStep()) {
+      Enter your email address to securely sign in or register. No password required.
+    } @else {
+      We've sent a secure code to <strong>{{ authForm.get('email')?.value }}</strong>. Enter it below to continue.
+    }
   </p>
 
   <!-- Error Message -->
   @if (errorMessage()) {
-    <div
-      class="mb-6 p-4 bg-red-50 text-red-700 border border-red-200 rounded-lg flex items-start gap-3"
-    >
+    <div class="mb-4 p-4 bg-red-50 text-red-700 border border-red-200 rounded-lg flex items-start gap-3">
       <div class="mt-0.5 flex-shrink-0">
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="8" x2="12" y2="12"></line>
           <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -32,123 +36,98 @@
     </div>
   }
 
-  <!-- Login Form -->
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-3">
-    <!-- Email Field -->
-    <div>
-      <div
-        class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow"
-      >
-        <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
-          <ng-icon name="lucideMail" size="20"></ng-icon>
+  <!-- Form -->
+  <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    @if (!isOtpStep()) {
+      <!-- Email Field (Step 1) -->
+      <div>
+        <div class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow">
+          <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
+            <ng-icon name="lucideMail" size="20"></ng-icon>
+          </div>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Email address"
+            class="w-full py-3 pr-4 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base"
+          />
         </div>
-        <input
-          type="email"
-          formControlName="email"
-          placeholder="Email address"
-          class="w-full py-3 pr-4 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base"
-        />
+        @if (authForm.get('email')?.touched && authForm.get('email')?.invalid) {
+          <div class="text-red-500 text-sm mt-1">Please enter a valid email address.</div>
+        }
       </div>
-      @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
-        <div class="text-red-500 text-sm mt-1">Please enter a valid email address.</div>
-      }
-    </div>
-
-    <!-- Password Field -->
-    <div>
-      <div
-        class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow"
-      >
-        <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
-          <ng-icon name="lucideLock" size="20"></ng-icon>
-        </div>
-        <input
-          [type]="showPassword() ? 'text' : 'password'"
-          formControlName="password"
-          placeholder="Password"
-          class="w-full py-3 pr-12 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base"
-        />
-        <button
-          type="button"
-          (click)="togglePasswordVisibility()"
-          class="absolute right-4 text-gray-500 hover:text-gray-700 flex items-center justify-center"
-        >
-          <ng-icon [name]="showPassword() ? 'lucideEyeOff' : 'lucideEye'" size="20"></ng-icon>
-        </button>
+    } @else {
+      <!-- OTP Field (Step 2) -->
+      <div class="flex justify-between gap-2 pb-2 pt-1">
+        @for (digit of [0, 1, 2, 3, 4, 5]; track digit; let i = $index) {
+          <input
+            type="text"
+            #otpInput
+            inputmode="numeric"
+            maxlength="1"
+            (input)="onOtpInput($event, i)"
+            (keydown)="onOtpKeydown($event, i)"
+            (paste)="onOtpPaste($event)"
+            class="w-12 h-14 sm:w-14 sm:h-16 text-center text-xl md:text-2xl font-bold rounded-lg border-2 bg-transparent focus:ring-0 focus:outline-none focus:border-brand-orange transition-colors"
+            [class.border-brand-orange]="otpDigits()[i]"
+            [class.text-brand-orange]="otpDigits()[i]"
+            [class.border-gray-300]="!otpDigits()[i]"
+            [class.text-gray-900]="!otpDigits()[i]"
+            [value]="otpDigits()[i]"
+          />
+        }
       </div>
-      @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
-        <div class="text-red-500 text-sm mt-1">Password is required.</div>
-      }
-    </div>
 
-    <!-- Remember Me & Forgot Password -->
-    <div class="flex items-center justify-between py-1">
-      <label class="flex items-center space-x-3 cursor-pointer">
-        <input
-          type="checkbox"
-          formControlName="rememberMe"
-          class="w-5 h-5 rounded border-gray-300 text-brand-orange focus:ring-brand-orange"
-        />
-        <span class="text-gray-600">Remember me</span>
-      </label>
-      <button
-        type="button"
-        (click)="switchView.emit('forgot-password')"
-        class="text-gray-900 font-bold hover:underline"
-      >
-        Forgot password?
-      </button>
-    </div>
+      <!-- Remember Me -->
+      <div class="flex items-center justify-between py-1">
+        <label class="flex items-center space-x-3 cursor-pointer">
+          <input
+            type="checkbox"
+            formControlName="rememberMe"
+            class="w-5 h-5 rounded border-gray-300 text-brand-orange focus:ring-brand-orange"
+          />
+          <span class="text-gray-600">Keep me signed in</span>
+        </label>
+      </div>
+    }
 
-    <!-- Submit Buttons -->
-    <div class="space-y-3 pt-1">
+    <!-- Submit Button -->
+    <div class="pt-2">
       <button
         type="submit"
-        [disabled]="isLoading()"
+        [disabled]="isLoading() || (!isOtpStep() && authForm.get('email')?.invalid)"
         class="w-full py-3 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed text-sm md:text-base"
       >
         @if (isLoading()) {
-          <span
-            class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"
-          ></span>
+          <span class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></span>
         }
-        Sign In
-      </button>
-
-      <div class="pt-2 text-center text-sm md:text-base">
-        <span class="text-gray-600">Don't have an account? </span>
-      </div>
-
-      <button
-        type="button"
-        (click)="switchView.emit('register')"
-        class="w-full py-3 bg-white text-brand-orange border border-brand-orange font-bold rounded-lg hover:bg-brand-orange-light transition-colors text-sm md:text-base"
-      >
-        Create Account
+        {{ !isOtpStep() ? 'Continue with Email' : 'Verify Code & Sign In' }}
       </button>
     </div>
   </form>
 
-  <!-- OR Divider -->
-  <div class="flex items-center my-5 text-gray-400">
-    <div class="flex-1 border-t border-gray-200"></div>
-    <span class="mx-4 text-xs md:text-sm font-medium">or</span>
-    <div class="flex-1 border-t border-gray-200"></div>
-  </div>
+  @if (!isOtpStep()) {
+    <!-- OR Divider -->
+    <div class="flex items-center my-5 text-gray-400">
+      <div class="flex-1 border-t border-gray-200"></div>
+      <span class="mx-4 text-xs md:text-sm font-medium uppercase tracking-wider">or</span>
+      <div class="flex-1 border-t border-gray-200"></div>
+    </div>
 
-  <!-- Social Login -->
-  <div class="space-y-3">
-    <div
-      #googleButtonContainer
-      class="flex justify-center"
-      [class.opacity-60]="isGoogleLoading()"
-      [class.pointer-events-none]="isGoogleLoading()"
-    ></div>
-    @if (isGoogleLoading()) {
-      <p class="text-center text-sm text-gray-500">Signing in with Google...</p>
-    }
-    @if (googleUnavailableMessage()) {
-      <p class="text-center text-xs text-gray-500">{{ googleUnavailableMessage() }}</p>
-    }
-  </div>
+    <!-- Social Login -->
+    <div class="space-y-3 pb-4">
+      <div
+        #googleButtonContainer
+        class="w-full flex justify-center min-h-[60px]"
+        [class.opacity-60]="isGoogleLoading()"
+        [class.pointer-events-none]="isGoogleLoading()"
+      ></div>
+      @if (isGoogleLoading()) {
+        <p class="text-center text-sm text-gray-500">Signing in with Google...</p>
+      }
+      @if (googleUnavailableMessage()) {
+        <p class="text-center text-sm text-red-500">{{ googleUnavailableMessage() }}</p>
+      }
+    </div>
+  }
 </div>

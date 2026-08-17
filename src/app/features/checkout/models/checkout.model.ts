@@ -71,7 +71,10 @@ export interface StorefrontStoreReadModel {
   address: string;
   isAvailable: boolean;
   isOpen: boolean;
+  isDefault?: boolean;
   preparationLeadMinutes: number;
+  imageUrl?: string | null;
+  closingTime?: string | null;
 }
 
 export interface StorefrontCollectionWindowReadModel {

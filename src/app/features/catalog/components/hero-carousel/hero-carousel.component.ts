@@ -1,5 +1,5 @@
-import { Component, computed, input, signal, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, computed, input, signal, ChangeDetectionStrategy, OnInit, OnDestroy, Inject, PLATFORM_ID, effect } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide';
 import { Banner } from '../../../../core/models';
@@ -14,6 +14,8 @@ import { Banner } from '../../../../core/models';
     @if (banners().length > 0 && activeBanner(); as banner) {
       <div class="mb-5 w-full min-w-0 px-0 lg:mb-0">
         <div
+          (mouseenter)="stopAutoSlide()"
+          (mouseleave)="startAutoSlide()"
           class="relative flex h-[180px] w-full min-w-0 items-center overflow-hidden rounded-2xl bg-brand-dark-grey shadow-sm group cursor-pointer md:h-[320px] lg:h-[300px]"
         >
           <!-- Background Image -->
@@ -24,9 +26,9 @@ import { Banner } from '../../../../core/models';
             fetchpriority="high"
             loading="eager"
           />
-          <!-- Subtle Gradient to protect text -->
+          <!-- Darker Gradient to protect text -->
           <div
-            class="absolute inset-0 bg-gradient-to-r from-brand-dark-grey via-brand-dark-grey/70 to-transparent pointer-events-none"
+            class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent pointer-events-none"
           ></div>
           <!-- Desktop Navigation Arrows -->
           <button
@@ -51,19 +53,19 @@ import { Banner } from '../../../../core/models';
           ) {
             <div class="relative z-10 px-4 md:px-8 lg:px-12 max-w-[70%] lg:max-w-[50%]">
               @if (banner.subtitle) {
-                <p class="text-brand-orange text-[12px] font-medium tracking-widest uppercase mb-1">
+                <p class="text-brand-orange text-[12px] font-bold tracking-widest uppercase mb-1 drop-shadow-sm">
                   {{ banner.subtitle }}
                 </p>
               }
               @if (banner.title) {
                 <h2
-                  class="text-white text-[24px] md:text-[32px] lg:text-[48px] lg:leading-[56px] font-extrabold leading-tight mb-1"
+                  class="text-white drop-shadow-md text-[20px] md:text-[28px] lg:text-[36px] lg:leading-[44px] font-extrabold leading-tight mb-2"
                   [innerHTML]="banner.title"
                 ></h2>
               }
               @if (banner.description) {
                 <p
-                  class="text-[#CCCCCC] text-[14px] lg:text-[14px] lg:leading-5 font-normal mb-4 line-clamp-2"
+                  class="text-[#E0E0E0] drop-shadow-sm text-[13px] lg:text-[14px] lg:leading-5 font-medium mb-3 line-clamp-2"
                 >
                   {{ banner.description }}
                 </p>
@@ -71,9 +73,10 @@ import { Banner } from '../../../../core/models';
               @if (banner.actionText || banner.buttonText) {
                 <a
                   [href]="banner.actionUrl || banner.linkUrl || '#'"
-                  class="inline-block bg-brand-orange hover:bg-brand-orange-dark text-white font-bold py-2 px-6 lg:py-2.5 lg:px-6 text-[14px] rounded-lg transition-transform transform active:scale-95 shadow-sm"
+                  class="inline-flex items-center gap-1.5 text-brand-orange hover:text-brand-orange-dark font-extrabold text-[13px] md:text-[14px] uppercase tracking-wider transition-all group drop-shadow-sm mt-1"
                 >
-                  {{ banner.actionText || banner.buttonText }}
+                  <span class="border-b-2 border-transparent group-hover:border-brand-orange-dark transition-colors pb-0.5">{{ banner.actionText || banner.buttonText }}</span>
+                  <span class="transform transition-transform group-hover:translate-x-1 text-[16px]" aria-hidden="true">&rarr;</span>
                 </a>
               }
             </div>
@@ -97,10 +100,52 @@ import { Banner } from '../../../../core/models';
     }
   `,
 })
-export class HeroCarousel {
+export class HeroCarousel implements OnInit, OnDestroy {
   readonly banners = input<Banner[]>([]);
   readonly activeIndex = signal(0);
   readonly activeBanner = computed(() => this.banners()[this.activeIndex()] ?? null);
+
+  private intervalId: any;
+  private isBrowser: boolean;
+
+  constructor(@Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+    
+    // Automatically restart sliding if the banners list changes
+    effect(() => {
+      const b = this.banners();
+      if (this.isBrowser && b.length > 1) {
+        this.startAutoSlide();
+      }
+    });
+  }
+
+  ngOnInit() {
+    // startAutoSlide will be handled by the effect, but we can keep this for safety
+    if (this.isBrowser && this.banners().length > 1) {
+      this.startAutoSlide();
+    }
+  }
+
+  ngOnDestroy() {
+    this.stopAutoSlide();
+  }
+
+  startAutoSlide() {
+    this.stopAutoSlide();
+    if (this.isBrowser && this.banners().length > 1) {
+      this.intervalId = setInterval(() => {
+        this.next();
+      }, 5000);
+    }
+  }
+
+  stopAutoSlide() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+  }
 
   next() {
     const banners = this.banners();
@@ -116,5 +161,6 @@ export class HeroCarousel {
 
   setSlide(index: number) {
     this.activeIndex.set(index);
+    this.startAutoSlide(); // Reset timer when manually clicked
   }
 }

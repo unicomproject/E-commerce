@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, NavigationEnd } from '@angular/router';
+import { filter, map } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideSearch, lucideHeart, lucideShoppingCart, lucideShoppingBag, lucideUser, lucideMenu, lucidePackage, lucideLayoutGrid, lucideTag, lucideChevronDown, lucideLogOut, lucideMapPin, lucideShieldCheck, lucideBell, lucideClock, lucideX, lucideStar } from '@ng-icons/lucide';
 import { AuthModalService } from '../../core/services/auth-modal.service';
@@ -17,6 +19,7 @@ import { CartAnimationService } from '../../features/cart/services/cart-animatio
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { NotificationPanelComponent } from '../../shared/components/notification-panel/notification-panel.component';
 import { NotificationService } from '../../features/customer/services/notification.service';
+import { TenantContextService } from '../../core/services/tenant-context.service';
 
 import { RecentOrdersModalService } from '../../features/orders/services/recent-orders-modal.service';
 
@@ -41,6 +44,7 @@ export class Header implements OnInit, AfterViewInit, AfterViewChecked {
   public modalService = inject(RecentOrdersModalService);
   public notificationService = inject(NotificationService);
   public cartAnimationService = inject(CartAnimationService);
+  public tenantCtx = inject(TenantContextService);
   @ViewChild('cartIconBtn') cartIconBtn!: ElementRef;
   @ViewChild('mobileCartIconBtn') mobileCartIconBtn!: ElementRef;
   
@@ -88,6 +92,14 @@ export class Header implements OnInit, AfterViewInit, AfterViewChecked {
   currentUser$ = this.authService.currentUser$;
   totalItems$ = this.cartService.totalItems$;
   wishlistTotalItems$ = this.wishlistService.totalItems$;
+
+  hideMobileCartFab = toSignal(
+    this.router.events.pipe(
+      filter((e) => e instanceof NavigationEnd),
+      map(() => this.router.url.includes('/cart') || this.router.url.includes('/checkout'))
+    ),
+    { initialValue: this.router.url.includes('/cart') || this.router.url.includes('/checkout') }
+  );
 
   ngOnInit() {
 

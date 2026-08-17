@@ -3,12 +3,12 @@ export interface Store {
   name: string;
   address: string;
   isAvailable: boolean;
-  
-  // UI Specific (Mocked for now as backend doesn't provide these yet)
-  imageUrl?: string;
+  isOpen?: boolean;
+  isDefault?: boolean;
+  imageUrl?: string | null;
   distance?: string;
   statusText?: string;
-  closingTime?: string;
+  closingTime?: string | null;
   collectionTime?: string;
   parkingInfo?: string;
   isRecommended?: boolean;

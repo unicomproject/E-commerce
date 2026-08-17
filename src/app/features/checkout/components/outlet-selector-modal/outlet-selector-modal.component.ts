@@ -11,7 +11,8 @@ import {
   lucideShoppingBag, 
   lucideParkingCircle, 
   lucideInfo,
-  lucideCircle
+  lucideCircle,
+  lucideStore
 } from '@ng-icons/lucide';
 import { Store } from '../../../../core/models';
 
@@ -30,7 +31,8 @@ import { Store } from '../../../../core/models';
     lucideShoppingBag, 
     lucideParkingCircle, 
     lucideInfo,
-    lucideCircle
+    lucideCircle,
+    lucideStore
   })],
   templateUrl: './outlet-selector-modal.component.html'
 })

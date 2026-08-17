@@ -41,6 +41,12 @@ export function initializeTenant(http: HttpClient, tenantCtx: TenantContextServi
           if (res.currencyCode) {
             tenantCtx.currencyCode = res.currencyCode;
           }
+          if (res.storeName) {
+            tenantCtx.storeName = res.storeName;
+          }
+          if (res.logoUrl) {
+            tenantCtx.logoUrl = res.logoUrl;
+          }
           if (!authService.hasSessionHint) {
             resolve(true);
             return;

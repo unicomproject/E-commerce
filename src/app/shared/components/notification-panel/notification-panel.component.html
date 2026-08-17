@@ -40,7 +40,7 @@
 
 
 
-    <div class="max-h-[60vh] overflow-y-auto px-3 pb-3">
+    <div class="max-h-[60vh] overflow-y-auto px-3 pb-3" (scroll)="onScroll($event)">
       @if (notificationService.loading() && notificationService.items().length === 0) {
         <div class="flex items-center justify-center py-14">
           <div class="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-b-brand-orange"></div>
@@ -89,14 +89,10 @@
           }
         </div>
 
-        @if (notificationService.hasMore()) {
-          <button
-            type="button"
-            (click)="loadMore($event)"
-            [disabled]="notificationService.loading()"
-            class="mt-3 w-full rounded-2xl border border-neutral-200 bg-white py-3 text-sm font-bold text-neutral-700 transition hover:border-brand-orange/40 hover:text-brand-orange disabled:opacity-50">
-            Load more
-          </button>
+        @if (notificationService.loading() && notificationService.items().length > 0) {
+          <div class="flex items-center justify-center py-4">
+            <div class="h-6 w-6 animate-spin rounded-full border-2 border-neutral-200 border-b-brand-orange"></div>
+          </div>
         }
       }
     </div>
