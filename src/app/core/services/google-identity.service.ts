@@ -104,7 +104,7 @@ export class GoogleIdentityService {
     window.google.accounts.id.renderButton(parent, {
       type: 'standard',
       theme: 'outline',
-      size: 'medium',
+      size: 'large',
       text,
       shape: 'rectangular',
       logo_alignment: 'center',

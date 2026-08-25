@@ -1,65 +1,190 @@
-<div class="max-w-[500px] mx-auto px-4 pt-4 pb-10 md:py-6">
-  <!-- Header -->
-  <div class="flex items-center mb-1">
-    @if (isOtpStep()) {
-      <button
-        (click)="goBack()"
-        class="mr-3 p-1 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
-      >
-        <ng-icon name="lucideArrowLeft" size="20"></ng-icon>
-      </button>
-    }
-    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Sign in or Create Account</h1>
-  </div>
-  
-  <p class="text-gray-600 mb-4 text-sm md:text-base">
-    @if (!isOtpStep()) {
-      Enter your email address to securely sign in or register. No password required.
-    } @else {
-      We've sent a secure code to <strong>{{ authForm.get('email')?.value }}</strong>. Enter it below to continue.
-    }
-  </p>
+<div class="max-w-[500px] mx-auto px-5 pt-5 pb-8">
 
-  <!-- Error Message -->
-  @if (errorMessage()) {
-    <div class="mb-4 p-4 bg-red-50 text-red-700 border border-red-200 rounded-lg flex items-start gap-3">
-      <div class="mt-0.5 flex-shrink-0">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+
+  @if (!isOtpStep()) {
+    <!-- Step 1: Email / Phone tab UI -->
+
+    <!-- Heading -->
+    <div class="text-center mb-5">
+      @if (isOtpStep()) {
+        <button
+          (click)="goBack()"
+          class="mb-3 mx-auto flex items-center justify-center p-1.5 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+        >
+          <ng-icon name="lucideArrowLeft" size="20"></ng-icon>
+        </button>
+      }
+      <h1 class="text-2xl font-bold text-gray-900 mb-1">Let's get started</h1>
+      <p class="text-sm text-gray-500">
+        Sign in to continue to your <span class="text-brand-orange font-semibold">OneVerze</span> account
+      </p>
+    </div>
+
+    <!-- Error Message -->
+    @if (errorMessage()) {
+      <div class="mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-xl flex items-start gap-2 text-sm">
+        <svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="8" x2="12" y2="12"></line>
           <line x1="12" y1="16" x2="12.01" y2="16"></line>
         </svg>
+        <span>{{ errorMessage() }}</span>
       </div>
-      <div class="text-sm font-medium leading-tight">
-        {{ errorMessage() }}
-      </div>
-    </div>
-  }
+    }
 
-  <!-- Form -->
-  <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="space-y-4">
-    @if (!isOtpStep()) {
-      <!-- Email Field (Step 1) -->
-      <div>
-        <div class="relative flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 transition-shadow">
-          <div class="pl-4 pr-3 text-gray-500 flex items-center justify-center">
-            <ng-icon name="lucideMail" size="20"></ng-icon>
+    <!-- VERIFY WITH tab switcher -->
+    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Verify With</p>
+    <div class="flex rounded-xl bg-white border border-gray-200 mb-5 relative">
+      <!-- Phone tab (UI only) -->
+      <button
+        type="button"
+        (click)="activeTab.set('phone')"
+        class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all duration-300 border ring-1 -m-[1px]"
+        [class.text-gray-500]="activeTab() !== 'phone'"
+        [class.border-transparent]="activeTab() !== 'phone'"
+        [class.ring-transparent]="activeTab() !== 'phone'"
+        [class.z-0]="activeTab() !== 'phone'"
+        [class.text-brand-orange]="activeTab() === 'phone'"
+        [class.border-brand-orange]="activeTab() === 'phone'"
+        [class.ring-brand-orange]="activeTab() === 'phone'"
+        [class.bg-white]="activeTab() === 'phone'"
+        [class.z-10]="activeTab() === 'phone'"
+      >
+        <ng-icon name="lucidePhone" size="16"></ng-icon>
+        Phone
+      </button>
+      <!-- Email tab -->
+      <button
+        type="button"
+        (click)="activeTab.set('email')"
+        class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all duration-300 border ring-1 -m-[1px]"
+        [class.text-gray-500]="activeTab() !== 'email'"
+        [class.border-transparent]="activeTab() !== 'email'"
+        [class.ring-transparent]="activeTab() !== 'email'"
+        [class.z-0]="activeTab() !== 'email'"
+        [class.text-brand-orange]="activeTab() === 'email'"
+        [class.border-brand-orange]="activeTab() === 'email'"
+        [class.ring-brand-orange]="activeTab() === 'email'"
+        [class.bg-white]="activeTab() === 'email'"
+        [class.z-10]="activeTab() === 'email'"
+      >
+        <ng-icon name="lucideMail" size="16"></ng-icon>
+        Email
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+      <div class="grid relative min-h-[220px]">
+        
+        <!-- Email Field & Submit -->
+        <div class="col-start-1 row-start-1 transition-all duration-500 ease-in-out flex flex-col"
+             [class.opacity-100]="activeTab() === 'email'" [class.z-10]="activeTab() === 'email'" [class.translate-x-0]="activeTab() === 'email'"
+             [class.opacity-0]="activeTab() !== 'email'" [class.z-0]="activeTab() !== 'email'" [class.-translate-x-4]="activeTab() !== 'email'" [class.pointer-events-none]="activeTab() !== 'email'">
+          
+          <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Email</p>
+          <div class="relative flex items-center border border-brand-orange ring-1 ring-brand-orange rounded-xl overflow-hidden transition-all bg-white mb-5">
+            <div class="pl-4 pr-3 text-gray-400 flex items-center justify-center">
+              <ng-icon name="lucideMail" size="18"></ng-icon>
+            </div>
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="name@email.com"
+              class="w-full py-3.5 pr-4 outline-none text-gray-900 placeholder-gray-400 bg-transparent text-sm"
+            />
           </div>
-          <input
-            type="email"
-            formControlName="email"
-            placeholder="Email address"
-            class="w-full py-3 pr-4 outline-none text-gray-900 placeholder-gray-500 bg-transparent text-sm md:text-base"
-          />
+          @if (authForm.get('email')?.touched && authForm.get('email')?.invalid) {
+            <div class="text-red-500 text-xs mb-3 -mt-4">Please enter a valid email address.</div>
+          }
+
+          <button
+            type="submit"
+            [disabled]="isLoading() || authForm.get('email')?.invalid"
+            class="w-full py-4 bg-brand-orange text-white font-bold rounded-xl hover:bg-brand-orange-dark transition-colors flex items-center justify-center gap-2 text-base shadow-[0_4px_14px_rgba(246,90,17,0.35)]"
+          >
+            @if (isLoading()) {
+              <span class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></span>
+              Sending...
+            } @else {
+              Send Verification Code
+              <ng-icon name="lucideArrowRight" size="18"></ng-icon>
+            }
+          </button>
+          
+          <!-- OR Divider + Google (only show in email tab visual block for smooth transition) -->
+          <div class="flex items-center my-5 text-gray-300 lg:hidden">
+            <div class="flex-1 border-t border-gray-200"></div>
+            <span class="mx-3 text-xs font-medium uppercase tracking-wider text-gray-400">or</span>
+            <div class="flex-1 border-t border-gray-200"></div>
+          </div>
+
+          <div class="space-y-3 lg:hidden">
+            <div class="w-full max-w-[398px] mx-auto h-[38px] border border-brand-orange ring-1 ring-brand-orange rounded-[4px] overflow-hidden relative">
+              <div class="absolute w-[calc(100%+2px)] h-[40px] -top-[1px] -left-[1px]">
+                <div
+                  #googleButtonContainer
+                  class="w-full h-full"
+                  [class.opacity-60]="isGoogleLoading()"
+                  [class.pointer-events-none]="isGoogleLoading()"
+                ></div>
+              </div>
+            </div>
+            @if (isGoogleLoading()) {
+              <p class="text-center text-sm text-gray-500">Signing in with Google...</p>
+            }
+            @if (googleUnavailableMessage()) {
+              <p class="text-center text-sm text-red-500">{{ googleUnavailableMessage() }}</p>
+            }
+          </div>
         </div>
-        @if (authForm.get('email')?.touched && authForm.get('email')?.invalid) {
-          <div class="text-red-500 text-sm mt-1">Please enter a valid email address.</div>
-        }
+
+        <!-- Phone tab: coming soon notice -->
+        <div class="col-start-1 row-start-1 transition-all duration-500 ease-in-out flex flex-col items-center justify-center py-8 text-center text-gray-400"
+             [class.opacity-100]="activeTab() === 'phone'" [class.z-10]="activeTab() === 'phone'" [class.translate-x-0]="activeTab() === 'phone'"
+             [class.opacity-0]="activeTab() !== 'phone'" [class.z-0]="activeTab() !== 'phone'" [class.translate-x-4]="activeTab() !== 'phone'" [class.pointer-events-none]="activeTab() !== 'phone'">
+          <ng-icon name="lucidePhone" size="36" class="mb-3 text-gray-300"></ng-icon>
+          <p class="text-sm font-medium text-gray-500">Phone sign-in coming soon</p>
+          <p class="text-xs text-gray-400 mt-1">Please use Email to sign in for now.</p>
+        </div>
+
       </div>
-    } @else {
-      <!-- OTP Field (Step 2) -->
-      <div class="flex justify-between gap-2 pb-2 pt-1">
-        @for (digit of [0, 1, 2, 3, 4, 5]; track digit; let i = $index) {
+    </form>
+
+
+
+  } @else {
+    <!-- Step 2: OTP Verification -->
+    <div class="text-center mb-5">
+      <button
+        (click)="goBack()"
+        class="mb-4 mx-auto flex items-center justify-center p-1.5 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+      >
+        <ng-icon name="lucideArrowLeft" size="20"></ng-icon>
+      </button>
+      <h1 class="text-2xl font-bold text-gray-900 mb-1">Enter your code</h1>
+      <p class="text-sm text-gray-500">
+        We've sent a code to <strong class="text-gray-800">{{ authForm.get('email')?.value }}</strong>
+      </p>
+    </div>
+
+    <!-- Error Message -->
+    @if (errorMessage()) {
+      <div class="mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-xl flex items-start gap-2 text-sm">
+        <svg class="mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+      <!-- OTP Boxes -->
+      <div class="flex justify-center gap-2 sm:gap-3 mb-5">
+        @for (digit of [0, 1, 2, 3]; track digit; let i = $index) {
           <input
             type="text"
             #otpInput
@@ -68,7 +193,7 @@
             (input)="onOtpInput($event, i)"
             (keydown)="onOtpKeydown($event, i)"
             (paste)="onOtpPaste($event)"
-            class="w-12 h-14 sm:w-14 sm:h-16 text-center text-xl md:text-2xl font-bold rounded-lg border-2 bg-transparent focus:ring-0 focus:outline-none focus:border-brand-orange transition-colors"
+            class="w-14 h-16 sm:w-16 sm:h-16 text-center text-2xl font-bold rounded-xl border-2 bg-white focus:ring-0 focus:outline-none transition-colors shadow-sm"
             [class.border-brand-orange]="otpDigits()[i]"
             [class.text-brand-orange]="otpDigits()[i]"
             [class.border-gray-300]="!otpDigits()[i]"
@@ -79,55 +204,32 @@
       </div>
 
       <!-- Remember Me -->
-      <div class="flex items-center justify-between py-1">
-        <label class="flex items-center space-x-3 cursor-pointer">
+      <div class="flex items-center mb-5">
+        <label class="flex items-center gap-3 cursor-pointer">
           <input
             type="checkbox"
             formControlName="rememberMe"
             class="w-5 h-5 rounded border-gray-300 text-brand-orange focus:ring-brand-orange"
           />
-          <span class="text-gray-600">Keep me signed in</span>
+          <span class="text-sm text-gray-600">Keep me signed in</span>
         </label>
       </div>
-    }
 
-    <!-- Submit Button -->
-    <div class="pt-2">
+      <!-- Verify Button -->
       <button
         type="submit"
-        [disabled]="isLoading() || (!isOtpStep() && authForm.get('email')?.invalid)"
-        class="w-full py-3 bg-brand-orange text-white font-bold rounded-lg hover:bg-brand-orange-dark transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed text-sm md:text-base"
+        [disabled]="isLoading()"
+        class="w-full py-4 bg-brand-orange text-white font-bold rounded-xl hover:bg-brand-orange-dark transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed text-base shadow-[0_4px_14px_rgba(246,90,17,0.35)]"
       >
         @if (isLoading()) {
           <span class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"></span>
+          Verifying...
+        } @else {
+          Verify & Sign In
+          <ng-icon name="lucideArrowRight" size="18"></ng-icon>
         }
-        {{ !isOtpStep() ? 'Continue with Email' : 'Verify Code & Sign In' }}
       </button>
-    </div>
-  </form>
-
-  @if (!isOtpStep()) {
-    <!-- OR Divider -->
-    <div class="flex items-center my-5 text-gray-400">
-      <div class="flex-1 border-t border-gray-200"></div>
-      <span class="mx-4 text-xs md:text-sm font-medium uppercase tracking-wider">or</span>
-      <div class="flex-1 border-t border-gray-200"></div>
-    </div>
-
-    <!-- Social Login -->
-    <div class="space-y-3 pb-4">
-      <div
-        #googleButtonContainer
-        class="w-full flex justify-center min-h-[60px]"
-        [class.opacity-60]="isGoogleLoading()"
-        [class.pointer-events-none]="isGoogleLoading()"
-      ></div>
-      @if (isGoogleLoading()) {
-        <p class="text-center text-sm text-gray-500">Signing in with Google...</p>
-      }
-      @if (googleUnavailableMessage()) {
-        <p class="text-center text-sm text-red-500">{{ googleUnavailableMessage() }}</p>
-      }
-    </div>
+    </form>
   }
+
 </div>

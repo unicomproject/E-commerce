@@ -60,7 +60,7 @@
 
     <div class="mt-2 flex items-center justify-between gap-3">
       <span class="shrink-0 text-[16px] font-bold leading-none text-[#111111]">
-        {{ item().unitPrice | tenantCurrency: 'symbol' : '1.0-0' }}
+        <app-price [value]="item().unitPrice"></app-price>
       </span>
 
       <div

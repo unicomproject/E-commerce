@@ -79,7 +79,6 @@ export class Account implements OnInit, OnDestroy {
     { label: 'Your orders', icon: 'lucidePackage', route: '/account/orders' },
     { label: 'Your reviews', icon: 'lucideStar', route: '/account/reviews' },
     { label: 'Wishlist', icon: 'lucideHeart', route: '/account/wishlist' },
-    { label: 'Addresses', icon: 'lucideMapPin', route: '/account/addresses' },
     { label: 'Sign Out', icon: 'lucideLogOut', action: () => this.logout(), isDestructive: true },
   ];
 

@@ -11,10 +11,13 @@
 
           <!-- Logo -->
           <div class="flex items-center gap-2">
-            <div class="relative flex flex-col leading-none" style="font-family: 'Bebas Neue', sans-serif;">
-              <span class="text-[22px] lg:text-[28px] tracking-widest text-brand-black">ARENA</span>
-              <span class="text-[22px] lg:text-[28px] tracking-widest text-brand-orange -mt-1">STORE</span>
-            </div>
+            @if (tenantCtx.logoUrl) {
+              <img [src]="tenantCtx.logoUrl" alt="Store Logo" class="h-8 lg:h-10 object-contain" />
+            } @else {
+              <div class="relative flex flex-col leading-none" style="font-family: 'Bebas Neue', sans-serif;">
+                <span class="text-[22px] lg:text-[28px] tracking-widest text-brand-black uppercase">{{ tenantCtx.storeName || 'ARENA' }}</span>
+              </div>
+            }
           </div>
         </div>
 
@@ -234,11 +237,11 @@
 
 <!-- Floating Cart for Mobile/Tablet -->
 @if (!hideMobileCartFab() && (totalItems$ | async); as total) {
-  <div class="fixed inset-0 pointer-events-none z-40 lg:hidden" #dragBoundary></div>
+  <div class="fixed top-0 left-0 right-0 bottom-40 pointer-events-none z-40 lg:hidden" #dragBoundary></div>
   <div
     cdkDrag
     [cdkDragBoundary]="dragBoundary"
-    class="lg:hidden fixed bottom-24 right-6 z-50 pointer-events-auto"
+    class="lg:hidden fixed bottom-44 right-6 z-50 pointer-events-auto"
   >
     @if (total > 0) {
       <a

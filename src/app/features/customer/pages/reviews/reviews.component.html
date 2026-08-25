@@ -126,7 +126,7 @@
                     {{ item.productName }}
                   </h3>
                   <p class="text-gray-500 text-sm mt-1.5">Size: M &bull; Color: Purple</p>
-                  <div class="text-brand-orange font-bold text-lg mt-2.5">LKR 3,250.00</div>
+                  <div class="text-brand-orange font-bold text-lg mt-2.5"><app-price [value]="3250.00" className="text-[18px]"></app-price></div>
                   <div class="flex items-center gap-1.5 mt-2.5 text-sm font-bold text-[#148353]">
                     <ng-icon name="lucideCheckCircle2" size="16"></ng-icon>
                     Verified Purchase
@@ -298,16 +298,11 @@
                 </div>
               </div>
               <!-- Action Button -->
-              <div class="flex-shrink-0 mt-2 md:mt-0 flex flex-col items-end gap-2">
-                <button
-                  class="text-gray-400 hover:text-gray-900 p-1 transition-colors hidden md:block"
-                >
-                  <ng-icon name="lucideMoreVertical" size="20"></ng-icon>
-                </button>
+              <div class="flex-shrink-0 mt-2 md:mt-0">
                 <button
                   [routerLink]="['/account/reviews/edit', review.id]"
                   [state]="{ review: review }"
-                  class="w-full md:w-auto inline-flex items-center justify-center px-8 py-2.5 border-2 border-brand-orange text-brand-orange text-sm font-bold rounded-lg hover:bg-orange-50 transition-colors whitespace-nowrap mt-auto"
+                  class="w-full md:w-auto inline-flex items-center justify-center px-8 py-2.5 border-2 border-brand-orange text-brand-orange text-sm font-bold rounded-lg hover:bg-orange-50 transition-colors whitespace-nowrap"
                 >
                   Edit Review
                 </button>

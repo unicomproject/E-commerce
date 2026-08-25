@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, effect } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -46,6 +46,26 @@ export class StorefrontDataService {
   selectedStore = signal<Store | null>(null);
   requestedCollectionAt = signal<string | null>(null);
   selectedTimeText = signal<string>('As soon as possible');
+
+  constructor() {
+    const savedStore = localStorage.getItem('selectedStore');
+    if (savedStore) {
+      try {
+        this.selectedStore.set(JSON.parse(savedStore));
+      } catch (e) {
+        console.error('Failed to parse saved store', e);
+      }
+    }
+
+    effect(() => {
+      const store = this.selectedStore();
+      if (store) {
+        localStorage.setItem('selectedStore', JSON.stringify(store));
+      } else {
+        localStorage.removeItem('selectedStore');
+      }
+    });
+  }
 
   getHeroBanners(): Observable<Banner[]> {
     return this.http.get<Banner[]>(`${this.baseUrl}/banners?bannerType=Hero`);

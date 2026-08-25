@@ -6,7 +6,7 @@ import { lucideHeart } from '@ng-icons/lucide';
 import { StorefrontProductListReadModel } from '../../../core/models';
 import { WishlistService } from '../../../features/wishlist/services/wishlist.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TenantCurrencyPipe } from '../../pipes/tenant-currency.pipe';
+import { PriceComponent } from '../price/price.component';
 import { StarRatingComponent } from '../star-rating/star-rating.component';
 import { LazyMediaImageComponent } from '../lazy-media-image/lazy-media-image.component';
 
@@ -14,7 +14,7 @@ import { LazyMediaImageComponent } from '../lazy-media-image/lazy-media-image.co
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink, NgIconComponent, TenantCurrencyPipe, StarRatingComponent, LazyMediaImageComponent],
+  imports: [RouterLink, NgIconComponent, PriceComponent, StarRatingComponent, LazyMediaImageComponent],
   viewProviders: [provideIcons({ lucideHeart })],
   templateUrl: './product-card.component.html',
 })

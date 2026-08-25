@@ -13,7 +13,11 @@
           [priority]="isPriority()"
         />
 
-        @if (discountPercentage()) {
+        @if (product.isInStock === false) {
+          <div class="absolute left-2 top-2 z-10 flex items-center justify-center rounded-[4px] bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700 uppercase tracking-wider shadow-sm lg:px-2 lg:py-1 lg:text-[12px]">
+            Out of Stock
+          </div>
+        } @else if (discountPercentage()) {
           <div class="absolute left-2 top-2 z-10 flex items-center justify-center rounded-[4px] bg-[#FF6A00] px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm lg:px-2 lg:py-1 lg:text-[12px]">
             -{{ discountPercentage() }}%
           </div>
@@ -39,11 +43,11 @@
         <!-- 2. Price -->
         <div class="mt-1 flex items-baseline gap-2">
           <p class="text-[14px] font-bold text-[#111111]">
-            {{ product.price | tenantCurrency:'symbol':'1.0-2' }}
+            <app-price [value]="product.price"></app-price>
           </p>
           @if (product.originalPrice && product.originalPrice > product.price) {
             <p class="text-[12px] font-medium text-[#999999] line-through">
-              {{ product.originalPrice | tenantCurrency:'symbol':'1.0-2' }}
+              <app-price [value]="product.originalPrice"></app-price>
             </p>
           }
         </div>
@@ -71,7 +75,11 @@
           [priority]="isPriority()"
         />
 
-        @if (discountPercentage()) {
+        @if (product.isInStock === false) {
+          <div class="absolute left-1.5 top-1.5 z-10 flex items-center justify-center rounded-[4px] bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700 uppercase tracking-wider shadow-sm">
+            Out of Stock
+          </div>
+        } @else if (discountPercentage()) {
           <div class="absolute left-1.5 top-1.5 z-10 flex items-center justify-center rounded-[4px] bg-[#FF6A00] px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
             -{{ discountPercentage() }}%
           </div>
@@ -95,11 +103,11 @@
 
         <div class="mt-1 flex items-baseline gap-2">
           <p class="text-[14px] font-bold text-[#111111]">
-            {{ product.price | tenantCurrency:'symbol':'1.0-2' }}
+            <app-price [value]="product.price"></app-price>
           </p>
           @if (product.originalPrice && product.originalPrice > product.price) {
             <p class="text-[12px] font-medium text-[#999999] line-through">
-              {{ product.originalPrice | tenantCurrency:'symbol':'1.0-2' }}
+              <app-price [value]="product.originalPrice"></app-price>
             </p>
           }
         </div>

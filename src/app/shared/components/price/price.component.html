@@ -1,3 +1,5 @@
-<span [ngClass]="className()">
-      {{ value() | tenantCurrency:'symbol':format() }}
-    </span>
+<span [ngClass]="className()" class="inline-flex items-baseline gap-[1px]">
+  <span class="text-[0.60em] font-semibold relative -top-[0.65em] mr-[0.1em] tracking-tight">{{ currencyCode() }}</span>
+  <span class="text-[1em] font-bold tracking-tight">{{ integerPart() }}</span>
+  <span class="text-[0.60em] font-semibold relative -top-[0.65em] tracking-tight">{{ decimalPart() }}</span>
+</span>

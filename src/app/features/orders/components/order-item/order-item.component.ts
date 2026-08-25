@@ -2,13 +2,13 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucidePackage } from '@ng-icons/lucide';
-import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PriceComponent } from '../../../../shared/components/price/price.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-order-item',
   standalone: true,
-  imports: [NgIconComponent, TenantCurrencyPipe],
+  imports: [NgIconComponent, PriceComponent],
   template: `
     <div
       class="flex items-center gap-4 py-2"
@@ -44,7 +44,7 @@ import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pip
       <div class="text-right flex items-center gap-4 md:gap-8 flex-shrink-0">
         <div class="text-sm text-neutral-500">Qty: {{ item().quantity }}</div>
         <div class="font-bold text-brand-navy min-w-fit whitespace-nowrap text-right">
-          {{ item().lineTotal | tenantCurrency: 'symbol' : '1.2-2' }}
+          <app-price [value]="item().lineTotal"></app-price>
         </div>
       </div>
     </div>

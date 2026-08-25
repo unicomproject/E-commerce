@@ -14,14 +14,14 @@ import { WishlistService } from '../../../../features/wishlist/services/wishlist
 import { StorefrontDataService } from '../../../catalog/services/catalog.service';
 import { CartItem } from '../../components/cart-item/cart-item.component';
 import { CartSummary } from '../../components/cart-summary/cart-summary.component';
-import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PriceComponent } from '../../../../shared/components/price/price.component';
 import { BreadcrumbItem, BreadcrumbsComponent } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgIconComponent, CartItem, CartSummary, TenantCurrencyPipe, BreadcrumbsComponent, MobileHeaderComponent, NgOptimizedImage],
+  imports: [CommonModule, RouterLink, NgIconComponent, CartItem, CartSummary, PriceComponent, BreadcrumbsComponent, MobileHeaderComponent, NgOptimizedImage],
   templateUrl: './cart.component.html',
   viewProviders: [provideIcons({ lucideTrash2, lucideCheckCircle2, lucideShoppingBag, lucideHeart, lucideX, lucideInfo, lucideArrowLeft })]
 })

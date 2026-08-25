@@ -71,7 +71,7 @@
                   <div
                     class="font-extrabold text-brand-orange text-sm sm:text-lg leading-none mb-1.5"
                   >
-                    {{ item.price | tenantCurrency: 'symbol' : '1.2-2' }}
+                    <app-price [value]="item.price"></app-price>
                   </div>
                   <!-- 3. Rating -->
                   <div class="flex items-center gap-1.5 mb-1.5">

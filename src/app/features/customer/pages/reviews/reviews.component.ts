@@ -8,6 +8,7 @@ import { CustomerReviewsService } from '../../services/customer-reviews.service'
 import { EligibleReviewsPageReadModel, CustomerReviewsPageReadModel } from '../../../../core/models';
 import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { PriceComponent } from '../../../../shared/components/price/price.component';
 import { Location } from '@angular/common';
 
 type Tab = 'ready' | 'reviewed';
@@ -16,7 +17,7 @@ type Tab = 'ready' | 'reviewed';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-customer-reviews',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgIconComponent, StarRatingComponent, NgOptimizedImage],
+  imports: [CommonModule, RouterLink, NgIconComponent, StarRatingComponent, NgOptimizedImage, PriceComponent],
   templateUrl: './reviews.component.html',
   viewProviders: [provideIcons({ lucideStar, lucidePackage, lucideChevronLeft, lucideEdit3, lucideMessageSquare, lucideChevronRight, lucideCheckCircle2, lucideChevronDown, lucideArrowLeft, lucideMoreVertical, lucideCalendar, lucideTruck })]
 })

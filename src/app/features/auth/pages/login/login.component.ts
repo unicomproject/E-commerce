@@ -21,7 +21,9 @@ import {
   lucideMail,
   lucideLock,
   lucideKeyRound,
-  lucideArrowLeft
+  lucideArrowLeft,
+  lucidePhone,
+  lucideArrowRight
 } from '@ng-icons/lucide';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthView, AuthModalService } from '../../../../core/services/auth-modal.service';
@@ -38,7 +40,9 @@ import { GoogleIdentityService } from '../../../../core/services/google-identity
       lucideMail,
       lucideLock,
       lucideKeyRound,
-      lucideArrowLeft
+      lucideArrowLeft,
+      lucidePhone,
+      lucideArrowRight
     }),
   ],
 })
@@ -57,8 +61,9 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
   isGoogleLoading = signal(false);
   googleUnavailableMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
+  activeTab = signal<'email' | 'phone'>('email');
   
-  otpDigits = signal<string[]>(['', '', '', '', '', '']);
+  otpDigits = signal<string[]>(['', '', '', '']);
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   authForm = this.fb.group({
@@ -79,7 +84,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     this.isOtpStep.set(false);
     this.errorMessage.set(null);
     this.authForm.patchValue({ code: '' });
-    this.otpDigits.set(['', '', '', '', '', '']);
+    this.otpDigits.set(['', '', '', '']);
   }
 
   onSubmit() {
@@ -162,7 +167,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     this.updateCodeControl();
 
     // Move to next input
-    if (value && index < 5) {
+    if (value && index < 3) {
       this.otpInputs.toArray()[index + 1].nativeElement.focus();
     }
   }
@@ -186,7 +191,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     } else if (event.key === 'ArrowLeft' && index > 0) {
       this.otpInputs.toArray()[index - 1].nativeElement.focus();
       event.preventDefault();
-    } else if (event.key === 'ArrowRight' && index < 5) {
+    } else if (event.key === 'ArrowRight' && index < 3) {
       this.otpInputs.toArray()[index + 1].nativeElement.focus();
       event.preventDefault();
     }
@@ -197,7 +202,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     const pastedData = event.clipboardData?.getData('text');
     if (!pastedData) return;
     
-    const numbers = pastedData.replace(/\D/g, '').split('').slice(0, 6);
+    const numbers = pastedData.replace(/\D/g, '').split('').slice(0, 4);
     const currentDigits = [...this.otpDigits()];
     
     for (let i = 0; i < numbers.length; i++) {

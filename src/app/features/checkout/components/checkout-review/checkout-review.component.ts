@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -16,7 +16,7 @@ import {
 } from '@ng-icons/lucide';
 import { CheckoutService } from '../../../../features/checkout/services/checkout.service';
 import { StorefrontDataService } from '../../../catalog/services/catalog.service';
-import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PriceComponent } from '../../../../shared/components/price/price.component';
 import { CollectionTimeModalComponent } from '../collection-time-modal/collection-time-modal.component';
 import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-selector-modal.component';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -25,7 +25,7 @@ import { ToastService } from '../../../../core/services/toast.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-checkout-review',
   standalone: true,
-  imports: [NgIconComponent, TenantCurrencyPipe, CollectionTimeModalComponent, OutletSelectorModalComponent],
+  imports: [NgIconComponent, PriceComponent, CollectionTimeModalComponent, OutletSelectorModalComponent],
   viewProviders: [
     provideIcons({
       lucideUser,
@@ -95,14 +95,12 @@ import { ToastService } from '../../../../core/services/toast.service';
                   checkoutService.checkoutSession()!.selectedOutletName
                 }}</span>
               </div>
-              @if (checkoutService.availableStores().length > 1) {
                 <button
                   (click)="editCollection()"
                   class="text-brand-orange text-sm font-medium flex items-center hover:underline"
                 >
-                  Edit <ng-icon name="lucideEdit2" size="14" class="ml-1"></ng-icon>
+                  Change <ng-icon name="lucideEdit2" size="14" class="ml-1"></ng-icon>
                 </button>
-              }
             </div>
 
             <div class="w-full border-t border-gray-100 pl-8"></div>
@@ -122,7 +120,7 @@ import { ToastService } from '../../../../core/services/toast.service';
                 (click)="openTimeModal()"
                 class="text-brand-orange text-sm font-medium flex items-center hover:underline"
               >
-                Edit <ng-icon name="lucideEdit2" size="14" class="ml-1"></ng-icon>
+                Change <ng-icon name="lucideEdit2" size="14" class="ml-1"></ng-icon>
               </button>
             </div>
           </div>
@@ -165,9 +163,7 @@ import { ToastService } from '../../../../core/services/toast.service';
                   </div>
 
                   <div class="shrink-0 pt-1">
-                    <span class="font-bold text-[15px] text-gray-900">{{
-                      item.lineTotal | tenantCurrency: 'symbol' : '1.2-2'
-                    }}</span>
+                    <span class="font-bold text-[15px] text-gray-900"><app-price [value]="item.lineTotal"></app-price></span>
                   </div>
                 </div>
               }
@@ -177,34 +173,25 @@ import { ToastService } from '../../../../core/services/toast.service';
             <div class="border-t border-gray-100 pt-4 space-y-2">
               <div class="flex justify-between text-gray-500 text-[13px]">
                 <span>Subtotal</span>
-                <span>{{
-                  checkoutService.checkoutSession()!.subtotal | tenantCurrency: 'symbol' : '1.2-2'
-                }}</span>
+                <span><app-price [value]="checkoutService.checkoutSession()!.subtotal"></app-price></span>
               </div>
               @if (checkoutService.checkoutSession()!.discountTotal > 0) {
                 <div class="flex justify-between text-green-600 text-[13px]">
                   <span>Discount</span>
                   <span
-                    >-{{
-                      checkoutService.checkoutSession()!.discountTotal
-                        | tenantCurrency: 'symbol' : '1.2-2'
-                    }}</span
+                    >-<app-price [value]="checkoutService.checkoutSession()!.discountTotal"></app-price></span
                   >
                 </div>
               }
               <div class="flex justify-between text-gray-500 text-[13px]">
                   <span>VAT</span>
-                <span>{{
-                  checkoutService.checkoutSession()!.taxTotal | tenantCurrency: 'symbol' : '1.2-2'
-                }}</span>
+                <span><app-price [value]="checkoutService.checkoutSession()!.taxTotal"></app-price></span>
               </div>
             </div>
 
             <div class="border-t border-gray-100 mt-3 pt-3 flex justify-between items-center">
               <span class="font-bold text-[15px] text-gray-900">Total to Pay</span>
-              <span class="font-bold text-lg text-gray-900">{{
-                checkoutService.checkoutSession()!.grandTotal | tenantCurrency: 'symbol' : '1.2-2'
-              }}</span>
+              <span class="font-bold text-lg text-gray-900"><app-price [value]="checkoutService.checkoutSession()!.grandTotal"></app-price></span>
             </div>
           </div>
         </div>
@@ -228,7 +215,7 @@ import { ToastService } from '../../../../core/services/toast.service';
               <ng-icon name="lucideLock" size="18" class="mr-2"></ng-icon>
             }
             Place Collection Order •
-            {{ checkoutService.checkoutSession()!.grandTotal | tenantCurrency: 'symbol' : '1.0-0' }}
+            <app-price [value]="checkoutService.checkoutSession()!.grandTotal"></app-price>
           </button>
         </div>
       } @else {
@@ -252,13 +239,19 @@ import { ToastService } from '../../../../core/services/toast.service';
     </div>
   `,
 })
-export class CheckoutReviewComponent {
+export class CheckoutReviewComponent implements OnInit {
   checkoutService = inject(CheckoutService);
   storefrontData = inject(StorefrontDataService);
   toastService = inject(ToastService);
 
   isTimeModalOpen = signal(false);
   isOutletModalOpen = signal(false);
+
+  ngOnInit() {
+    if (this.checkoutService.availableStores().length === 0) {
+      this.checkoutService.getStores().subscribe();
+    }
+  }
 
   goBack() {
     this.checkoutService.setStep(1); // Since step 2 is removed, go back to step 1

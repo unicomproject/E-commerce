@@ -8,7 +8,7 @@ import { CartService } from '../../../../features/cart/services/cart.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthModalService } from '../../../../core/services/auth-modal.service';
 import { CustomerProfileService } from '../../../../features/customer/services/customer-profile.service';
-import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PriceComponent } from '../../../../shared/components/price/price.component';
 import { PhoneInputComponent } from '../../../../shared/components/phone-input/phone-input.component';
 
 @Component({
@@ -19,7 +19,7 @@ import { PhoneInputComponent } from '../../../../shared/components/phone-input/p
     CommonModule,
     ReactiveFormsModule,
     NgIconComponent,
-    TenantCurrencyPipe,
+    PriceComponent,
     PhoneInputComponent,
   ],
   viewProviders: [provideIcons({ lucideShield, lucideShoppingBag, lucideChevronDown, lucideLock })],
@@ -108,7 +108,7 @@ import { PhoneInputComponent } from '../../../../shared/components/phone-input/p
                 <h4 class="font-bold text-gray-900 leading-tight">Order Summary</h4>
                 <p class="text-gray-600 text-sm">
                   {{ cart.items.length }} items •
-                  {{ cart.grandTotal | tenantCurrency: 'symbol' : '1.2-2' }}
+                  <app-price [value]="cart.grandTotal"></app-price>
                 </p>
               </div>
             </div>
