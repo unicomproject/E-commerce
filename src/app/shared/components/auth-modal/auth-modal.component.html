@@ -10,7 +10,7 @@
     >
       <!-- Mobile Drag Handle -->
       <div class="w-full flex justify-center pt-3 pb-1 md:hidden">
-        <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+        <div class="w-12 h-1.5 bg-brand-orange rounded-full"></div>
       </div>
       <!-- Close Button (Fixed at top) -->
       <div class="absolute top-4 right-4 z-20">
@@ -22,22 +22,8 @@
         </button>
       </div>
       <!-- Scrollable Content Views -->
-      <div class="w-full flex-1 overflow-y-auto pb-safe">
-        @if (authModalService.view() === 'login') {
-          <app-login (switchView)="switchView($event)"></app-login>
-        }
-        @if (authModalService.view() === 'register') {
-          <app-register (switchView)="switchView($event)"></app-register>
-        }
-        @if (authModalService.view() === 'forgot-password') {
-          <app-forgot-password (switchView)="switchView($event)"></app-forgot-password>
-        }
-        @if (authModalService.view() === 'verify') {
-          <app-email-verification (switchView)="switchView($event)"></app-email-verification>
-        }
-        @if (authModalService.view() === 'reset-password') {
-          <app-reset-password (switchView)="switchView($event)"></app-reset-password>
-        }
+      <div class="w-full flex-1 overflow-y-auto pb-12 pb-safe">
+        <app-login></app-login>
       </div>
     </div>
   </div>

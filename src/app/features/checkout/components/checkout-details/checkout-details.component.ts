@@ -7,7 +7,8 @@ import { CheckoutService } from '../../../../features/checkout/services/checkout
 import { CartService } from '../../../../features/cart/services/cart.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthModalService } from '../../../../core/services/auth-modal.service';
-import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { CustomerProfileService } from '../../../../features/customer/services/customer-profile.service';
+import { PriceComponent } from '../../../../shared/components/price/price.component';
 import { PhoneInputComponent } from '../../../../shared/components/phone-input/phone-input.component';
 
 @Component({
@@ -18,7 +19,7 @@ import { PhoneInputComponent } from '../../../../shared/components/phone-input/p
     CommonModule,
     ReactiveFormsModule,
     NgIconComponent,
-    TenantCurrencyPipe,
+    PriceComponent,
     PhoneInputComponent,
   ],
   viewProviders: [provideIcons({ lucideShield, lucideShoppingBag, lucideChevronDown, lucideLock })],
@@ -107,7 +108,7 @@ import { PhoneInputComponent } from '../../../../shared/components/phone-input/p
                 <h4 class="font-bold text-gray-900 leading-tight">Order Summary</h4>
                 <p class="text-gray-600 text-sm">
                   {{ cart.items.length }} items •
-                  {{ cart.grandTotal | tenantCurrency: 'symbol' : '1.2-2' }}
+                  <app-price [value]="cart.grandTotal"></app-price>
                 </p>
               </div>
             </div>
@@ -135,7 +136,7 @@ import { PhoneInputComponent } from '../../../../shared/components/phone-input/p
                 class="mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 animate-spin"
               ></span>
             }
-            {{ checkoutService.isFastTracked() ? 'Continue to Review' : 'Continue to Collection Outlet' }}
+            Continue to Review
           </button>
         </div>
       </form>
@@ -147,6 +148,7 @@ export class CheckoutDetailsComponent implements OnInit {
   cartService = inject(CartService);
   private authService = inject(AuthService);
   private authModalService = inject(AuthModalService);
+  private profileService = inject(CustomerProfileService);
   private fb = inject(FormBuilder);
 
   detailsForm = this.fb.group({
@@ -157,8 +159,18 @@ export class CheckoutDetailsComponent implements OnInit {
   });
 
   ngOnInit() {
+    const session = this.checkoutService.checkoutSession();
     const user = this.authService.currentUserSnapshot;
-    if (user) {
+
+    if (session) {
+      const parts = session.pickupContactName ? session.pickupContactName.split(' ') : [];
+      this.detailsForm.patchValue({
+        firstName: parts[0] || '',
+        lastName: parts.slice(1).join(' ') || '',
+        email: session.pickupContactEmail || '',
+        mobile: session.pickupContactPhone || '',
+      });
+    } else if (user) {
       this.detailsForm.patchValue({
         firstName: user.displayName?.split(' ')[0] || '',
         lastName: user.displayName?.split(' ')[1] || '',
@@ -200,9 +212,19 @@ export class CheckoutDetailsComponent implements OnInit {
             pickupContactPhone: val.mobile!,
           },
           cartId,
-          { nextStep: this.checkoutService.isFastTracked() ? 3 : 2 }
+          { nextStep: 3 }
         )
-        .subscribe();
+        .subscribe(() => {
+          // Also save this permanently to the user's profile
+          this.profileService.updateProfile({
+            firstName: val.firstName!,
+            lastName: val.lastName!,
+            email: val.email!,
+            phone: val.mobile!
+          }).subscribe(() => {
+            this.authService.refreshSession().subscribe();
+          });
+        });
     });
   }
 }

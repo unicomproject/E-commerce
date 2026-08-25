@@ -23,9 +23,8 @@ export class TenantCurrencyPipe implements PipeTransform {
     
     const currencyCode = this.tenantCtx.currencyCode;
     
-    // Use 'symbol-narrow' by default if 'symbol' is requested to ensure we get 
-    // recognizable symbols (like 'Rs.' or '$') instead of ISO codes (like 'LKR' or 'USD')
-    const displayFormat = display === 'symbol' ? 'symbol-narrow' : display;
+    // Use 'code' to ensure we get ISO codes (like 'LKR' or 'USD') instead of symbols (like 'Rs.' or '$')
+    const displayFormat = display === 'symbol' ? 'code' : display;
 
     return this.currencyPipe.transform(value, currencyCode, displayFormat, digitsInfo, locale);
   }

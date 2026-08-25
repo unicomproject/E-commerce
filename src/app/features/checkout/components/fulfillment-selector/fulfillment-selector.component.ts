@@ -29,7 +29,7 @@ import { CollectionTimeModalComponent } from '../collection-time-modal/collectio
                 <ng-icon name="lucideStore" style="color: #f97316" class="text-[14px] leading-none flex-shrink-0"></ng-icon>
                 Collect from
               </span>
-              <span class="mt-0.5 text-[13px] sm:text-[14px] font-bold text-brand-black leading-tight">{{ selectedStore()?.name || 'Etihad Stadium Store' }}</span>
+              <span class="mt-0.5 text-[13px] sm:text-[14px] font-bold text-brand-black leading-tight">{{ selectedStore()?.name || 'Select outlet' }}</span>
             </span>
             <ng-icon
               name="lucideChevronDown"

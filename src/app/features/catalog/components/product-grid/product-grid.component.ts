@@ -27,7 +27,7 @@ import { Product } from '../../../../features/catalog/models/product.model';
 
       <div class="grid w-full min-w-0 grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
         @for (product of products(); track product) {
-          <app-product-card [product]="product" class="min-w-0"></app-product-card>
+          <app-product-card [product]="product" class="min-w-0" [isPriority]="true"></app-product-card>
         }
       </div>
     </div>

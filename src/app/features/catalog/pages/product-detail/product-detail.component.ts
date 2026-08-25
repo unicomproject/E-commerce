@@ -34,7 +34,7 @@ import { BreadcrumbsComponent, BreadcrumbItem } from '../../../../shared/compone
 import { TabsComponent, TabItem } from '../../../../shared/components/tabs/tabs.component';
 import { FulfillmentSelector } from '../../../checkout/components/fulfillment-selector/fulfillment-selector.component';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PriceComponent } from '../../../../shared/components/price/price.component';
 import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { DEMO_SNEAKER, DEMO_REVIEWS } from '../../../../core/mocks/demo-product.mock';
@@ -46,7 +46,7 @@ import { ProductReviewsComponent } from '../../components/product-reviews/produc
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, NgIconComponent, StarRatingComponent, QuantityStepperComponent, TenantCurrencyPipe, BreadcrumbsComponent, PageHeaderComponent, ProductReviewsComponent],
+  imports: [CommonModule, NgIconComponent, StarRatingComponent, QuantityStepperComponent, PriceComponent, BreadcrumbsComponent, PageHeaderComponent, ProductReviewsComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.css',
   viewProviders: [provideIcons({ 
@@ -108,6 +108,10 @@ export class ProductDetail implements OnInit {
   showStickyNav = signal<boolean>(false);
   isHeaderHidden = signal<boolean>(false);
   private lastScrollTop = 0;
+
+  // Swipe State
+  touchStartX = 0;
+  touchEndX = 0;
 
   // Tabs State (Legacy, keeping for any dependencies)
   activeTabId = signal<string>('reviews');
@@ -187,6 +191,15 @@ export class ProductDetail implements OnInit {
     const variant: any = this.selectedVariant();
     if (variant && variant.originalPrice) return variant.originalPrice;
     return (this.product() as any)?.originalPrice;
+  });
+
+  discountPercentage = computed<number | null>(() => {
+    const op = this.originalPrice();
+    const p = this.displayPrice();
+    if (op && op > p) {
+      return Math.round(((op - p) / op) * 100);
+    }
+    return null;
   });
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => {
@@ -360,6 +373,25 @@ export class ProductDetail implements OnInit {
 
   setImage(index: number) {
     this.activeImageIndex.set(index);
+  }
+
+  // Swipe Handlers
+  onTouchStart(e: TouchEvent) {
+    this.touchStartX = e.changedTouches[0].screenX;
+  }
+
+  onTouchEnd(e: TouchEvent) {
+    this.touchEndX = e.changedTouches[0].screenX;
+    this.handleSwipe();
+  }
+
+  handleSwipe() {
+    const swipeThreshold = 50; // minimum distance
+    if (this.touchEndX < this.touchStartX - swipeThreshold) {
+      this.nextImage(); // Swipe left
+    } else if (this.touchEndX > this.touchStartX + swipeThreshold) {
+      this.prevImage(); // Swipe right
+    }
   }
 
   selectOption(optionName: string, valueId: string) {

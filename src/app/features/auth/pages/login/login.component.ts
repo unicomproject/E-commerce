@@ -4,11 +4,15 @@ import {
   ElementRef,
   OnDestroy,
   ViewChild,
+  ViewChildren,
+  QueryList,
   inject,
   output,
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
+import { timeout } from 'rxjs/operators';
+import { TimeoutError } from 'rxjs';
 
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -16,11 +20,10 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   lucideMail,
   lucideLock,
-  lucideEye,
-  lucideEyeOff,
-  lucidePackage,
-  lucideMapPin,
-  lucideStar,
+  lucideKeyRound,
+  lucideArrowLeft,
+  lucidePhone,
+  lucideArrowRight
 } from '@ng-icons/lucide';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthView, AuthModalService } from '../../../../core/services/auth-modal.service';
@@ -36,11 +39,10 @@ import { GoogleIdentityService } from '../../../../core/services/google-identity
     provideIcons({
       lucideMail,
       lucideLock,
-      lucideEye,
-      lucideEyeOff,
-      lucidePackage,
-      lucideMapPin,
-      lucideStar,
+      lucideKeyRound,
+      lucideArrowLeft,
+      lucidePhone,
+      lucideArrowRight
     }),
   ],
 })
@@ -54,17 +56,21 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
   private googleIdentityService = inject(GoogleIdentityService);
   private router = inject(Router);
 
-  loginForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
-    rememberMe: [false],
-  });
-
-  showPassword = signal(false);
+  isOtpStep = signal(false);
   isLoading = signal(false);
   isGoogleLoading = signal(false);
   googleUnavailableMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
+  activeTab = signal<'email' | 'phone'>('email');
+  
+  otpDigits = signal<string[]>(['', '', '', '']);
+  @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
+
+  authForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    code: [''],
+    rememberMe: [false],
+  });
 
   ngAfterViewInit(): void {
     void this.renderGoogleButton();
@@ -74,52 +80,155 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     this.googleIdentityService.cancel();
   }
 
-  togglePasswordVisibility() {
-    this.showPassword.update((v) => !v);
+  goBack() {
+    this.isOtpStep.set(false);
+    this.errorMessage.set(null);
+    this.authForm.patchValue({ code: '' });
+    this.otpDigits.set(['', '', '', '']);
   }
 
   onSubmit() {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
+    if (!this.isOtpStep()) {
+      this.requestOtp();
+    } else {
+      this.verifyOtp();
+    }
+  }
+
+  private requestOtp() {
+    const emailControl = this.authForm.get('email');
+    if (emailControl?.invalid) {
+      emailControl.markAsTouched();
       return;
     }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
-    const { email, password, rememberMe } = this.loginForm.value;
+    const email = this.authForm.value.email!;
 
-    this.authService
-      .login({ email: email!, password: password!, rememberMe: rememberMe! })
-      .subscribe({
-        next: (response) => {
-          this.isLoading.set(false);
-          if (response.success) {
-            this.authModalService.close();
-            return;
-          }
+    this.authService.requestOtp(email).subscribe({
+      next: (response) => {
+        this.isLoading.set(false);
+        if (response.success) {
+          this.isOtpStep.set(true);
+        } else {
+          this.errorMessage.set(response.message || 'Could not send OTP.');
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set('Failed to send OTP. Please try again.');
+        console.error('Request OTP error', err);
+      },
+    });
+  }
 
-          if (response.errorCode === 'customer_auth.email_not_verified') {
-            this.authModalService.setPendingVerificationEmail(email!);
-            this.errorMessage.set(null);
-            this.switchView.emit('verify');
-            return;
-          }
+  private verifyOtp() {
+    const codeControl = this.authForm.get('code');
+    if (!codeControl?.value) {
+      this.errorMessage.set('Please enter the verification code.');
+      return;
+    }
 
-          this.errorMessage.set(response.message || 'Login failed. Please check your credentials.');
-        },
-        error: (err) => {
-          this.isLoading.set(false);
-          this.errorMessage.set('An unexpected error occurred. Please try again.');
-          console.error('Login error', err);
-        },
-      });
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+    const { email, code, rememberMe } = this.authForm.value;
+
+    this.authService.verifyOtp(email!, code!, rememberMe!).subscribe({
+      next: (response) => {
+        this.isLoading.set(false);
+        if (response.success) {
+          this.authModalService.close();
+        } else {
+          this.errorMessage.set(response.message || 'Invalid verification code.');
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set('Verification failed. Please try again.');
+        console.error('Verify OTP error', err);
+      },
+    });
+  }
+
+  onOtpInput(event: Event, index: number) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+    
+    // Allow only numbers
+    if (value && !/^\d$/.test(value)) {
+      input.value = this.otpDigits()[index]; // Revert to old
+      return;
+    }
+
+    const currentDigits = [...this.otpDigits()];
+    currentDigits[index] = value;
+    this.otpDigits.set(currentDigits);
+    this.updateCodeControl();
+
+    // Move to next input
+    if (value && index < 3) {
+      this.otpInputs.toArray()[index + 1].nativeElement.focus();
+    }
+  }
+
+  onOtpKeydown(event: KeyboardEvent, index: number) {
+    if (event.key === 'Backspace') {
+      const currentDigits = [...this.otpDigits()];
+      
+      if (!currentDigits[index] && index > 0) {
+        // If current is empty, move focus to prev and clear it
+        this.otpInputs.toArray()[index - 1].nativeElement.focus();
+        currentDigits[index - 1] = '';
+      } else {
+        // Clear current
+        currentDigits[index] = '';
+      }
+      
+      this.otpDigits.set(currentDigits);
+      this.updateCodeControl();
+      event.preventDefault(); // Prevent default backspace
+    } else if (event.key === 'ArrowLeft' && index > 0) {
+      this.otpInputs.toArray()[index - 1].nativeElement.focus();
+      event.preventDefault();
+    } else if (event.key === 'ArrowRight' && index < 3) {
+      this.otpInputs.toArray()[index + 1].nativeElement.focus();
+      event.preventDefault();
+    }
+  }
+
+  onOtpPaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const pastedData = event.clipboardData?.getData('text');
+    if (!pastedData) return;
+    
+    const numbers = pastedData.replace(/\D/g, '').split('').slice(0, 4);
+    const currentDigits = [...this.otpDigits()];
+    
+    for (let i = 0; i < numbers.length; i++) {
+      currentDigits[i] = numbers[i];
+    }
+    
+    this.otpDigits.set(currentDigits);
+    this.updateCodeControl();
+    
+    if (numbers.length > 0) {
+      const focusIndex = Math.min(numbers.length, 5);
+      if (focusIndex < 6) {
+        this.otpInputs.toArray()[focusIndex].nativeElement.focus();
+      } else {
+        this.otpInputs.toArray()[5].nativeElement.focus();
+      }
+    }
+  }
+
+  private updateCodeControl() {
+    this.authForm.patchValue({ code: this.otpDigits().join('') });
   }
 
   private async renderGoogleButton(): Promise<void> {
     const container = this.googleButtonContainer?.nativeElement;
-    if (!container) {
-      return;
-    }
+    if (!container) return;
 
     if (!this.googleIdentityService.isConfigured) {
       this.googleUnavailableMessage.set('Google sign-in is not configured for this store.');
@@ -141,28 +250,25 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     this.isGoogleLoading.set(true);
     this.errorMessage.set(null);
 
-    const rememberMe = this.loginForm.controls.rememberMe.value === true;
-    this.authService.googleLogin({ idToken, rememberMe }).subscribe({
+    const rememberMe = this.authForm.controls.rememberMe.value === true;
+    this.authService.googleLogin({ idToken, rememberMe }).pipe(
+      timeout(30000)
+    ).subscribe({
       next: (response) => {
         this.isGoogleLoading.set(false);
         if (response.success) {
           this.authModalService.close();
-          return;
+        } else {
+          this.errorMessage.set(this.resolveGoogleErrorMessage(response.errorCode, response.message));
         }
-
-        if (response.errorCode === 'customer_auth.terms_required') {
-          this.errorMessage.set(
-            'Please create an account and accept the terms before using Google sign-in.',
-          );
-          this.switchView.emit('register');
-          return;
-        }
-
-        this.errorMessage.set(this.resolveGoogleErrorMessage(response.errorCode, response.message));
       },
-      error: () => {
+      error: (err) => {
         this.isGoogleLoading.set(false);
-        this.errorMessage.set('Google sign-in failed. Please try again.');
+        if (err instanceof TimeoutError) {
+          this.errorMessage.set('Request timed out. Please check your connection and try again.');
+        } else {
+          this.errorMessage.set('Google sign-in failed. Please try again.');
+        }
       },
     });
   }
@@ -171,6 +277,8 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     switch (errorCode) {
       case 'customer_auth.google_not_configured':
         return 'Google sign-in is not configured yet.';
+      case 'customer_auth.google_verification_unavailable':
+        return 'Google sign-in timed out while verifying your account. Please try again.';
       case 'customer_auth.invalid_google_token':
         return 'Google sign-in could not be verified. Please try again.';
       case 'customer_auth.google_email_not_verified':

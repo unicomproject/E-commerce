@@ -2,13 +2,14 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideArrowRight } from '@ng-icons/lucide';
-import { Banner } from '../../../../core/models';import { NgOptimizedImage } from '@angular/common';
+import { Banner } from '../../../../core/models';
+import { LazyMediaImageComponent } from '../../../../shared/components/lazy-media-image/lazy-media-image.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-promo-banners',
   standalone: true,
-  imports: [NgIcon, NgOptimizedImage],
+  imports: [NgIcon, LazyMediaImageComponent],
   viewProviders: [provideIcons({ lucideArrowRight })],
   template: `
     @if (banners().length > 0) {
@@ -54,12 +55,12 @@ import { Banner } from '../../../../core/models';import { NgOptimizedImage } fro
               <div
                 class="absolute bottom-0 right-0 z-0 h-24 w-24 shrink-0 transition-transform duration-300 group-hover:scale-105 sm:bottom-4 sm:right-4 sm:h-28 sm:w-28 md:h-36 md:w-36 lg:bottom-3 lg:right-3 lg:h-24 lg:w-24 mix-blend-multiply"
               >
-                <img
-                  [ngSrc]="banner.imageUrl"
+                <app-lazy-media-image
+                  class="absolute inset-0 block h-full w-full"
+                  [src]="banner.imageUrl"
                   [alt]="banner.title"
-                  class="object-contain"
-                  fill
-                  priority
+                  [priority]="true"
+                  fit="contain"
                 />
               </div>
             </a>

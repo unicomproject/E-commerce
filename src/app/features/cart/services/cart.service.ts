@@ -4,7 +4,6 @@ import { BehaviorSubject, Observable, map } from 'rxjs';
 import { StorefrontCartReadModel, AddStorefrontCartItemRequest, UpdateStorefrontCartItemRequest } from '../../../features/cart/models/cart.model';
 import { environment } from '../../../../environments/environment';
 import { ToastService } from '../../../core/services/toast.service';
-import { AuthService } from '../../../core/services/auth.service';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -19,24 +18,16 @@ export class CartService {
   private http = inject(HttpClient);
   private toastService = inject(ToastService);
   private cartSubject = new BehaviorSubject<StorefrontCartReadModel | null>(null);
-  
+
   cart$ = this.cartSubject.asObservable();
   totalItems$: Observable<number> = this.cart$.pipe(
     map(cart => cart?.totalQuantity || 0)
   );
-  
+
   private readonly baseUrl = `${environment.apiUrl}/ecommerce/storefront/cart`;
 
-  private authService = inject(AuthService);
-  
   constructor() {
-    this.authService.currentUser$.subscribe((user) => {
-      if (!user) {
-        this.clearLocalState();
-      } else {
-        this.loadCart();
-      }
-    });
+    this.loadCart();
   }
   loadCart(): void {
     this.http.get<ApiResponse<StorefrontCartReadModel>>(this.baseUrl).subscribe({

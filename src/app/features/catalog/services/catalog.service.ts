@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, effect } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -46,6 +46,26 @@ export class StorefrontDataService {
   selectedStore = signal<Store | null>(null);
   requestedCollectionAt = signal<string | null>(null);
   selectedTimeText = signal<string>('As soon as possible');
+
+  constructor() {
+    const savedStore = localStorage.getItem('selectedStore');
+    if (savedStore) {
+      try {
+        this.selectedStore.set(JSON.parse(savedStore));
+      } catch (e) {
+        console.error('Failed to parse saved store', e);
+      }
+    }
+
+    effect(() => {
+      const store = this.selectedStore();
+      if (store) {
+        localStorage.setItem('selectedStore', JSON.stringify(store));
+      } else {
+        localStorage.removeItem('selectedStore');
+      }
+    });
+  }
 
   getHeroBanners(): Observable<Banner[]> {
     return this.http.get<Banner[]>(`${this.baseUrl}/banners?bannerType=Hero`);
@@ -115,15 +135,14 @@ export class StorefrontDataService {
 
   getStores(): Observable<Store[]> {
     return this.http.get<Store[]>(`${this.baseUrl}/fulfillment/stores`).pipe(
-      map(stores => stores.map((s, index) => ({
-        ...s,
-        imageUrl: index === 0
-          ? 'https://images.unsplash.com/photo-1555529733-0e670560f4e1?w=400&h=300&fit=crop'
-          : 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop',
-        statusText: index === 3 ? 'Busy' : 'Open',
-        closingTime: `Closes ${9 + index}:00 PM`,
-        isRecommended: index === 0
-      })))
+      map((stores) =>
+        stores.map((store, index) => ({
+          ...store,
+          statusText: store.isOpen ? 'Open' : 'Closed',
+          closingTime: store.closingTime ? `Closes ${store.closingTime}` : undefined,
+          isRecommended: store.isDefault === true || (index === 0 && stores.every((item) => !item.isDefault)),
+        })),
+      ),
     );
   }
 

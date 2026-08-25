@@ -5,7 +5,7 @@
 }
 
 @if (!isLoading && category) {
-  <div class="min-h-screen bg-[#FFFFFF] flex flex-col pb-20">
+  <div class="min-h-screen bg-[#FFFFFF] flex flex-col pb-28 sm:pb-32 lg:pb-12">
     <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8">
       <!-- Breadcrumb (Desktop Only) -->
       <div class="hidden md:block pt-4 pb-2">
@@ -25,31 +25,11 @@
               {{ category.name }}
             </h1>
           </div>
-          <h1 class="hidden lg:block text-2xl md:text-3xl font-bold text-[#111111]">
-            {{ category.name }}
-          </h1>
         </div>
       </div>
-      <!-- Category Chips Row -->
-      <div class="w-full overflow-x-auto scrollbar-hide mt-5 pb-1 -mx-4 px-4 lg:mx-0 lg:px-0">
-        <div class="flex items-center gap-3 w-max">
-          <div
-            class="h-[44px] px-4 rounded-full border border-brand-orange text-[#FF6A00] font-medium flex items-center justify-center cursor-pointer whitespace-nowrap"
-          >
-            All {{ category.name }}
-          </div>
-          @for (child of subcategories; track child) {
-            <div
-              [routerLink]="['/collections', child.slug]"
-              class="h-[44px] px-4 rounded-full border border-[#EAEAEA] text-[#111111] font-medium flex items-center justify-center hover:border-brand-orange/30 cursor-pointer transition-colors whitespace-nowrap"
-            >
-              {{ child.name }}
-            </div>
-          }
-        </div>
-      </div>
+
       <!-- Count Row -->
-      <div class="mt-6 flex items-center">
+      <div class="mt-2 flex items-center">
         <span class="text-[14px] font-semibold text-[#111111]">{{ totalItems }} items</span>
       </div>
       <!-- Product Category Cards (2-column Grid) -->

@@ -40,7 +40,7 @@
     <!-- Price -->
     <div class="flex flex-col items-end">
       <div class="text-lg md:text-xl font-extrabold text-brand-orange">
-        {{ order().grandTotal | tenantCurrency: 'symbol' : '1.2-2' }}
+        <app-price [value]="order().grandTotal"></app-price>
       </div>
       <div class="text-[13px] text-neutral-500 font-medium mt-1">
         {{ order().paymentLabel || 'Pay at Pickup' }}

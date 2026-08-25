@@ -5,7 +5,6 @@ import { lucideX, lucideLock } from '@ng-icons/lucide';
 import { CheckoutService } from '../../../../features/checkout/services/checkout.service';
 import { CheckoutStepperComponent } from '../checkout-stepper/checkout-stepper.component';
 import { CheckoutDetailsComponent } from '../checkout-details/checkout-details.component';
-import { CheckoutCollectionComponent } from '../checkout-collection/checkout-collection.component';
 import { CheckoutReviewComponent } from '../checkout-review/checkout-review.component';
 import { CheckoutSuccessComponent } from '../checkout-success/checkout-success.component';
 
@@ -17,7 +16,6 @@ import { CheckoutSuccessComponent } from '../checkout-success/checkout-success.c
     NgIconComponent,
     CheckoutStepperComponent,
     CheckoutDetailsComponent,
-    CheckoutCollectionComponent,
     CheckoutReviewComponent,
     CheckoutSuccessComponent,
   ],
@@ -30,7 +28,7 @@ import { CheckoutSuccessComponent } from '../checkout-success/checkout-success.c
       >
         <!-- Modal Container: Full screen on mobile, popup on desktop -->
         <div
-          class="relative w-full bg-white flex flex-col
+          class="relative w-full bg-white flex flex-col overflow-hidden
                  h-[100dvh]
                  lg:h-auto lg:max-h-[90vh] lg:max-w-[580px] lg:rounded-2xl lg:shadow-2xl lg:animate-none
                  animate-in slide-in-from-bottom duration-300"
@@ -71,9 +69,6 @@ import { CheckoutSuccessComponent } from '../checkout-success/checkout-success.c
               @switch (checkoutService.currentStep()) {
                 @case (1) {
                   <app-checkout-details></app-checkout-details>
-                }
-                @case (2) {
-                  <app-checkout-collection></app-checkout-collection>
                 }
                 @case (3) {
                   <app-checkout-review></app-checkout-review>

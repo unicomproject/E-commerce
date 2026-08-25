@@ -11,14 +11,10 @@ import {
   ResetPasswordRequest,
   GoogleLoginRequest,
   AuthResponse,
-  CustomerLoginRequest,
-  CustomerLoginCustomerDto,
-  CustomerRegisterRequest,
-  CustomerVerifyEmailRequest,
-  CustomerResendEmailVerificationRequest,
-  CustomerForgotPasswordRequest,
-  CustomerResetPasswordRequest,
-  CustomerGoogleLoginRequest
+  CustomerRequestOtpRequest,
+  CustomerVerifyOtpRequest,
+  CustomerGoogleLoginRequest,
+  CustomerLoginCustomerDto
 } from '../models';
 import {
   clearCustomerAuthStorage,
@@ -27,6 +23,7 @@ import {
   setCustomerAccessToken
 } from './customer-auth-token';
 import { ToastService } from './toast.service';
+import { GoogleIdentityService } from './google-identity.service';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +31,7 @@ import { ToastService } from './toast.service';
 export class AuthService {
   private http = inject(HttpClient);
   private toastService = inject(ToastService);
+  private googleIdentityService = inject(GoogleIdentityService);
   private baseUrl = `${environment.apiUrl}/ecommerce/storefront/auth`;
   private refreshSessionRequest$: Observable<AuthResponse> | null = null;
 
@@ -63,24 +61,39 @@ export class AuthService {
     this.currentUserSubject.next(null);
   }
 
-  login(data: LoginRequest): Observable<AuthResponse> {
-    const request: CustomerLoginRequest = {
-      emailOrPhone: data.email || '',
-      password: data.password || ''
+  requestOtp(email: string): Observable<AuthResponse> {
+    const request: CustomerRequestOtpRequest = { email };
+
+    return this.http.post<AuthResponse>(`${this.baseUrl}/request-otp`, request, { withCredentials: true }).pipe(
+      tap(response => {
+        if (response.success) {
+          this.toastService.success(response.message || 'OTP sent successfully.');
+        }
+      }),
+      catchError(err => this.toAuthFailure(err, 'Failed to send OTP', true))
+    );
+  }
+
+  verifyOtp(email: string, code: string, rememberMe: boolean = false): Observable<AuthResponse> {
+    const request: CustomerVerifyOtpRequest = {
+      email,
+      code,
+      deviceName: this.resolveDeviceName(),
+      rememberMe
     };
 
-    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, request, { withCredentials: true }).pipe(
+    return this.http.post<AuthResponse>(`${this.baseUrl}/verify-otp`, request, { withCredentials: true }).pipe(
       tap(response => {
         if (response.success && response.data) {
           setCustomerAccessToken(response.data.accessToken);
           this.currentUserSubject.next(response.data.customer);
-          this.toastService.success(`Welcome back, ${response.data.customer.displayName || 'User'}!`);
+          this.toastService.success(`Welcome, ${response.data.customer.displayName || 'User'}!`);
         }
       }),
       catchError(err => this.toAuthFailure(
         err,
-        'Login failed',
-        err.error?.errorCode !== 'customer_auth.email_not_verified'))
+        'Verification failed',
+        err.error?.errorCode !== 'customer_auth.invalid_verification_code'))
     );
   }
 
@@ -134,100 +147,17 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true }).pipe(
-      tap(() => {
-        this.clearLocalSession();
-        this.toastService.info('Logged out successfully');
-      }),
-      catchError(() => {
-        this.clearLocalSession();
-        return of(null);
-      })
-    );
+    this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true }).pipe(
+      catchError(() => of(null))
+    ).subscribe();
+
+    this.googleIdentityService.signOut();
+    this.clearLocalSession();
+    this.toastService.info('Logged out successfully');
+    return of(null);
   }
 
-  register(data: RegisterRequest): Observable<AuthResponse> {
-    const request: CustomerRegisterRequest = {
-      email: data.email || '',
-      password: data.password || '',
-      firstName: data.firstName || undefined,
-      lastName: data.lastName || undefined,
-      agreeTerms: data.agreeTerms === true,
-      sendOffers: data.sendOffers === true
-    };
 
-    return this.http.post<AuthResponse>(`${this.baseUrl}/register`, request, { withCredentials: true }).pipe(
-      tap(response => {
-        if (response.success) {
-          this.toastService.success(response.message || 'Registration successful. Please verify your email.');
-        }
-      }),
-      catchError(err => this.toAuthFailure(err, 'Registration failed'))
-    );
-  }
-
-  verifyEmail(data: VerifyEmailRequest): Observable<AuthResponse> {
-    const request: CustomerVerifyEmailRequest = {
-      email: data.email || '',
-      code: data.code || ''
-    };
-
-    return this.http.post<AuthResponse>(`${this.baseUrl}/verify-email`, request, { withCredentials: true }).pipe(
-      tap(response => {
-        if (response.success) {
-          this.toastService.success(response.message || 'Email verified successfully.');
-        }
-      }),
-      catchError(err => this.toAuthFailure(err, 'Email verification failed'))
-    );
-  }
-
-  resendEmailVerification(data: ResendEmailVerificationRequest): Observable<AuthResponse> {
-    const request: CustomerResendEmailVerificationRequest = {
-      email: data.email || ''
-    };
-
-    return this.http.post<AuthResponse>(`${this.baseUrl}/resend-email-verification`, request, { withCredentials: true }).pipe(
-      tap(response => {
-        if (response.success) {
-          this.toastService.success(response.message || 'Verification code sent.');
-        }
-      }),
-      catchError(err => this.toAuthFailure(err, 'Could not resend verification code'))
-    );
-  }
-
-  forgotPassword(data: ForgotPasswordRequest): Observable<AuthResponse> {
-    const request: CustomerForgotPasswordRequest = {
-      email: data.email || ''
-    };
-
-    return this.http.post<AuthResponse>(`${this.baseUrl}/forgot-password`, request, { withCredentials: true }).pipe(
-      tap(response => {
-        if (response.success) {
-          this.toastService.success(response.message || 'If an account exists, a password reset link has been sent.');
-        }
-      }),
-      catchError(err => this.toAuthFailure(err, 'Could not send password reset email'))
-    );
-  }
-
-  resetPassword(data: ResetPasswordRequest): Observable<AuthResponse> {
-    const request: CustomerResetPasswordRequest = {
-      email: data.email || '',
-      token: data.token || '',
-      newPassword: data.newPassword || ''
-    };
-
-    return this.http.post<AuthResponse>(`${this.baseUrl}/reset-password`, request, { withCredentials: true }).pipe(
-      tap(response => {
-        if (response.success) {
-          this.toastService.success(response.message || 'Password has been reset successfully.');
-        }
-      }),
-      catchError(err => this.toAuthFailure(err, 'Password reset failed'))
-    );
-  }
 
   private toAuthFailure(err: HttpErrorResponse, fallbackMessage: string, showToast = true): Observable<AuthResponse> {
     const message = err.error?.message || fallbackMessage;

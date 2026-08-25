@@ -26,6 +26,7 @@ export interface StorefrontProductVariantReadModel {
   variantName: string;
   optionValues: { [key: string]: string };
   price: number;
+  originalPrice?: number;
   currencyCode?: string;
   isDefault: boolean;
   isInStock: boolean;
@@ -38,6 +39,7 @@ export interface StorefrontProductDetailReadModel {
   shortDescription: string;
   longDescription: string;
   price: number;
+  originalPrice?: number;
   currencyCode?: string;
   rating: number;
   reviewCount: number;

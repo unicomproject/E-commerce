@@ -1,4 +1,4 @@
-<div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8 collections-page">
+<div class="w-full max-w-[1600px] mx-auto px-4 pb-28 sm:pb-32 lg:px-6 lg:px-8 lg:pb-12 collections-page">
   <!-- Loading State -->
   @if (loading()) {
     <div class="skeleton-header"></div>
@@ -16,6 +16,7 @@
       [title]="currentCategory.name"
       [breadcrumbs]="breadcrumbItems()"
       [noPadding]="true"
+      [hideDesktopTitle]="true"
       customClasses="!px-0 py-4 !border-b-0 mb-4"
     >
       <div actions>
@@ -38,8 +39,8 @@
     <!-- Products Grid (for subcategories) -->
     @if (!loading() && childCategories().length === 0 && products().length > 0) {
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-6 mt-6">
-        @for (product of products(); track product) {
-          <app-product-card [product]="product"></app-product-card>
+        @for (product of products(); track product; let idx = $index) {
+          <app-product-card [product]="product" [isPriority]="idx < 4"></app-product-card>
         }
       </div>
     }

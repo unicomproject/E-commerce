@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { GoogleIdentityService } from './google-identity.service';
 
 export type AuthView = 'login' | 'register' | 'forgot-password' | 'verify' | 'reset-password';
 
@@ -6,6 +7,7 @@ export type AuthView = 'login' | 'register' | 'forgot-password' | 'verify' | 're
   providedIn: 'root'
 })
 export class AuthModalService {
+  private readonly googleIdentityService = inject(GoogleIdentityService);
   private readonly isOpenState = signal(false);
   readonly isOpen = this.isOpenState.asReadonly();
 
@@ -34,6 +36,7 @@ export class AuthModalService {
   }
 
   open(view: AuthView = 'login') {
+    this.googleIdentityService.preload();
     this.viewState.set(view);
     this.isOpenState.set(true);
     document.body.style.overflow = 'hidden';

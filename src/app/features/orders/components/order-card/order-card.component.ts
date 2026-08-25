@@ -4,13 +4,13 @@ import { RouterModule } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideClock, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCheckCircle2, lucideChevronRight, lucideCalendar, lucideMapPin, lucideShoppingBag, lucideMoreVertical } from '@ng-icons/lucide';
 import { CustomerOrderSummaryReadModel } from '../../../../features/orders/models/order.model';
-import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PriceComponent } from '../../../../shared/components/price/price.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-order-card',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgIconComponent, TenantCurrencyPipe],
+  imports: [CommonModule, RouterModule, NgIconComponent, PriceComponent],
   viewProviders: [provideIcons({ lucideClock, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCheckCircle2, lucideChevronRight, lucideCalendar, lucideMapPin, lucideShoppingBag, lucideMoreVertical })],
   templateUrl: './order-card.component.html'
 })

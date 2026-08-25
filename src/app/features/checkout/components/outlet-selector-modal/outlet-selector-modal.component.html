@@ -38,7 +38,7 @@
 
 
   <!-- Stores List -->
-  <div class="px-5 flex-1 overflow-y-auto pb-4">
+  <div class="px-5 flex-1 overflow-y-auto pb-1">
     <div class="flex items-center justify-between mb-3">
       <h3 class="text-base font-bold text-gray-900">Nearest stores</h3>
       <span class="text-xs text-gray-500">{{stores().length}} stores found</span>
@@ -51,26 +51,25 @@
           class="relative flex gap-4 p-3 bg-white border rounded-xl cursor-pointer transition-all hover:shadow-md"
           [ngClass]="selectedStoreIdState() === store.id ? 'border-brand-orange ring-1 ring-brand-orange' : 'border-gray-200'"
         >
-          <!-- Recommended Badge -->
-          @if (store.isRecommended) {
-            <div class="absolute -top-2.5 left-4 bg-brand-orange text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm z-10">
-              RECOMMENDED
-            </div>
-          }
+
 
           <!-- Store Image -->
-          <div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden border border-gray-100">
-            <img [src]="store.imageUrl || '/assets/placeholder.png'" [alt]="store.name" class="w-full h-full object-cover">
+          <div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center">
+            @if (store.imageUrl) {
+              <img [src]="store.imageUrl" [alt]="store.name" class="w-full h-full object-cover">
+            } @else {
+              <ng-icon name="lucideStore" class="text-3xl text-brand-orange" style="color: #FF5A00;"></ng-icon>
+            }
           </div>
 
           <!-- Store Details -->
           <div class="flex-1 min-w-0 py-1">
             <div class="flex justify-between items-start mb-1">
-              <h4 class="font-bold text-gray-900 text-sm truncate pr-2">{{store.name}}</h4>
+              <h4 class="font-bold text-gray-900 text-sm leading-snug pr-2 line-clamp-2">{{store.name}}</h4>
               <!-- Radio/Check Icon -->
               <div class="shrink-0 mt-0.5">
                 @if (selectedStoreIdState() === store.id) {
-                  <ng-icon name="lucideCheckCircle2" class="text-brand-orange text-xl"></ng-icon>
+                  <ng-icon name="lucideCheckCircle2" class="text-brand-orange text-xl" style="color: #FF5A00;"></ng-icon>
                 } @else {
                   <ng-icon name="lucideCircle" class="text-gray-300 text-xl"></ng-icon>
                 }
@@ -78,10 +77,12 @@
             </div>
             
             <div class="flex items-center gap-1.5 mb-2">
-              <div class="w-2 h-2 rounded-full" [ngClass]="store.statusText === 'Open' ? 'bg-green-500' : 'bg-brand-orange'"></div>
-              <span class="text-xs font-semibold" [ngClass]="store.statusText === 'Open' ? 'text-green-600' : 'text-brand-orange'">{{store.statusText}}</span>
-              <span class="text-gray-400 text-xs">&bull;</span>
-              <span class="text-gray-500 text-xs">{{store.closingTime}}</span>
+              <div class="w-2 h-2 rounded-full" [ngClass]="store.isOpen ? 'bg-green-500' : 'bg-brand-orange'"></div>
+              <span class="text-xs font-semibold" [ngClass]="store.isOpen ? 'text-green-600' : 'text-brand-orange'">{{ store.isOpen ? 'Open' : 'Closed' }}</span>
+              @if (store.closingTime) {
+                <span class="text-gray-400 text-xs">&bull;</span>
+                <span class="text-gray-500 text-xs">Closes {{store.closingTime}}</span>
+              }
             </div>
 
             <p class="text-xs text-gray-600 leading-snug mb-3 pr-6">
@@ -97,7 +98,7 @@
   </div>
 
   <!-- Footer -->
-  <div class="px-5 py-4 border-t border-gray-100 bg-white shrink-0 rounded-b-3xl">
+  <div class="px-5 pt-2 pb-4 border-t border-gray-100 bg-white shrink-0 rounded-b-3xl">
     <div class="flex gap-3 bg-gray-50 border border-gray-200 rounded-xl p-3 mb-4">
       <ng-icon name="lucideInfo" class="text-brand-orange text-xl shrink-0 mt-0.5"></ng-icon>
       <div>

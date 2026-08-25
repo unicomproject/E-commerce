@@ -23,7 +23,6 @@ export class AccountSidebarComponent {
     { label: 'Your reviews', icon: 'lucideStar', route: '/account/reviews' },
     { label: 'Wishlist', icon: 'lucideHeart', route: '/account/wishlist.component' },
     { label: 'Notifications', icon: 'lucideBell', route: '/account/notifications.component' },
-    { label: 'Addresses', icon: 'lucideMapPin', route: '/account/addresses.component' },
   ];
 
   logout() {

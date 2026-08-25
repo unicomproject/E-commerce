@@ -1,5 +1,4 @@
 import { Component, computed, inject, input, ChangeDetectionStrategy } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
 
 import { RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -7,20 +6,22 @@ import { lucideHeart } from '@ng-icons/lucide';
 import { StorefrontProductListReadModel } from '../../../core/models';
 import { WishlistService } from '../../../features/wishlist/services/wishlist.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TenantCurrencyPipe } from '../../pipes/tenant-currency.pipe';
+import { PriceComponent } from '../price/price.component';
 import { StarRatingComponent } from '../star-rating/star-rating.component';
+import { LazyMediaImageComponent } from '../lazy-media-image/lazy-media-image.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink, NgIconComponent, TenantCurrencyPipe, StarRatingComponent, NgOptimizedImage],
+  imports: [RouterLink, NgIconComponent, PriceComponent, StarRatingComponent, LazyMediaImageComponent],
   viewProviders: [provideIcons({ lucideHeart })],
   templateUrl: './product-card.component.html',
 })
 export class ProductCardComponent {
   readonly product = input.required<StorefrontProductListReadModel | any>();
   readonly layout = input<'grid' | 'list'>('grid');
+  readonly isPriority = input<boolean>(false);
 
   private readonly wishlistService = inject(WishlistService);
   readonly wishlistSig = toSignal(this.wishlistService.wishlist$);
@@ -39,6 +40,14 @@ export class ProductCardComponent {
 
   readonly reviewCount = computed(() => {
     return Number(this.product()?.reviewCount ?? 0);
+  });
+
+  readonly discountPercentage = computed(() => {
+    const p = this.product();
+    if (p && p.originalPrice && p.originalPrice > p.price) {
+      return Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100);
+    }
+    return null;
   });
 
   toggleWishlist(event: Event) {

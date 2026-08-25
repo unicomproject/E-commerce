@@ -53,7 +53,9 @@
         <div class="lg:col-span-6 flex flex-col self-start z-10 w-full">
           <!-- Main Image -->
           <div
-            class="relative bg-white rounded-3xl w-full aspect-square lg:aspect-[4/3] flex items-center justify-center mb-6 overflow-hidden border border-gray-100 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]"
+            class="relative bg-white rounded-3xl w-full flex items-center justify-center mb-6 overflow-hidden border border-gray-100 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]"
+            (touchstart)="onTouchStart($event)"
+            (touchend)="onTouchEnd($event)"
           >
             <!-- Badge -->
             @if (prod.badge) {
@@ -63,12 +65,15 @@
                 {{ prod.badge }}
               </div>
             }
-            <button
-              class="absolute left-4 z-20 w-10 h-10 bg-white shadow-md rounded-full flex items-center justify-center text-gray-600 hover:text-black hover:scale-105 transition-all"
-              (click)="prevImage()"
-            >
-              <ng-icon name="lucideChevronLeft" size="20"></ng-icon>
-            </button>
+            @if (discountPercentage()) {
+              <div
+                class="absolute left-4 z-20 bg-[#FF6A00] text-white text-xs font-bold px-3 py-1.5 rounded-[4px] shadow-sm"
+                [class.top-12]="prod.badge"
+                [class.top-4]="!prod.badge"
+              >
+                -{{ discountPercentage() }}%
+              </div>
+            }
             @if (currentImage(); as img) {
               <img
                 [src]="img.url"
@@ -76,12 +81,12 @@
                 class="w-full h-full object-cover transition-all duration-300"
               />
             }
-            <button
-              class="absolute right-4 z-20 w-10 h-10 bg-white shadow-md rounded-full flex items-center justify-center text-gray-600 hover:text-black hover:scale-105 transition-all"
-              (click)="nextImage()"
-            >
-              <ng-icon name="lucideChevronRight" size="20"></ng-icon>
-            </button>
+            <!-- Image Counter Indicator -->
+            @if (prod.images && prod.images.length > 1) {
+              <div class="absolute bottom-4 right-4 flex items-center justify-center z-20 bg-black/50 backdrop-blur-sm text-white text-sm font-bold px-3 py-1 rounded-full shadow-sm tracking-wide">
+                {{ activeImageIndex() + 1 }}/{{ prod.images.length }}
+              </div>
+            }
             <!-- Wishlist Icon -->
             <button
               (click)="toggleWishlist()"
@@ -127,11 +132,16 @@
         <!-- Right: Product Info -->
         <div class="lg:col-span-6 flex flex-col justify-start">
           <!-- Title & Subtitle -->
-          <h1
-            class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-1 tracking-tight"
-          >
-            {{ prod.name }}
-          </h1>
+          <div class="flex items-center gap-3 mb-1">
+            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
+              {{ prod.name }}
+            </h1>
+            @if (!isCurrentlyInStock()) {
+              <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold uppercase tracking-wider rounded-full self-start mt-2">
+                Out of Stock
+              </span>
+            }
+          </div>
           <div class="text-sm text-gray-500 mb-1 flex items-center gap-2">
             @if (prod.shortDescription) {
               <span class="font-medium">{{ prod.shortDescription }}</span>
@@ -146,17 +156,17 @@
           <!-- Price Row -->
           <div class="flex items-baseline flex-wrap gap-x-4 gap-y-1 mb-1">
             <div class="text-3xl lg:text-[2rem] font-bold text-brand-orange tracking-tight">
-              {{ displayPrice() | tenantCurrency: 'symbol' : '1.2-2' }}
+              <app-price [value]="displayPrice()" className="text-[28px] font-bold text-gray-900"></app-price>
             </div>
             @if (originalPrice() && originalPrice()! > displayPrice()) {
               <div class="text-lg text-gray-400 line-through font-medium">
-                {{ originalPrice() | tenantCurrency: 'symbol' : '1.2-2' }}
+                <app-price [value]="originalPrice()" className="text-[16px] text-gray-500 line-through mr-2"></app-price>
               </div>
             }
             @if (originalPrice() && originalPrice()! > displayPrice()) {
               <div class="text-sm font-bold text-red-500">
                 Save
-                {{ originalPrice()! - displayPrice() | tenantCurrency: 'symbol' : '1.0-0' }} ({{
+                <app-price [value]="originalPrice()! - displayPrice()" format="1.0-0"></app-price> ({{
                   ((originalPrice()! - displayPrice()) / originalPrice()!) * 100 | number: '1.0-0'
                 }}%)
               </div>
@@ -174,12 +184,7 @@
               >
             </div>
           </div>
-          <!-- Full Description -->
-          @if (prod.longDescription) {
-            <div class="text-sm text-gray-600 leading-relaxed mb-2">
-              {{ prod.longDescription }}
-            </div>
-          }
+
           <!-- Dynamic Options Selection -->
           @if (prod.options && prod.options.length > 0) {
             <div class="mb-2">
@@ -250,7 +255,7 @@
                 <span class="font-bold text-gray-900 text-sm">Quantity</span>
               </div>
               <!-- Stepper -->
-              <div class="h-11 max-w-[140px]">
+              <div class="h-12 max-w-[140px]">
                 <app-quantity-stepper
                   [quantity]="quantity()"
                   (quantityChange)="onQuantityChange($event)"
@@ -259,20 +264,17 @@
             </div>
           </div>
           <!-- Desktop Buttons -->
-          <div class="hidden lg:flex lg:flex-row gap-3 pt-0 mb-6">
+          <div class="hidden lg:flex lg:flex-row gap-3 pt-4 mb-6">
             <button
               (click)="addToCart($event)"
               [disabled]="!canAddToCart()"
-              class="flex-1 h-12 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full h-12 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold text-sm transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm hover:shadow-lg hover:-translate-y-0.5 shadow-brand-orange/20 hover:shadow-brand-orange/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
             >
-              <ng-icon name="lucideShoppingCart" size="18"></ng-icon> Add to Cart
-            </button>
-            <button
-              (click)="buyNow($event)"
-              [disabled]="!canAddToCart()"
-              class="flex-1 h-12 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange-light/20 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed bg-white"
-            >
-              <ng-icon name="lucideRotateCcw" size="18"></ng-icon> Buy Now
+              @if (isCurrentlyInStock()) {
+                <ng-icon name="lucideShoppingCart" size="18"></ng-icon> Add to Cart
+              } @else {
+                <ng-icon name="lucideXCircle" size="18"></ng-icon> Out of Stock
+              }
             </button>
           </div>
         </div>
@@ -334,34 +336,35 @@
             </div>
           </div>
 
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Delivery Options</h3>
-          <p class="text-gray-600 mb-8">
-            {{ prod.deliveryInfo || 'Standard delivery in 3-5 days.' }}
-          </p>
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Returns Policy</h3>
-          <p class="text-gray-600">
-            {{ prod.returnInfo || 'You can return any unworn items within 30 days.' }}
-          </p>
+          @if (prod.deliveryInfo) {
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Delivery Options</h3>
+            <p class="text-gray-600 mb-8">
+              {{ prod.deliveryInfo }}
+            </p>
+          }
+          @if (prod.returnInfo) {
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Returns Policy</h3>
+            <p class="text-gray-600">
+              {{ prod.returnInfo }}
+            </p>
+          }
         </section>
       </div>
     </div>
     <!-- Sticky Bottom Bar (Mobile Only) -->
     <div
-      class="fixed bottom-[calc(72px+env(safe-area-inset-bottom))] left-0 right-0 bg-white border-t border-gray-200 p-4 flex gap-3 lg:hidden z-40 shadow-[0_-8px_20px_-10px_rgba(0,0,0,0.1)]"
+      class="fixed bottom-[calc(72px+env(safe-area-inset-bottom))] left-0 right-0 p-4 lg:hidden z-40 pointer-events-none"
     >
       <button
         (click)="addToCart($event)"
         [disabled]="!canAddToCart()"
-        class="flex-1 h-14 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange-light/20 rounded-xl font-bold text-[15px] transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        class="pointer-events-auto w-full h-14 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl font-bold text-[15px] transition-colors flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <ng-icon name="lucideShoppingCart" size="18"></ng-icon> Add to Cart
-      </button>
-      <button
-        (click)="buyNow($event)"
-        [disabled]="!canAddToCart()"
-        class="flex-1 h-14 bg-brand-orange text-white rounded-xl font-bold text-[15px] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-      >
-        Buy Now
+        @if (isCurrentlyInStock()) {
+          <ng-icon name="lucideShoppingCart" size="20"></ng-icon> Add to Cart
+        } @else {
+          <ng-icon name="lucideXCircle" size="20"></ng-icon> Out of Stock
+        }
       </button>
     </div>
   }

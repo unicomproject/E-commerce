@@ -27,4 +27,23 @@ export class TenantContextService {
       this._currencyCode = code;
     }
   }
+
+  private _storeName: string | null = null;
+  private _logoUrl: string | null = null;
+
+  get storeName(): string | null {
+    return this._storeName;
+  }
+
+  set storeName(name: string | null) {
+    this._storeName = name;
+  }
+
+  get logoUrl(): string | null {
+    return this._logoUrl;
+  }
+
+  set logoUrl(url: string | null) {
+    this._logoUrl = url;
+  }
 }

@@ -1,7 +1,7 @@
 import { Component, computed, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterLink } from '@angular/router';
-import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PriceComponent } from '../../../../shared/components/price/price.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideArrowRight } from '@ng-icons/lucide';
 import { StorefrontCartReadModel } from '../../../../features/cart/models/cart.model';
@@ -10,7 +10,7 @@ import { StorefrontCartReadModel } from '../../../../features/cart/models/cart.m
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-cart-summary',
   standalone: true,
-  imports: [RouterLink, TenantCurrencyPipe, NgIconComponent],
+  imports: [RouterLink, PriceComponent, NgIconComponent],
   viewProviders: [provideIcons({ lucideArrowRight })],
   template: `
     <div
@@ -39,7 +39,7 @@ import { StorefrontCartReadModel } from '../../../../features/cart/models/cart.m
             <span class="text-[#22C55E] text-sm font-bold">You saved</span>
           </div>
           <div class="text-[#22C55E] font-bold text-sm">
-            - {{ selectedDiscountTotal() | tenantCurrency: 'symbol' : '1.2-2' }}
+            - <app-price [value]="selectedDiscountTotal()"></app-price>
           </div>
         </div>
       }
@@ -55,7 +55,7 @@ import { StorefrontCartReadModel } from '../../../../features/cart/models/cart.m
             }
           </div>
           <div class="text-xl font-bold text-brand-orange">
-            {{ selectedTotal() | tenantCurrency: 'symbol' : '1.2-2' }}
+            <app-price [value]="selectedTotal()"></app-price>
           </div>
         </div>
       </div>

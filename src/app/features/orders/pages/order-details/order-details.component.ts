@@ -7,7 +7,7 @@ import { OrderService } from '../../../../features/orders/services/order.service
 import { QRCodeComponent } from 'angularx-qrcode';
 import { OrderItem } from '../../components/order-item/order-item.component';
 import { OrderTimeline } from '../../components/order-timeline/order-timeline.component';
-import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PriceComponent } from '../../../../shared/components/price/price.component';
 
 import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 
@@ -15,7 +15,7 @@ import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadc
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-order-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgIconComponent, QRCodeComponent, OrderItem, OrderTimeline, TenantCurrencyPipe],
+  imports: [CommonModule, RouterModule, NgIconComponent, QRCodeComponent, OrderItem, OrderTimeline, PriceComponent],
   viewProviders: [provideIcons({ lucideClock, lucideCheckCircle2, lucideSettings, lucidePackageCheck, lucideCheckSquare, lucideXCircle, lucideCopy, lucideDownload, lucideHelpCircle, lucideTruck, lucideCalendar, lucideMapPin, lucideCreditCard, lucideFileText, lucideChevronDown, lucideChevronUp, lucideArrowLeft, lucideChevronRight })],
   templateUrl: './order-details.component.html',
   styleUrl: './order-details.component.css',

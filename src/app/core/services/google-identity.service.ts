@@ -32,6 +32,7 @@ interface GoogleIdentityApi {
       initialize(config: GoogleIdentityConfiguration): void;
       renderButton(parent: HTMLElement, options: GoogleButtonConfiguration): void;
       cancel(): void;
+      disableAutoSelect(): void;
     };
   };
 }
@@ -57,6 +58,29 @@ export class GoogleIdentityService {
     return environment.googleClientId.trim().length > 0;
   }
 
+  constructor() {
+    if (this.isConfigured) {
+      void this.loadScript();
+    }
+  }
+
+  preload(): void {
+    if (this.isConfigured) {
+      void this.loadScript();
+    }
+  }
+
+  signOut(): void {
+    try {
+      window.google?.accounts?.id?.cancel();
+      window.google?.accounts?.id?.disableAutoSelect();
+    } catch {
+      // Google script may not be loaded yet.
+    }
+    this.initializedClientId = null;
+    this.activeCredentialHandler = null;
+  }
+
   async renderButton(
     parent: HTMLElement,
     callback: (idToken: string) => void,
@@ -80,7 +104,7 @@ export class GoogleIdentityService {
     window.google.accounts.id.renderButton(parent, {
       type: 'standard',
       theme: 'outline',
-      size: 'medium',
+      size: 'large',
       text,
       shape: 'rectangular',
       logo_alignment: 'center',

@@ -1,4 +1,4 @@
-<div class="search-page pb-24 lg:pb-12 bg-page-bg min-h-screen">
+<div class="search-page pb-28 sm:pb-32 lg:pb-12 bg-page-bg min-h-screen">
   <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8 pt-0 pb-6">
     <!-- Breadcrumbs -->
     <div class="hidden lg:block pt-4 pb-2">
@@ -84,8 +84,8 @@
             : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
         "
       >
-        @for (product of products(); track product) {
-          <app-product-card [product]="product" [layout]="layout()"></app-product-card>
+        @for (product of products(); track product; let idx = $index) {
+          <app-product-card [product]="product" [layout]="layout()" [isPriority]="idx < 4"></app-product-card>
         }
       </div>
       <!-- Scroll Sentinel & Infinite Scroll Spinner -->

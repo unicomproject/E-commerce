@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -16,15 +16,16 @@ import {
 } from '@ng-icons/lucide';
 import { CheckoutService } from '../../../../features/checkout/services/checkout.service';
 import { StorefrontDataService } from '../../../catalog/services/catalog.service';
-import { TenantCurrencyPipe } from '../../../../shared/pipes/tenant-currency.pipe';
+import { PriceComponent } from '../../../../shared/components/price/price.component';
 import { CollectionTimeModalComponent } from '../collection-time-modal/collection-time-modal.component';
+import { OutletSelectorModalComponent } from '../outlet-selector-modal/outlet-selector-modal.component';
 import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-checkout-review',
   standalone: true,
-  imports: [NgIconComponent, TenantCurrencyPipe, CollectionTimeModalComponent],
+  imports: [NgIconComponent, PriceComponent, CollectionTimeModalComponent, OutletSelectorModalComponent],
   viewProviders: [
     provideIcons({
       lucideUser,
@@ -42,13 +43,7 @@ import { ToastService } from '../../../../core/services/toast.service';
   ],
   template: `
     <div class="animate-in fade-in duration-300">
-      <!-- Header -->
-      <div class="pt-2 pb-4 flex items-center gap-2 sticky top-0 z-40 bg-white">
-        <button (click)="goBack()" class="lg:hidden flex-shrink-0 p-1.5 -ml-1.5 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-[#111111]">
-          <ng-icon name="lucideArrowLeft" class="text-[24px]"></ng-icon>
-        </button>
-        <h1 class="text-[20px] font-bold text-[#111111] leading-none pt-0.5 truncate">Order Review</h1>
-      </div>
+      <!-- Header removed -->
 
       <!-- Content below header -->
       @if (checkoutService.checkoutSession() !== null) {
@@ -100,47 +95,37 @@ import { ToastService } from '../../../../core/services/toast.service';
                   checkoutService.checkoutSession()!.selectedOutletName
                 }}</span>
               </div>
-              @if (storefrontData.availableStores().length > 1) {
                 <button
                   (click)="editCollection()"
                   class="text-brand-orange text-sm font-medium flex items-center hover:underline"
                 >
-                  Edit <ng-icon name="lucideEdit2" size="14" class="ml-1"></ng-icon>
+                  Change <ng-icon name="lucideEdit2" size="14" class="ml-1"></ng-icon>
                 </button>
-              }
             </div>
-            <div class="w-full border-t border-gray-100 pl-8"></div>
-            <div class="flex items-center gap-3 text-gray-700">
-              <ng-icon name="lucideMapPin" size="18" class="text-gray-400 shrink-0"></ng-icon>
-              <span class="text-sm">Pick up from the collection point</span>
-            </div>
+
             <div class="w-full border-t border-gray-100 pl-8"></div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3 text-gray-900 font-medium">
                 <ng-icon name="lucideCalendar" size="18" class="text-gray-400 shrink-0"></ng-icon>
                 <span class="text-sm">
-                  {{ formatDate(checkoutService.checkoutSession()!.requestedCollectionAt!) }} •
-                  {{ formatTime(checkoutService.checkoutSession()!.requestedCollectionAt!) }}
+                  @if (checkoutService.checkoutSession()?.requestedCollectionAt) {
+                    {{ formatDate(checkoutService.checkoutSession()!.requestedCollectionAt!) }} •
+                    {{ formatTime(checkoutService.checkoutSession()!.requestedCollectionAt!) }}
+                  } @else {
+                    <span class="text-brand-orange font-semibold cursor-pointer" (click)="openTimeModal()">Select a collection time</span>
+                  }
                 </span>
               </div>
               <button
                 (click)="openTimeModal()"
                 class="text-brand-orange text-sm font-medium flex items-center hover:underline"
               >
-                Edit <ng-icon name="lucideEdit2" size="14" class="ml-1"></ng-icon>
+                Change <ng-icon name="lucideEdit2" size="14" class="ml-1"></ng-icon>
               </button>
             </div>
           </div>
         </div>
-        <!-- Collection Alert Banner -->
-        <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-start gap-3 mb-6">
-          <div class="text-blue-500 mt-0.5 shrink-0">
-            <ng-icon name="lucideInfo" size="18"></ng-icon>
-          </div>
-          <div class="text-[13px] text-blue-800 font-medium leading-tight pt-0.5">
-            Please confirm your collection date and time before ordering.
-          </div>
-        </div>
+
 
         <!-- Your Items -->
         <div class="mb-6">
@@ -178,9 +163,7 @@ import { ToastService } from '../../../../core/services/toast.service';
                   </div>
 
                   <div class="shrink-0 pt-1">
-                    <span class="font-bold text-[15px] text-gray-900">{{
-                      item.lineTotal | tenantCurrency: 'symbol' : '1.2-2'
-                    }}</span>
+                    <span class="font-bold text-[15px] text-gray-900"><app-price [value]="item.lineTotal"></app-price></span>
                   </div>
                 </div>
               }
@@ -190,34 +173,25 @@ import { ToastService } from '../../../../core/services/toast.service';
             <div class="border-t border-gray-100 pt-4 space-y-2">
               <div class="flex justify-between text-gray-500 text-[13px]">
                 <span>Subtotal</span>
-                <span>{{
-                  checkoutService.checkoutSession()!.subtotal | tenantCurrency: 'symbol' : '1.2-2'
-                }}</span>
+                <span><app-price [value]="checkoutService.checkoutSession()!.subtotal"></app-price></span>
               </div>
               @if (checkoutService.checkoutSession()!.discountTotal > 0) {
                 <div class="flex justify-between text-green-600 text-[13px]">
                   <span>Discount</span>
                   <span
-                    >-{{
-                      checkoutService.checkoutSession()!.discountTotal
-                        | tenantCurrency: 'symbol' : '1.2-2'
-                    }}</span
+                    >-<app-price [value]="checkoutService.checkoutSession()!.discountTotal"></app-price></span
                   >
                 </div>
               }
               <div class="flex justify-between text-gray-500 text-[13px]">
                   <span>VAT</span>
-                <span>{{
-                  checkoutService.checkoutSession()!.taxTotal | tenantCurrency: 'symbol' : '1.2-2'
-                }}</span>
+                <span><app-price [value]="checkoutService.checkoutSession()!.taxTotal"></app-price></span>
               </div>
             </div>
 
             <div class="border-t border-gray-100 mt-3 pt-3 flex justify-between items-center">
               <span class="font-bold text-[15px] text-gray-900">Total to Pay</span>
-              <span class="font-bold text-lg text-gray-900">{{
-                checkoutService.checkoutSession()!.grandTotal | tenantCurrency: 'symbol' : '1.2-2'
-              }}</span>
+              <span class="font-bold text-lg text-gray-900"><app-price [value]="checkoutService.checkoutSession()!.grandTotal"></app-price></span>
             </div>
           </div>
         </div>
@@ -241,7 +215,7 @@ import { ToastService } from '../../../../core/services/toast.service';
               <ng-icon name="lucideLock" size="18" class="mr-2"></ng-icon>
             }
             Place Collection Order •
-            {{ checkoutService.checkoutSession()!.grandTotal | tenantCurrency: 'symbol' : '1.0-0' }}
+            <app-price [value]="checkoutService.checkoutSession()!.grandTotal"></app-price>
           </button>
         </div>
       } @else {
@@ -254,23 +228,54 @@ import { ToastService } from '../../../../core/services/toast.service';
         (close)="isTimeModalOpen.set(false)"
         (confirm)="onTimeConfirmed($event)"
       ></app-collection-time-modal>
+
+      <app-outlet-selector-modal
+        [isOpen]="isOutletModalOpen()"
+        [stores]="checkoutService.availableStores()"
+        [selectedStoreId]="checkoutService.checkoutSession()?.selectedOutletId || null"
+        (close)="isOutletModalOpen.set(false)"
+        (selectStore)="onOutletSelected($event)"
+      ></app-outlet-selector-modal>
     </div>
   `,
 })
-export class CheckoutReviewComponent {
+export class CheckoutReviewComponent implements OnInit {
   checkoutService = inject(CheckoutService);
   storefrontData = inject(StorefrontDataService);
   toastService = inject(ToastService);
 
   isTimeModalOpen = signal(false);
+  isOutletModalOpen = signal(false);
+
+  ngOnInit() {
+    if (this.checkoutService.availableStores().length === 0) {
+      this.checkoutService.getStores().subscribe();
+    }
+  }
 
   goBack() {
-    this.checkoutService.setStep(2);
+    this.checkoutService.setStep(1); // Since step 2 is removed, go back to step 1
   }
 
   editCollection() {
-    this.checkoutService.isFastTracked.set(false);
-    this.checkoutService.setStep(2);
+    this.isOutletModalOpen.set(true);
+  }
+
+  onOutletSelected(store: any) {
+    this.isOutletModalOpen.set(false);
+    const currentCollectionTime = this.checkoutService.checkoutSession()?.requestedCollectionAt || '';
+    
+    this.checkoutService
+      .updateCollection({
+        selectedOutletId: store.id,
+        requestedCollectionAt: currentCollectionTime
+      })
+      .subscribe({
+        next: () => {
+          // Open time modal so user can pick a new time for the newly selected outlet
+          this.isTimeModalOpen.set(true);
+        },
+      });
   }
 
   onConfirmOrder() {
