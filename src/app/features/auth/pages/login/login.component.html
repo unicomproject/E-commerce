@@ -112,15 +112,24 @@
               <ng-icon name="lucideArrowRight" size="18"></ng-icon>
             }
           </button>
-          
+
+          <label class="flex items-start gap-2 mt-4 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              formControlName="agreeTerms"
+              class="mt-0.5 w-4 h-4 rounded border-gray-300 text-brand-orange focus:ring-brand-orange shrink-0"
+            />
+            <span class="text-xs text-gray-500">I agree to the Terms of Service and Privacy Policy.</span>
+          </label>
+
           <!-- OR Divider + Google (only show in email tab visual block for smooth transition) -->
-          <div class="flex items-center my-5 text-gray-300 lg:hidden">
+          <div class="flex items-center my-5 text-gray-300">
             <div class="flex-1 border-t border-gray-200"></div>
             <span class="mx-3 text-xs font-medium uppercase tracking-wider text-gray-400">or</span>
             <div class="flex-1 border-t border-gray-200"></div>
           </div>
 
-          <div class="space-y-3 lg:hidden">
+          <div class="space-y-3">
             <div class="w-full max-w-[398px] mx-auto h-[38px] border border-brand-orange ring-1 ring-brand-orange rounded-[4px] overflow-hidden relative">
               <div class="absolute w-[calc(100%+2px)] h-[40px] -top-[1px] -left-[1px]">
                 <div

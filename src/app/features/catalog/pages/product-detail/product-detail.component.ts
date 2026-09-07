@@ -25,7 +25,6 @@ import {
 import { StorefrontDataService } from '../../services/catalog.service';
 import { CartService } from '../../../../features/cart/services/cart.service';
 import { WishlistService } from '../../../../features/wishlist/services/wishlist.service';
-import { ToastService } from '../../../../core/services/toast.service';
 import { CartAnimationService } from '../../../../features/cart/services/cart-animation.service';
 import { StorefrontProductDetailReadModel, StorefrontProductImageReadModel, StorefrontProductVariantReadModel, ProductReviewsPageReadModel } from '../../../../core/models';
 import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
@@ -77,7 +76,6 @@ export class ProductDetail implements OnInit {
   private cartService = inject(CartService);
   private wishlistService = inject(WishlistService);
   private cartAnimationService = inject(CartAnimationService);
-  private toastService = inject(ToastService);
 
   // Core State Signals
   product = signal<StorefrontProductDetailReadModel | null>(null);
@@ -438,8 +436,6 @@ export class ProductDetail implements OnInit {
     const img = this.currentImage();
     if (img) {
       this.cartAnimationService.animateToCart(event, img.url);
-    } else {
-      this.toastService.success('Added to cart');
     }
   }
 

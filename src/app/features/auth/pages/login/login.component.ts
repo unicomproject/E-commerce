@@ -70,6 +70,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     email: ['', [Validators.required, Validators.email]],
     code: [''],
     rememberMe: [false],
+    agreeTerms: [false],
   });
 
   ngAfterViewInit(): void {
@@ -247,11 +248,17 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
   }
 
   private onGoogleCredential(idToken: string): void {
+    if (this.authForm.controls.agreeTerms.value !== true) {
+      this.errorMessage.set('You must agree to the terms and privacy policy.');
+      return;
+    }
+
     this.isGoogleLoading.set(true);
     this.errorMessage.set(null);
 
     const rememberMe = this.authForm.controls.rememberMe.value === true;
-    this.authService.googleLogin({ idToken, rememberMe }).pipe(
+    const agreeTerms = this.authForm.controls.agreeTerms.value === true;
+    this.authService.googleLogin({ idToken, rememberMe, agreeTerms }).pipe(
       timeout(30000)
     ).subscribe({
       next: (response) => {
