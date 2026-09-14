@@ -196,6 +196,33 @@ import { ToastService } from '../../../../core/services/toast.service';
           </div>
         </div>
 
+        <!-- Payment Method -->
+        <div class="mb-6">
+          <h3 class="text-[17px] font-bold text-gray-900 mb-3">Payment Method</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              (click)="checkoutService.selectedPaymentMethod.set('PAY_AT_PICKUP')"
+              class="border rounded-xl p-3 text-left text-sm font-medium transition-colors"
+              [class.border-brand-orange]="checkoutService.selectedPaymentMethod() === 'PAY_AT_PICKUP'"
+              [class.bg-orange-50]="checkoutService.selectedPaymentMethod() === 'PAY_AT_PICKUP'"
+              [class.border-gray-100]="checkoutService.selectedPaymentMethod() !== 'PAY_AT_PICKUP'"
+            >
+              Pay at pickup
+            </button>
+            <button
+              type="button"
+              (click)="checkoutService.selectedPaymentMethod.set('STRIPE')"
+              class="border rounded-xl p-3 text-left text-sm font-medium transition-colors"
+              [class.border-brand-orange]="checkoutService.selectedPaymentMethod() === 'STRIPE'"
+              [class.bg-orange-50]="checkoutService.selectedPaymentMethod() === 'STRIPE'"
+              [class.border-gray-100]="checkoutService.selectedPaymentMethod() !== 'STRIPE'"
+            >
+              Pay online with card
+            </button>
+          </div>
+        </div>
+
         <!-- Actions -->
         <div
           class="sticky bottom-0 bg-white pt-4 pb-4 md:pb-6 z-10 -mx-6 px-6 -mb-6 flex flex-col items-center border-t border-gray-100"
@@ -214,7 +241,11 @@ import { ToastService } from '../../../../core/services/toast.service';
             @if (!checkoutService.isLoading()) {
               <ng-icon name="lucideLock" size="18" class="mr-2"></ng-icon>
             }
-            Place Collection Order •
+            @if (checkoutService.selectedPaymentMethod() === 'STRIPE') {
+              Pay Now •
+            } @else {
+              Place Collection Order •
+            }
             <app-price [value]="checkoutService.checkoutSession()!.grandTotal"></app-price>
           </button>
         </div>

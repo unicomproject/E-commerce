@@ -4,12 +4,13 @@ import { Observable, tap, catchError, of, map, shareReplay, Subject } from 'rxjs
 import { environment } from '../../../../environments/environment';
 import { CartService } from '../../cart/services/cart.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { 
+import {
   StorefrontCheckoutReadModel,
   StorefrontCollectionOptionsReadModel,
   StorefrontStoreReadModel,
   CreateStorefrontCheckoutFromCartRequest,
-  UpdateStorefrontCheckoutCollectionRequest
+  UpdateStorefrontCheckoutCollectionRequest,
+  StorefrontPaymentMethodCode
 } from '../../../features/checkout/models/checkout.model';
 
 @Injectable({
@@ -32,6 +33,7 @@ export class CheckoutService {
   collectionOptions = signal<StorefrontCollectionOptionsReadModel | null>(null);
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
+  selectedPaymentMethod = signal<StorefrontPaymentMethodCode>('PAY_AT_PICKUP');
 
   // Events
   private stepChangedSource = new Subject<number>();
@@ -185,21 +187,27 @@ export class CheckoutService {
     );
   }
 
-  confirmOrder(idempotencyKey: string): Observable<{ success: boolean, data?: StorefrontCheckoutReadModel, message?: string }> {
+  confirmOrder(idempotencyKey: string, paymentMethodCode: StorefrontPaymentMethodCode = this.selectedPaymentMethod()): Observable<{ success: boolean, data?: StorefrontCheckoutReadModel, message?: string }> {
     const id = this.sessionId();
     if (!id) return of({ success: false, message: 'No active session' });
-    
+
     this.isLoading.set(true);
     this.error.set(null);
     return this.http.post<{ success: boolean, data: StorefrontCheckoutReadModel, message: string }>(
-      `${this.baseUrl}/checkout/${id}/confirm`, 
-      {},
+      `${this.baseUrl}/checkout/${id}/confirm`,
+      { paymentMethodCode },
       { headers: { 'Idempotency-Key': idempotencyKey } }
     ).pipe(
       tap(res => {
         this.isLoading.set(false);
         if (res.success && res.data) {
           this.checkoutSession.set(res.data);
+          if (res.data.paymentRedirectUrl) {
+            // Full-page redirect to Stripe Checkout; cart/session state is
+            // finalized on return via the /checkout/success route instead.
+            window.location.href = res.data.paymentRedirectUrl;
+            return;
+          }
           this.setStep(4);
           // Order placed successfully, clear the cart from local state
           this.cartService.clearLocalState();
