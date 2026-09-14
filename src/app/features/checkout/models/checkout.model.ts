@@ -11,6 +11,8 @@ export interface UpdateStorefrontCheckoutCollectionRequest {
   requestedCollectionAt: string;
 }
 
+export type StorefrontPaymentMethodCode = 'STRIPE' | 'PAY_AT_PICKUP';
+
 export interface StorefrontCheckoutLineReadModel {
   id: string;
   lineNumber: number;
@@ -63,6 +65,7 @@ export interface StorefrontCheckoutReadModel {
   expiresAt?: string;
   items: StorefrontCheckoutLineReadModel[];
   order?: StorefrontCheckoutOrderReadModel;
+  paymentRedirectUrl?: string;
 }
 
 export interface StorefrontStoreReadModel {
