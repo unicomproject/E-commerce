@@ -104,13 +104,13 @@
                     {{ item.isInStock ? 'In stock' : 'Out of stock' }}
                   </div>
                 </div>
-                <!-- Top Right Icon (Trash) -->
+                <!-- Top Right Icon (Heart, already active — click to remove from wishlist) -->
                 <button
                   (click)="$event.preventDefault(); removeItem(item.id)"
-                  class="shrink-0 w-7 h-7 sm:w-8 sm:h-8 border border-gray-200 rounded-md sm:rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all shadow-sm bg-white"
+                  class="shrink-0 w-7 h-7 sm:w-8 sm:h-8 border border-brand-orange-light rounded-md sm:rounded-lg flex items-center justify-center text-brand-orange hover:bg-brand-orange-light/10 transition-all shadow-sm bg-white"
                   title="Remove from Wishlist"
                 >
-                  <ng-icon name="lucideTrash2" size="15"></ng-icon>
+                  <ng-icon name="lucideHeart" size="15" class="fill-brand-orange"></ng-icon>
                 </button>
               </div>
               <!-- Bottom: Cart Button -->

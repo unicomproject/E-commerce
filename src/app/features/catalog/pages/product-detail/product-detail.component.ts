@@ -90,10 +90,15 @@ export class ProductDetail implements OnInit {
     const prod = this.product();
     const variant = this.selectedVariant();
     if (!list || !prod) return false;
-    
-    // Check if the specific variant is in the wishlist
-    // If there is no variant selected, check if the base product is in the wishlist
-    return list.items.some(i => i.productId === prod.id && i.productVariantId === (variant?.id || null));
+
+    // Product cards add to the wishlist at the product level (no variant), so
+    // a variant-less entry here counts as wishlisted regardless of which
+    // variant this page currently has auto-selected -- otherwise a product
+    // wishlisted from a grid always shows as not-wishlisted here, since the
+    // default variant it lands on never equals the null it was saved with.
+    return list.items.some(i =>
+      i.productId === prod.id &&
+      (i.productVariantId == null || i.productVariantId === variant?.id));
   });
   
   // Selection Signals
@@ -451,7 +456,9 @@ export class ProductDetail implements OnInit {
     if (this.isInWishlist()) {
       const list = this.wishlistSig();
       const variant = this.selectedVariant();
-      const item = list?.items.find(i => i.productId === p.id && i.productVariantId === (variant?.id || null));
+      const item = list?.items.find(i =>
+        i.productId === p.id &&
+        (i.productVariantId == null || i.productVariantId === variant?.id));
       if (item) {
         this.wishlistService.removeItem(item.id);
       }

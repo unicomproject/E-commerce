@@ -2,7 +2,7 @@ import { Component, inject, OnInit , ChangeDetectionStrategy } from '@angular/co
 import {  CommonModule , NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideTrash2, lucideShoppingCart, lucideHeart, lucideChevronRight, lucideChevronDown, lucideFilter, lucideArrowLeft } from '@ng-icons/lucide';
+import { lucideShoppingCart, lucideHeart, lucideChevronRight, lucideChevronDown, lucideFilter, lucideArrowLeft } from '@ng-icons/lucide';
 import { WishlistService } from '../../../../features/wishlist/services/wishlist.service';
 import { CartService } from '../../../../features/cart/services/cart.service';
 import { PriceComponent } from '../../../../shared/components/price/price.component';
@@ -15,7 +15,7 @@ import { StarRatingComponent } from '../../../../shared/components/star-rating/s
   standalone: true,
   imports: [CommonModule, RouterLink, NgIconComponent, PriceComponent, StarRatingComponent, NgOptimizedImage],
   templateUrl: './wishlist.component.html',
-  viewProviders: [provideIcons({ lucideTrash2, lucideShoppingCart, lucideHeart, lucideChevronRight, lucideChevronDown, lucideFilter, lucideArrowLeft })]
+  viewProviders: [provideIcons({ lucideShoppingCart, lucideHeart, lucideChevronRight, lucideChevronDown, lucideFilter, lucideArrowLeft })]
 })
 export class Wishlist implements OnInit {
   private wishlistService = inject(WishlistService);
