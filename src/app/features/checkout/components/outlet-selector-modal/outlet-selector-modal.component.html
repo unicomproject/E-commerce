@@ -24,14 +24,14 @@
 
   <!-- Header -->
   <div class="px-5 pt-5 pb-4 border-b border-gray-100 shrink-0">
-    <div class="flex items-center gap-3">
-      <button (click)="closeModal()" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
-        <ng-icon name="lucideX" class="text-2xl text-gray-700"></ng-icon>
-      </button>
+    <div class="flex items-start justify-between gap-3">
       <div>
         <h2 class="text-xl font-bold text-gray-900 leading-tight">Select a pickup outlet</h2>
         <p class="text-sm text-gray-500">Choose where you want to collect your order.</p>
       </div>
+      <button (click)="closeModal()" class="p-1 -mt-1 -mr-1 hover:bg-gray-100 rounded-full transition-colors shrink-0">
+        <ng-icon name="lucideX" class="text-2xl text-gray-700"></ng-icon>
+      </button>
     </div>
   </div>
 

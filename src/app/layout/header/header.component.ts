@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, OnInit, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, DestroyRef , ChangeDetectionStrategy } from '@angular/core';
+import { Component, HostListener, inject, OnInit, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, DestroyRef, signal , ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -20,6 +20,8 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
 import { NotificationPanelComponent } from '../../shared/components/notification-panel/notification-panel.component';
 import { NotificationService } from '../../features/customer/services/notification.service';
 import { TenantContextService } from '../../core/services/tenant-context.service';
+import { StorefrontDataService } from '../../features/catalog/services/catalog.service';
+import { Category } from '../../core/models';
 
 import { RecentOrdersModalService } from '../../features/orders/services/recent-orders-modal.service';
 
@@ -45,10 +47,48 @@ export class Header implements OnInit, AfterViewInit, AfterViewChecked {
   public notificationService = inject(NotificationService);
   public cartAnimationService = inject(CartAnimationService);
   public tenantCtx = inject(TenantContextService);
+  private dataService = inject(StorefrontDataService);
   @ViewChild('cartIconBtn') cartIconBtn!: ElementRef;
   @ViewChild('mobileCartIconBtn') mobileCartIconBtn!: ElementRef;
-  
+  @ViewChild('categoriesContainer') categoriesContainer!: ElementRef;
+
   private mobileCartRegistered = false;
+
+  // Categories dropdown
+  isCategoriesOpen = signal(false);
+  categories = signal<Category[]>([]);
+  categoriesLoading = signal(false);
+  private categoriesLoaded = false;
+
+  toggleCategories() {
+    this.isCategoriesOpen.update((open) => !open);
+    if (this.isCategoriesOpen() && !this.categoriesLoaded) {
+      this.categoriesLoading.set(true);
+      this.dataService.getRootCategories().subscribe({
+        next: (categories) => {
+          this.categories.set(categories);
+          this.categoriesLoading.set(false);
+          this.categoriesLoaded = true;
+        },
+        error: () => this.categoriesLoading.set(false),
+      });
+    }
+  }
+
+  closeCategories() {
+    this.isCategoriesOpen.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (
+      this.isCategoriesOpen() &&
+      this.categoriesContainer &&
+      !this.categoriesContainer.nativeElement.contains(event.target)
+    ) {
+      this.closeCategories();
+    }
+  }
 
   ngAfterViewInit() {
     if (this.cartIconBtn) {

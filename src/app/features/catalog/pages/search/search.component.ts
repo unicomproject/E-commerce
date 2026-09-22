@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal, DestroyRef, ViewChild, ElementRef, A
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, of } from 'rxjs';
-import { delay, map, switchMap, catchError } from 'rxjs/operators';
+import { map, switchMap, catchError } from 'rxjs/operators';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -79,11 +79,16 @@ export class Search implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.searchSubject.pipe(
-      debounceTime(400),
+      debounceTime(250),
       distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(query => {
-      this.router.navigate(['/search'], { queryParams: { q: query, category: this.categorySlug(), categoryId: this.categoryId() } });
+      // replaceUrl avoids pushing a new history entry per keystroke, which
+      // would otherwise make the back button step through every letter typed.
+      this.router.navigate(['/search'], {
+        queryParams: { q: query, category: this.categorySlug(), categoryId: this.categoryId() },
+        replaceUrl: true,
+      });
     });
 
 
@@ -106,7 +111,6 @@ export class Search implements OnInit, AfterViewInit, OnDestroy {
         if (this.activeSort()) request.sort = this.activeSort() ?? undefined;
 
         return this.dataService.searchProducts(request).pipe(
-          delay(600), // Replaces setTimeout to prevent memory leaks and race conditions
           catchError((err) => {
             console.error('Search error', err);
             return of(null);
