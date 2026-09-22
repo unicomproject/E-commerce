@@ -7,7 +7,7 @@ import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideSearch, lucideHeart, lucideShoppingCart, lucideShoppingBag, lucideUser, lucideMenu, lucidePackage, lucideLayoutGrid, lucideTag, lucideChevronDown, lucideLogOut, lucideMapPin, lucideShieldCheck, lucideBell, lucideClock, lucideX, lucideStar } from '@ng-icons/lucide';
+import { lucideSearch, lucideHeart, lucideShoppingCart, lucideShoppingBag, lucideUser, lucideMenu, lucidePackage, lucideLayoutGrid, lucideTag, lucideChevronDown, lucideLogOut, lucideMapPin, lucideShieldCheck, lucideBell, lucideClock, lucideX, lucideStar, lucideImage } from '@ng-icons/lucide';
 import { AuthModalService } from '../../core/services/auth-modal.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../features/cart/services/cart.service';
@@ -30,7 +30,7 @@ import { RecentOrdersModalService } from '../../features/orders/services/recent-
   selector: 'app-header',
   standalone: true,
   imports: [CommonModule, FormsModule, NgIconComponent, RouterLink, RecentOrdersBottomSheet, CdkDrag, SearchBarComponent, NotificationPanelComponent],
-  viewProviders: [provideIcons({ lucideSearch, lucideHeart, lucideShoppingCart, lucideShoppingBag, lucideUser, lucideMenu, lucidePackage, lucideLayoutGrid, lucideTag, lucideChevronDown, lucideLogOut, lucideMapPin, lucideShieldCheck, lucideBell, lucideClock, lucideX, lucideStar })],
+  viewProviders: [provideIcons({ lucideSearch, lucideHeart, lucideShoppingCart, lucideShoppingBag, lucideUser, lucideMenu, lucidePackage, lucideLayoutGrid, lucideTag, lucideChevronDown, lucideLogOut, lucideMapPin, lucideShieldCheck, lucideBell, lucideClock, lucideX, lucideStar, lucideImage })],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
   host: { class: 'sticky top-0 z-50 block w-full' }

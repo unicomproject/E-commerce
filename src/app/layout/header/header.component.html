@@ -46,30 +46,53 @@
               ></ng-icon>
             </button>
 
-            <!-- Categories Dropdown -->
+            <!-- Categories Dropdown (full-width mega menu) -->
             @if (isCategoriesOpen()) {
               <div
-                class="absolute left-0 top-full -mt-2 w-72 max-h-[70vh] overflow-y-auto bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] border border-gray-100 z-50 py-2"
+                class="fixed left-0 right-0 top-14 max-h-[75vh] overflow-y-auto bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] border-t border-gray-100 z-50"
               >
-                @if (categoriesLoading()) {
-                  <div class="p-4 text-center text-sm text-gray-500">Loading categories...</div>
-                } @else if (categories().length === 0) {
-                  <div class="p-4 text-center text-sm text-gray-500">No categories found.</div>
-                } @else {
-                  @for (cat of categories(); track cat.id) {
-                    <a
-                      [routerLink]="['/search']"
-                      [queryParams]="{ category: cat.slug }"
-                      (click)="closeCategories()"
-                      class="flex items-center justify-between px-4 py-2.5 hover:bg-orange-50 hover:text-brand-orange text-gray-700 text-sm font-medium transition-colors"
-                    >
-                      {{ cat.name }}
-                      @if (cat.itemCount) {
-                        <span class="text-xs text-gray-400">{{ cat.itemCount }}</span>
+                <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8 py-6">
+                  @if (categoriesLoading()) {
+                    <div class="p-8 text-center text-sm text-gray-500">Loading categories...</div>
+                  } @else if (categories().length === 0) {
+                    <div class="p-8 text-center text-sm text-gray-500">No categories found.</div>
+                  } @else {
+                    <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+                      @for (cat of categories(); track cat.id) {
+                        <a
+                          [routerLink]="['/search']"
+                          [queryParams]="{ category: cat.slug }"
+                          (click)="closeCategories()"
+                          class="group bg-white rounded-xl border border-gray-200/60 shadow-sm overflow-hidden flex flex-col cursor-pointer hover:border-brand-orange/40 hover:shadow-md transition-all"
+                        >
+                          <div class="w-full aspect-square bg-gray-100 shrink-0 relative overflow-hidden">
+                            @if (cat.imageUrl) {
+                              <img
+                                [src]="cat.imageUrl"
+                                [alt]="cat.name"
+                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                            } @else {
+                              <ng-icon
+                                name="lucideImage"
+                                class="absolute inset-0 m-auto text-gray-300 text-4xl"
+                              ></ng-icon>
+                            }
+                          </div>
+                          <div class="p-3 flex flex-col justify-center items-center bg-white gap-1">
+                            <span
+                              class="font-bold text-gray-900 text-[14px] leading-tight truncate w-full text-center group-hover:text-brand-orange transition-colors"
+                              >{{ cat.name }}</span
+                            >
+                            <span class="text-[12px] text-gray-500 font-medium"
+                              >{{ cat.itemCount || 0 }} Items</span
+                            >
+                          </div>
+                        </a>
                       }
-                    </a>
+                    </div>
                   }
-                }
+                </div>
               </div>
             }
           </div>

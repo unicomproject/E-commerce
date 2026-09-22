@@ -48,7 +48,7 @@ import { CheckoutSuccessComponent } from '../checkout-success/checkout-success.c
               <!-- Close Button -->
               <button
                 (click)="close()"
-                class="p-2 -mr-2 text-gray-500 hover:text-gray-900 rounded-full transition-colors"
+                class="w-10 h-10 flex items-center justify-center -mr-2 text-gray-500 hover:text-gray-900 rounded-full transition-colors"
               >
                 <ng-icon name="lucideX" size="24"></ng-icon>
               </button>
