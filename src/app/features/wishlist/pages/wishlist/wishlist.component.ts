@@ -1,8 +1,8 @@
-import { Component, inject, OnInit , ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import {  CommonModule , NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideShoppingCart, lucideHeart, lucideChevronRight, lucideChevronDown, lucideFilter, lucideArrowLeft } from '@ng-icons/lucide';
+import { lucideShoppingCart, lucideHeart, lucideChevronRight, lucideChevronDown, lucideFilter, lucideArrowLeft, lucideX, lucideInfo } from '@ng-icons/lucide';
 import { WishlistService } from '../../../../features/wishlist/services/wishlist.service';
 import { CartService } from '../../../../features/cart/services/cart.service';
 import { PriceComponent } from '../../../../shared/components/price/price.component';
@@ -15,7 +15,7 @@ import { StarRatingComponent } from '../../../../shared/components/star-rating/s
   standalone: true,
   imports: [CommonModule, RouterLink, NgIconComponent, PriceComponent, StarRatingComponent, NgOptimizedImage],
   templateUrl: './wishlist.component.html',
-  viewProviders: [provideIcons({ lucideShoppingCart, lucideHeart, lucideChevronRight, lucideChevronDown, lucideFilter, lucideArrowLeft })]
+  viewProviders: [provideIcons({ lucideShoppingCart, lucideHeart, lucideChevronRight, lucideChevronDown, lucideFilter, lucideArrowLeft, lucideX, lucideInfo })]
 })
 export class Wishlist implements OnInit {
   private wishlistService = inject(WishlistService);
@@ -23,6 +23,10 @@ export class Wishlist implements OnInit {
 
   wishlist$ = this.wishlistService.wishlist$;
   breadcrumbItems: BreadcrumbItem[] = [{ label: 'Home', link: '/' }, { label: 'My Account', link: '/account.component' }, { label: 'Wishlist' }];
+
+  // Guards against an accidental heart click removing an item outright --
+  // the customer confirms before it's actually taken off the wishlist.
+  itemToRemove = signal<any | null>(null);
 
   ngOnInit() {
     this.wishlistService.loadWishlist();
@@ -37,7 +41,19 @@ export class Wishlist implements OnInit {
     this.wishlistService.removeItem(item.id);
   }
 
-  removeItem(itemId: string) {
-    this.wishlistService.removeItem(itemId);
+  requestRemove(item: any) {
+    this.itemToRemove.set(item);
+  }
+
+  cancelRemove() {
+    this.itemToRemove.set(null);
+  }
+
+  confirmRemove() {
+    const item = this.itemToRemove();
+    if (item) {
+      this.wishlistService.removeItem(item.id);
+      this.itemToRemove.set(null);
+    }
   }
 }

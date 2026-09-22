@@ -106,7 +106,7 @@
                 </div>
                 <!-- Top Right Icon (Heart, already active — click to remove from wishlist) -->
                 <button
-                  (click)="$event.preventDefault(); removeItem(item.id)"
+                  (click)="$event.preventDefault(); requestRemove(item)"
                   class="shrink-0 w-7 h-7 sm:w-8 sm:h-8 border border-brand-orange-light rounded-md sm:rounded-lg flex items-center justify-center text-brand-orange hover:bg-brand-orange-light/10 transition-all shadow-sm bg-white"
                   title="Remove from Wishlist"
                 >
@@ -151,5 +151,73 @@
         </a>
       </div>
     }
+  }
+
+  <!-- Remove From Wishlist Confirmation Modal -->
+  @if (itemToRemove(); as item) {
+    <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <!-- Backdrop -->
+      <div class="absolute inset-0 bg-black/50 transition-opacity" (click)="cancelRemove()"></div>
+      <!-- Modal Content -->
+      <div
+        class="relative bg-white w-full sm:w-auto sm:min-w-[420px] max-w-md max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl p-6 shadow-xl animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:fade-in-0 duration-300"
+      >
+        <!-- Drag handle (Mobile only) -->
+        <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6 sm:hidden"></div>
+        <!-- Close Button (Tablet & Desktop) -->
+        <button
+          (click)="cancelRemove()"
+          class="hidden sm:flex absolute top-4 right-4 text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors"
+        >
+          <ng-icon name="lucideX" size="20"></ng-icon>
+        </button>
+        <!-- Header -->
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Remove from wishlist?</h2>
+        <p class="text-gray-500 mb-6">Are you sure you want to remove this item from your wishlist?</p>
+        <!-- Item Summary Card -->
+        <div class="flex gap-4 p-4 rounded-xl border border-gray-100 bg-gray-50/50 mb-6">
+          <div
+            class="w-20 h-20 bg-white rounded-lg border border-gray-100 p-1 flex-shrink-0 flex items-center justify-center"
+          >
+            <img
+              [ngSrc]="item.imageUrl || 'assets/images/placeholder.webp'"
+              [alt]="item.productName"
+              width="80"
+              height="80"
+              class="w-full h-full object-contain mix-blend-multiply"
+            />
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="font-bold text-gray-900 truncate">{{ item.productName }}</h3>
+            @if (item.variantName) {
+              <div class="text-sm text-gray-500 mt-1">{{ item.variantName }}</div>
+            }
+            <div class="font-bold text-brand-orange text-lg mt-2 text-right">
+              <app-price [value]="item.price"></app-price>
+            </div>
+          </div>
+        </div>
+        <!-- Info Alert -->
+        <div class="flex items-start gap-2 text-gray-600 text-sm mb-6 px-1">
+          <ng-icon name="lucideInfo" size="18" class="flex-shrink-0 mt-0.5 text-gray-400"></ng-icon>
+          <p>You can always add it back to your wishlist later.</p>
+        </div>
+        <!-- Actions -->
+        <div class="flex flex-col gap-3">
+          <button
+            (click)="confirmRemove()"
+            class="w-full py-3.5 bg-red-500 text-white font-bold rounded-xl shadow-sm hover:bg-red-600 transition-colors text-base"
+          >
+            Remove Item
+          </button>
+          <button
+            (click)="cancelRemove()"
+            class="w-full py-3.5 bg-white text-gray-700 border border-gray-300 font-bold rounded-xl hover:bg-gray-50 transition-colors text-base"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
   }
 </div>
