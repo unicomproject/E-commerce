@@ -47,15 +47,24 @@
             </button>
 
             <!-- Categories Dropdown (full-width mega menu) -->
-            @if (isCategoriesOpen()) {
-              <!-- Backdrop: dims the page so the white panel below doesn't blend into it -->
-              <div
-                class="fixed inset-0 top-14 bg-black/30 z-40"
-                (click)="closeCategories()"
-              ></div>
-              <div
-                class="fixed left-0 right-0 top-14 max-h-[75vh] overflow-y-auto bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] border-t border-gray-100 z-50"
-              >
+            <!-- Backdrop: dims the page so the white panel below doesn't blend into it -->
+            <div
+              class="fixed inset-0 top-14 bg-black/30 z-40 transition-opacity duration-300 ease-out"
+              [class.opacity-100]="isCategoriesOpen()"
+              [class.opacity-0]="!isCategoriesOpen()"
+              [class.pointer-events-none]="!isCategoriesOpen()"
+              (click)="closeCategories()"
+            ></div>
+            <div
+              class="fixed left-0 right-0 top-14 max-h-[75vh] overflow-y-auto bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] border-t border-gray-100 z-50 transition-all duration-300 ease-out origin-top"
+              [class.opacity-100]="isCategoriesOpen()"
+              [class.translate-y-0]="isCategoriesOpen()"
+              [class.scale-y-100]="isCategoriesOpen()"
+              [class.opacity-0]="!isCategoriesOpen()"
+              [class.-translate-y-2]="!isCategoriesOpen()"
+              [class.scale-y-95]="!isCategoriesOpen()"
+              [class.pointer-events-none]="!isCategoriesOpen()"
+            >
                 <div class="w-full max-w-[1600px] mx-auto px-4 lg:px-6 lg:px-8 py-6">
                   @if (categoriesLoading()) {
                     <div class="p-8 text-center text-sm text-gray-500">Loading categories...</div>
@@ -98,8 +107,7 @@
                     </div>
                   }
                 </div>
-              </div>
-            }
+            </div>
           </div>
         </nav>
 
