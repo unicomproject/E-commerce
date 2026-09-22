@@ -248,6 +248,14 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  /** Invoked by the overlay that blocks the Google button until terms are
+   *  agreed to, so this fires on the customer's first click instead of only
+   *  after they've already completed the Google flow. */
+  onGoogleBlockedByTerms(): void {
+    this.errorMessage.set('You must agree to the terms and privacy policy.');
+    this.triggerTermsShake();
+  }
+
   private onGoogleCredential(idToken: string): void {
     if (this.authForm.controls.agreeTerms.value !== true) {
       this.errorMessage.set('You must agree to the terms and privacy policy.');

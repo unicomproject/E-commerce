@@ -145,6 +145,20 @@
                   [class.opacity-60]="isGoogleLoading()"
                   [class.pointer-events-none]="isGoogleLoading()"
                 ></div>
+                <!-- Blocks the Google button until terms are agreed to. Google
+                     renders its own button into an iframe we can't attach a
+                     "confirm terms first" handler to directly, so this sits on
+                     top and absorbs the first click instead: shake the terms
+                     checkbox and never let the click reach the iframe below,
+                     so the Google flow can't start until the box is checked. -->
+                @if (authForm.controls.agreeTerms.value !== true) {
+                  <div
+                    class="absolute inset-0 z-10 cursor-pointer"
+                    (click)="onGoogleBlockedByTerms()"
+                    role="button"
+                    aria-label="Agree to the terms before continuing with Google"
+                  ></div>
+                }
               </div>
             </div>
             @if (isGoogleLoading()) {
