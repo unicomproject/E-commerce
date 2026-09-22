@@ -65,7 +65,7 @@
                           (click)="closeCategories()"
                           class="group bg-white rounded-xl border border-gray-200/60 shadow-sm overflow-hidden flex flex-col cursor-pointer hover:border-brand-orange/40 hover:shadow-md transition-all"
                         >
-                          <div class="w-full aspect-square bg-gray-100 shrink-0 relative overflow-hidden">
+                          <div class="w-full h-20 bg-gray-100 shrink-0 relative overflow-hidden">
                             @if (cat.imageUrl) {
                               <img
                                 [src]="cat.imageUrl"
@@ -75,16 +75,16 @@
                             } @else {
                               <ng-icon
                                 name="lucideImage"
-                                class="absolute inset-0 m-auto text-gray-300 text-4xl"
+                                class="absolute inset-0 m-auto text-gray-300 text-2xl"
                               ></ng-icon>
                             }
                           </div>
-                          <div class="p-3 flex flex-col justify-center items-center bg-white gap-1">
+                          <div class="p-2 flex flex-col justify-center items-center bg-white gap-0.5">
                             <span
-                              class="font-bold text-gray-900 text-[14px] leading-tight truncate w-full text-center group-hover:text-brand-orange transition-colors"
+                              class="font-bold text-gray-900 text-[13px] leading-tight truncate w-full text-center group-hover:text-brand-orange transition-colors"
                               >{{ cat.name }}</span
                             >
-                            <span class="text-[12px] text-gray-500 font-medium"
+                            <span class="text-[11px] text-gray-500 font-medium"
                               >{{ cat.itemCount || 0 }} Items</span
                             >
                           </div>
