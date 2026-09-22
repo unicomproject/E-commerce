@@ -37,21 +37,21 @@ import { CheckoutSuccessComponent } from '../checkout-success/checkout-success.c
           <!-- Header -->
           <div class="w-full border-b border-gray-100 flex justify-center shrink-0">
             <div class="w-full max-w-[550px] flex items-center justify-between px-6 pt-4 pb-2">
-              <!-- Close Button -->
-              <button
-                (click)="close()"
-                class="p-2 -ml-2 text-gray-500 hover:text-gray-900 rounded-full transition-colors"
-              >
-                <ng-icon name="lucideX" size="24"></ng-icon>
-              </button>
-
-              <h2 class="text-xl font-bold text-gray-900">Checkout</h2>
-
               <!-- Secure Icon -->
               <div class="flex items-center text-gray-500 text-sm font-medium">
                 <ng-icon name="lucideLock" size="16" class="mr-1"></ng-icon>
                 Secure
               </div>
+
+              <h2 class="text-xl font-bold text-gray-900">Checkout</h2>
+
+              <!-- Close Button -->
+              <button
+                (click)="close()"
+                class="p-2 -mr-2 text-gray-500 hover:text-gray-900 rounded-full transition-colors"
+              >
+                <ng-icon name="lucideX" size="24"></ng-icon>
+              </button>
             </div>
           </div>
 
