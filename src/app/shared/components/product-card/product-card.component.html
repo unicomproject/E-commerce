@@ -11,6 +11,7 @@
           [src]="product.imageUrl"
           [alt]="product.name"
           [priority]="isPriority()"
+          fit="contain"
         />
 
         @if (product.isInStock === false) {
@@ -73,6 +74,7 @@
           [src]="product.imageUrl"
           [alt]="product.name"
           [priority]="isPriority()"
+          fit="contain"
         />
 
         @if (product.isInStock === false) {
