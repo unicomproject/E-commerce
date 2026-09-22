@@ -48,6 +48,11 @@
 
             <!-- Categories Dropdown (full-width mega menu) -->
             @if (isCategoriesOpen()) {
+              <!-- Backdrop: dims the page so the white panel below doesn't blend into it -->
+              <div
+                class="fixed inset-0 top-14 bg-black/30 z-40"
+                (click)="closeCategories()"
+              ></div>
               <div
                 class="fixed left-0 right-0 top-14 max-h-[75vh] overflow-y-auto bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] border-t border-gray-100 z-50"
               >
