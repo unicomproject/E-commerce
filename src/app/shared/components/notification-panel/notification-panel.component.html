@@ -21,6 +21,16 @@
       </div>
 
       <div class="flex items-center gap-1.5">
+        @if (notificationService.unreadCount() > 0) {
+          <button
+            type="button"
+            (click)="markAllRead($event)"
+            class="flex h-9 items-center gap-1.5 rounded-full px-3 text-xs font-bold text-neutral-500 transition hover:bg-white hover:text-brand-orange"
+            aria-label="Mark all notifications as read">
+            <ng-icon name="lucideCheckCheck" size="16"></ng-icon>
+            Mark all read
+          </button>
+        }
         <button
           type="button"
           (click)="refresh(); $event.stopPropagation()"

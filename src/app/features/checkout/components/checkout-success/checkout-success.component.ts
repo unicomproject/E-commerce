@@ -178,7 +178,7 @@ import { CheckoutService } from '../../../../features/checkout/services/checkout
 
       <!-- Actions -->
       <div
-        class="sticky bottom-0 z-10 pt-4 pb-4 md:pb-6 -mx-6 px-6 -mb-6 space-y-3 mt-6"
+        class="sticky bottom-0 z-10 bg-white border-t border-gray-100 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] pt-4 pb-4 md:pb-6 -mx-6 px-6 -mb-6 space-y-3 mt-6"
       >
         <button
           type="button"

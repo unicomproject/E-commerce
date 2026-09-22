@@ -113,13 +113,20 @@
             }
           </button>
 
-          <label class="flex items-start gap-2 mt-4 cursor-pointer select-none">
+          <label
+            class="flex items-start gap-2 mt-4 cursor-pointer select-none"
+            [class.animate-shake]="shakeTerms()"
+          >
             <input
               type="checkbox"
               formControlName="agreeTerms"
-              class="mt-0.5 w-4 h-4 rounded border-gray-300 text-brand-orange focus:ring-brand-orange shrink-0"
+              class="mt-0.5 w-4 h-4 rounded shrink-0 text-brand-orange focus:ring-brand-orange"
+              [class.border-gray-300]="!shakeTerms()"
+              [class.border-red-400]="shakeTerms()"
+              [class.ring-2]="shakeTerms()"
+              [class.ring-red-300]="shakeTerms()"
             />
-            <span class="text-xs text-gray-500">I agree to the Terms of Service and Privacy Policy.</span>
+            <span class="text-xs" [class.text-gray-500]="!shakeTerms()" [class.text-red-500]="shakeTerms()">I agree to the Terms of Service and Privacy Policy.</span>
           </label>
 
           <!-- OR Divider + Google (only show in email tab visual block for smooth transition) -->

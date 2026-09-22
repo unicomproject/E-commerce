@@ -62,6 +62,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
   googleUnavailableMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
   activeTab = signal<'email' | 'phone'>('email');
+  shakeTerms = signal(false);
   
   otpDigits = signal<string[]>(['', '', '', '']);
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
@@ -250,6 +251,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
   private onGoogleCredential(idToken: string): void {
     if (this.authForm.controls.agreeTerms.value !== true) {
       this.errorMessage.set('You must agree to the terms and privacy policy.');
+      this.triggerTermsShake();
       return;
     }
 
@@ -277,6 +279,15 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
           this.errorMessage.set('Google sign-in failed. Please try again.');
         }
       },
+    });
+  }
+
+  private triggerTermsShake(): void {
+    // Reset first so the animation replays even if it's already mid-shake.
+    this.shakeTerms.set(false);
+    setTimeout(() => {
+      this.shakeTerms.set(true);
+      setTimeout(() => this.shakeTerms.set(false), 500);
     });
   }
 
