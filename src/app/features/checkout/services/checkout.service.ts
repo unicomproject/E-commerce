@@ -1,9 +1,10 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, catchError, of, map, shareReplay, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { CartService } from '../../cart/services/cart.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { BodyScrollLockService } from '../../../core/services/body-scroll-lock.service';
 import {
   StorefrontCheckoutReadModel,
   StorefrontCollectionOptionsReadModel,
@@ -20,6 +21,7 @@ export class CheckoutService {
   private http = inject(HttpClient);
   private cartService = inject(CartService);
   private toastService = inject(ToastService);
+  private bodyScrollLock = inject(BodyScrollLockService);
   private baseUrl = `${environment.apiUrl}/ecommerce/storefront`;
 
   // State
@@ -39,7 +41,15 @@ export class CheckoutService {
   private stepChangedSource = new Subject<number>();
   stepChanged$ = this.stepChangedSource.asObservable();
 
-  constructor() {}
+  constructor() {
+    let wasOpen = false;
+    effect(() => {
+      const open = this.isOpen();
+      if (open && !wasOpen) this.bodyScrollLock.lock();
+      if (!open && wasOpen) this.bodyScrollLock.unlock();
+      wasOpen = open;
+    });
+  }
 
   openCheckout() {
     this.isOpen.set(true);

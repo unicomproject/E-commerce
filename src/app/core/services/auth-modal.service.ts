@@ -1,5 +1,6 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, effect } from '@angular/core';
 import { GoogleIdentityService } from './google-identity.service';
+import { BodyScrollLockService } from './body-scroll-lock.service';
 
 export type AuthView = 'login' | 'register' | 'forgot-password' | 'verify' | 'reset-password';
 
@@ -8,6 +9,7 @@ export type AuthView = 'login' | 'register' | 'forgot-password' | 'verify' | 're
 })
 export class AuthModalService {
   private readonly googleIdentityService = inject(GoogleIdentityService);
+  private readonly bodyScrollLock = inject(BodyScrollLockService);
   private readonly isOpenState = signal(false);
   readonly isOpen = this.isOpenState.asReadonly();
 
@@ -22,6 +24,16 @@ export class AuthModalService {
 
   private readonly passwordResetTokenState = signal('');
   readonly passwordResetTokenSignal = this.passwordResetTokenState.asReadonly();
+
+  constructor() {
+    let wasOpen = false;
+    effect(() => {
+      const open = this.isOpenState();
+      if (open && !wasOpen) this.bodyScrollLock.lock();
+      if (!open && wasOpen) this.bodyScrollLock.unlock();
+      wasOpen = open;
+    });
+  }
 
   get pendingVerificationEmail(): string {
     return this.pendingVerificationEmailState();
@@ -39,12 +51,10 @@ export class AuthModalService {
     this.googleIdentityService.preload();
     this.viewState.set(view);
     this.isOpenState.set(true);
-    document.body.style.overflow = 'hidden';
   }
 
   close() {
     this.isOpenState.set(false);
-    document.body.style.overflow = '';
   }
 
   switchView(view: AuthView) {

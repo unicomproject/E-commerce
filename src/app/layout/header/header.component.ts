@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, OnInit, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, DestroyRef, signal , ChangeDetectionStrategy } from '@angular/core';
+import { Component, HostListener, inject, OnInit, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, DestroyRef, signal, effect , ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -24,6 +24,7 @@ import { StorefrontDataService } from '../../features/catalog/services/catalog.s
 import { Category } from '../../core/models';
 
 import { RecentOrdersModalService } from '../../features/orders/services/recent-orders-modal.service';
+import { BodyScrollLockService } from '../../core/services/body-scroll-lock.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,6 +49,7 @@ export class Header implements OnInit, AfterViewInit, AfterViewChecked {
   public cartAnimationService = inject(CartAnimationService);
   public tenantCtx = inject(TenantContextService);
   private dataService = inject(StorefrontDataService);
+  private bodyScrollLock = inject(BodyScrollLockService);
   @ViewChild('cartIconBtn') cartIconBtn!: ElementRef;
   @ViewChild('mobileCartIconBtn') mobileCartIconBtn!: ElementRef;
   @ViewChild('categoriesContainer') categoriesContainer!: ElementRef;
@@ -59,6 +61,14 @@ export class Header implements OnInit, AfterViewInit, AfterViewChecked {
   categories = signal<Category[]>([]);
   categoriesLoading = signal(false);
   private categoriesLoaded = false;
+  private categoriesWasOpen = false;
+
+  private lockScrollOnCategoriesOpen = effect(() => {
+    const open = this.isCategoriesOpen();
+    if (open && !this.categoriesWasOpen) this.bodyScrollLock.lock();
+    if (!open && this.categoriesWasOpen) this.bodyScrollLock.unlock();
+    this.categoriesWasOpen = open;
+  });
 
   toggleCategories() {
     this.isCategoriesOpen.update((open) => !open);

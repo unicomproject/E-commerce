@@ -1,5 +1,6 @@
-import { Component, computed, input, linkedSignal, output, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, input, linkedSignal, output, signal, effect, inject, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import {  CommonModule } from '@angular/common';
+import { BodyScrollLockService } from '../../../../core/services/body-scroll-lock.service';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { 
   lucideX, 
@@ -37,16 +38,33 @@ import { Store } from '../../../../core/models';
   templateUrl: './outlet-selector-modal.component.html'
 })
 export class OutletSelectorModalComponent {
+  private bodyScrollLock = inject(BodyScrollLockService);
+
   readonly stores = input<Store[]>([]);
   readonly selectedStoreId = input<string | null>(null);
   readonly isOpen = input(false);
-  
+
   readonly close = output<void>();
   readonly selectStore = output<Store>();
 
   readonly visible = linkedSignal(() => this.isOpen());
   readonly selectedStoreIdState = linkedSignal(() => this.selectedStoreId());
   readonly isMobile = signal(window.innerWidth < 1024);
+
+  constructor() {
+    let wasOpen = false;
+    effect(() => {
+      const open = this.isOpen();
+      if (open && !wasOpen) this.bodyScrollLock.lock();
+      if (!open && wasOpen) this.bodyScrollLock.unlock();
+      wasOpen = open;
+    });
+    // Guards against a leaked lock if the parent destroys this component
+    // (e.g. switching checkout steps) while isOpen was still true.
+    inject(DestroyRef).onDestroy(() => {
+      if (wasOpen) this.bodyScrollLock.unlock();
+    });
+  }
   readonly selectedStoreName = computed(() => {
     const selectedStoreId = this.selectedStoreIdState();
     if (!selectedStoreId) return '';

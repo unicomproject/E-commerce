@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, signal, effect, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import {  CommonModule , NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -8,6 +8,7 @@ import { CartService } from '../../../../features/cart/services/cart.service';
 import { PriceComponent } from '../../../../shared/components/price/price.component';
 import { BreadcrumbItem } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
 import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
+import { BodyScrollLockService } from '../../../../core/services/body-scroll-lock.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,6 +21,8 @@ import { StarRatingComponent } from '../../../../shared/components/star-rating/s
 export class Wishlist implements OnInit {
   private wishlistService = inject(WishlistService);
   private cartService = inject(CartService);
+  private bodyScrollLock = inject(BodyScrollLockService);
+  private destroyRef = inject(DestroyRef);
 
   wishlist$ = this.wishlistService.wishlist$;
   breadcrumbItems: BreadcrumbItem[] = [{ label: 'Home', link: '/' }, { label: 'My Account', link: '/account' }, { label: 'Wishlist' }];
@@ -27,6 +30,19 @@ export class Wishlist implements OnInit {
   // Guards against an accidental heart click removing an item outright --
   // the customer confirms before it's actually taken off the wishlist.
   itemToRemove = signal<any | null>(null);
+
+  constructor() {
+    let wasOpen = false;
+    effect(() => {
+      const open = this.itemToRemove() !== null;
+      if (open && !wasOpen) this.bodyScrollLock.lock();
+      if (!open && wasOpen) this.bodyScrollLock.unlock();
+      wasOpen = open;
+    });
+    this.destroyRef.onDestroy(() => {
+      if (wasOpen) this.bodyScrollLock.unlock();
+    });
+  }
 
   ngOnInit() {
     this.wishlistService.loadWishlist();

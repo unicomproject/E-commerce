@@ -1,8 +1,9 @@
-import { Component, input, output, signal, effect, inject, computed , ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, signal, effect, inject, DestroyRef, computed , ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideX, lucideClock, lucideCalendar, lucideChevronRight } from '@ng-icons/lucide';
 import { StorefrontDataService, CollectionOptions } from '../../../catalog/services/catalog.service';
+import { BodyScrollLockService } from '../../../../core/services/body-scroll-lock.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,6 +21,7 @@ export class CollectionTimeModalComponent {
   confirm = output<{ type: 'asap' | 'later', date?: string, time?: string, isoString?: string }>();
 
   private dataService = inject(StorefrontDataService);
+  private bodyScrollLock = inject(BodyScrollLockService);
 
   // State
   isLoading = signal<boolean>(false);
@@ -36,6 +38,19 @@ export class CollectionTimeModalComponent {
       if (this.isOpen() && this.outletId()) {
         this.fetchOptions(this.outletId()!);
       }
+    });
+
+    let wasOpen = false;
+    effect(() => {
+      const open = this.isOpen();
+      if (open && !wasOpen) this.bodyScrollLock.lock();
+      if (!open && wasOpen) this.bodyScrollLock.unlock();
+      wasOpen = open;
+    });
+    // Guards against a leaked lock if the parent destroys this component
+    // (e.g. switching checkout steps) while isOpen was still true.
+    inject(DestroyRef).onDestroy(() => {
+      if (wasOpen) this.bodyScrollLock.unlock();
     });
   }
 

@@ -1,5 +1,5 @@
 import { MobileHeaderComponent } from '../../../../shared/components/mobile-header/mobile-header.component';
-import { Component, inject, OnInit, signal, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { Component, inject, OnInit, signal, effect, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {  CommonModule , NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -16,6 +16,7 @@ import { CartItem } from '../../components/cart-item/cart-item.component';
 import { CartSummary } from '../../components/cart-summary/cart-summary.component';
 import { PriceComponent } from '../../../../shared/components/price/price.component';
 import { BreadcrumbItem, BreadcrumbsComponent } from '../../../../shared/components/breadcrumbs/breadcrumbs.component';
+import { BodyScrollLockService } from '../../../../core/services/body-scroll-lock.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,11 +35,25 @@ export class Cart implements OnInit {
   private wishlistService = inject(WishlistService);
   private storefrontData = inject(StorefrontDataService);
   private destroyRef = inject(DestroyRef);
+  private bodyScrollLock = inject(BodyScrollLockService);
 
   cart$ = this.cartService.cart$;
   itemToRemove = signal<any | null>(null);
   selectedItemIds = signal<Set<string>>(new Set());
   isCheckoutStarting = signal(false);
+
+  constructor() {
+    let wasOpen = false;
+    effect(() => {
+      const open = this.itemToRemove() !== null;
+      if (open && !wasOpen) this.bodyScrollLock.lock();
+      if (!open && wasOpen) this.bodyScrollLock.unlock();
+      wasOpen = open;
+    });
+    this.destroyRef.onDestroy(() => {
+      if (wasOpen) this.bodyScrollLock.unlock();
+    });
+  }
   
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Home', link: '/' },
