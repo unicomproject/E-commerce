@@ -63,7 +63,7 @@ export class RecentOrdersBottomSheet implements OnInit, OnDestroy {
 
   onOrderClick(orderId: string) {
     this.close();
-    this.router.navigate(['/account/orders.component', orderId]);
+    this.router.navigate(['/account/orders', orderId]);
   }
 
   fetchRecentOrders() {

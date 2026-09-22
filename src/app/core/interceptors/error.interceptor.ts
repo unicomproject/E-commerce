@@ -28,7 +28,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       }
       
       const isRefreshRequest = req.url.includes('/ecommerce/storefront/auth/refresh');
-      const isLoginRequest = req.url.includes('/ecommerce/storefront/auth/login.component');
+      const isLoginRequest = req.url.includes('/ecommerce/storefront/auth/login');
       const isGoogleAuthRequest = req.url.includes('/ecommerce/storefront/auth/google');
       const isComponentHandledAuthRequest = isLoginRequest || isGoogleAuthRequest;
       const isExpectedEmailVerificationLoginFailure = isLoginRequest &&

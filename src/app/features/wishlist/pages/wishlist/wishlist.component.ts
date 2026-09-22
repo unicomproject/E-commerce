@@ -22,7 +22,7 @@ export class Wishlist implements OnInit {
   private cartService = inject(CartService);
 
   wishlist$ = this.wishlistService.wishlist$;
-  breadcrumbItems: BreadcrumbItem[] = [{ label: 'Home', link: '/' }, { label: 'My Account', link: '/account.component' }, { label: 'Wishlist' }];
+  breadcrumbItems: BreadcrumbItem[] = [{ label: 'Home', link: '/' }, { label: 'My Account', link: '/account' }, { label: 'Wishlist' }];
 
   // Guards against an accidental heart click removing an item outright --
   // the customer confirms before it's actually taken off the wishlist.

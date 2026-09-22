@@ -65,14 +65,14 @@ export class AccountLayoutComponent {
     const url = this.currentUrl();
     const items: BreadcrumbItem[] = [
       { label: 'Home', link: '/' },
-      { label: 'Account', link: '/account/profile.component' },
+      { label: 'Account', link: '/account/profile' },
     ];
 
-    if (url.includes('/account/orders.component')) {
+    if (url.includes('/account/orders')) {
       items.push({ label: 'Your Orders' });
-    } else if (url.includes('/account/profile.component')) {
+    } else if (url.includes('/account/profile')) {
       items.push({ label: 'Profile' });
-    } else if (url.includes('/account/addresses.component')) {
+    } else if (url.includes('/account/addresses')) {
       items.push({ label: 'Addresses' });
     } else if (url.includes('/account/reviews')) {
       if (url.includes('/write')) {
@@ -81,8 +81,10 @@ export class AccountLayoutComponent {
       } else {
         items.push({ label: 'Your Reviews' });
       }
-    } else if (url.includes('/account/wishlist.component')) {
+    } else if (url.includes('/account/wishlist')) {
       items.push({ label: 'Wishlist' });
+    } else if (url.includes('/account/notifications')) {
+      items.push({ label: 'Notifications' });
     }
 
     return items;

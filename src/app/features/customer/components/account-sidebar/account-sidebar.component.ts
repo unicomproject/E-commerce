@@ -18,11 +18,11 @@ export class AccountSidebarComponent {
   private router = inject(Router);
 
   menuItems = [
-    { label: 'Your profile', icon: 'lucideUser', route: '/account/profile.component' },
-    { label: 'Your orders', icon: 'lucidePackage', route: '/account/orders.component' },
+    { label: 'Your profile', icon: 'lucideUser', route: '/account/profile' },
+    { label: 'Your orders', icon: 'lucidePackage', route: '/account/orders' },
     { label: 'Your reviews', icon: 'lucideStar', route: '/account/reviews' },
-    { label: 'Wishlist', icon: 'lucideHeart', route: '/account/wishlist.component' },
-    { label: 'Notifications', icon: 'lucideBell', route: '/account/notifications.component' },
+    { label: 'Wishlist', icon: 'lucideHeart', route: '/account/wishlist' },
+    { label: 'Notifications', icon: 'lucideBell', route: '/account/notifications' },
   ];
 
   logout() {
