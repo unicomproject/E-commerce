@@ -10,7 +10,7 @@
 <!-- Modal -->
 <div
   class="fixed z-[101] bg-white shadow-2xl flex flex-col
-         bottom-0 left-0 right-0 rounded-t-3xl max-h-[90vh]
+         bottom-0 left-0 right-0 rounded-3xl max-h-[90vh]
          transition-all duration-300 ease-out
          lg:bottom-auto lg:left-1/2 lg:top-1/2 lg:w-[560px] lg:rounded-2xl lg:max-h-[85vh]"
   [style.transform]="isOpen() ? (isMobile() ? 'translateY(0)' : 'translateX(-50%) translateY(-50%)') : (isMobile() ? 'translateY(100%)' : 'translateX(-50%) translateY(-40%)')"
@@ -23,7 +23,7 @@
   </div>
 
   <!-- Header -->
-  <div class="px-5 flex items-center justify-between pb-4">
+  <div class="px-5 pt-5 flex items-center justify-between pb-4">
     <h2 class="text-[20px] font-semibold text-[#111111]">When would you like to collect?</h2>
     <button
       (click)="onClose()"
@@ -109,7 +109,7 @@
   </div>
 
   <!-- Bottom Action -->
-  <div class="p-5 border-t border-gray-100 bg-white shadow-[0_-4px_15px_-10px_rgba(0,0,0,0.1)]">
+  <div class="p-5 border-t border-gray-100 bg-white shadow-[0_-4px_15px_-10px_rgba(0,0,0,0.1)] rounded-b-3xl">
     <button
       (click)="onConfirm()"
       [disabled]="!selectedTime()"
