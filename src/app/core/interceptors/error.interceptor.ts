@@ -40,14 +40,17 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (!(error.status === 401 && isRefreshRequest) && !shouldSuppressGlobalErrorLog) {
         console.error('Global Error Interceptor:', errorMsg);
         
-        // Show a generic toast for 500 errors or 0 (network down)
+        // Only a generic toast for 500 errors or 0 (network down) -- these are
+        // the cases unlikely to have dedicated handling anywhere else. 4xx
+        // business/validation failures are deliberately left to whichever
+        // service or component made the call: nearly every one of them
+        // already shows its own toast with a more specific message (or the
+        // backend's own message via err.error?.message), and toasting here
+        // too produced the same error twice on screen for the same failure.
         if (error.status === 0) {
            toastService.error('Cannot connect to the server. Please check your internet connection.');
         } else if (error.status >= 500) {
            toastService.error('Something went wrong on the server. Please try again later.');
-        } else if (error.status >= 400 && error.status !== 401 && !isComponentHandledAuthRequest) {
-           // For 400s (Bad Request, etc.) other than 401 and login
-           toastService.error(error.error?.message || 'An error occurred.');
         }
       }
       
