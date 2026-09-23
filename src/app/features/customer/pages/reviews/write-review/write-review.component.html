@@ -73,8 +73,8 @@
                     name="lucideStar"
                     size="32"
                     strokeWidth="1.5"
-                    [class.text-[#ff5b22]]="star <= rating()"
-                    [class.fill-[#ff5b22]]="star <= rating()"
+                    [class.text-brand-orange]="star <= rating()"
+                    [class.fill-brand-orange]="star <= rating()"
                     [class.text-gray-300]="star > rating()"
                     [class.fill-transparent]="star > rating()"
                   ></ng-icon>
@@ -85,8 +85,8 @@
               <div
                 class="bg-orange-50 border border-orange-100 rounded-lg px-3 py-1.5 flex items-center gap-1 text-sm"
               >
-                <span class="font-bold text-[#ff5b22]">{{ rating() }} / 5</span>
-                <span class="font-medium text-[#ff5b22]">{{ ratingLabel() }}</span>
+                <span class="font-bold text-brand-orange">{{ rating() }} / 5</span>
+                <span class="font-medium text-brand-orange">{{ ratingLabel() }}</span>
               </div>
             }
           </div>
@@ -178,7 +178,7 @@
                 class="flex-1 py-3 px-6 rounded-full flex justify-center items-center gap-2 font-bold transition-all text-sm border"
                 [ngClass]="
                   isRecommended() === true
-                    ? 'bg-[#ff5b22] text-white border-[#ff5b22] shadow-sm'
+                    ? 'bg-brand-orange text-white border-brand-orange shadow-sm'
                     : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                 "
               >
@@ -192,7 +192,7 @@
                 class="flex-1 py-3 px-6 rounded-full flex justify-center items-center gap-2 font-bold transition-all text-sm border"
                 [ngClass]="
                   isRecommended() === false
-                    ? 'bg-[#ff5b22] text-white border-[#ff5b22] shadow-sm'
+                    ? 'bg-brand-orange text-white border-brand-orange shadow-sm'
                     : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                 "
               >
@@ -212,7 +212,7 @@
           <button
             (click)="submitReview()"
             [disabled]="isSubmitting() || rating() === 0 || reviewText().length === 0"
-            class="px-8 py-3 bg-[#ff5b22] text-white font-bold rounded-xl hover:bg-[#e04a17] transition-all disabled:opacity-50 flex justify-center items-center gap-2"
+            class="px-8 py-3 bg-brand-orange text-white font-bold rounded-xl hover:bg-brand-orange-dark transition-all disabled:opacity-50 flex justify-center items-center gap-2"
           >
             @if (isSubmitting()) {
               <span class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>

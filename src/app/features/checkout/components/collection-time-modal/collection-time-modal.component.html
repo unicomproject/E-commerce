@@ -38,7 +38,7 @@
     @if (isLoading()) {
       <div class="py-10 flex flex-col items-center justify-center">
         <div
-          class="w-8 h-8 border-4 border-[#FF6A00] border-t-transparent rounded-full animate-spin"
+          class="w-8 h-8 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"
         ></div>
         <div class="mt-4 text-[#6B7280] text-sm">Loading collection times...</div>
       </div>
@@ -56,23 +56,23 @@
               class="h-[72px] rounded-[12px] flex flex-col items-center justify-center transition-colors border"
               [ngClass]="
                 selectedDate() === d.value
-                  ? 'border-[#FF6A00] bg-[#FFF7F2] border-[1.5px]'
+                  ? 'border-brand-orange bg-brand-orange-light border-[1.5px]'
                   : 'border-[#E5E7EB] bg-white'
               "
             >
               <span
                 class="text-[14px] font-medium"
-                [ngClass]="selectedDate() === d.value ? 'text-[#FF6A00]' : 'text-[#6B7280]'"
+                [ngClass]="selectedDate() === d.value ? 'text-brand-orange' : 'text-[#6B7280]'"
                 >{{ d.label }}</span
               >
               <span
                 class="text-[20px] font-bold"
-                [ngClass]="selectedDate() === d.value ? 'text-[#FF6A00]' : 'text-[#111111]'"
+                [ngClass]="selectedDate() === d.value ? 'text-brand-orange' : 'text-[#111111]'"
                 >{{ d.day }}</span
               >
               <span
                 class="text-[12px] font-medium"
-                [ngClass]="selectedDate() === d.value ? 'text-[#FF6A00]' : 'text-[#6B7280]'"
+                [ngClass]="selectedDate() === d.value ? 'text-brand-orange' : 'text-[#6B7280]'"
                 >{{ d.month }}</span
               >
             </button>
@@ -82,7 +82,7 @@
         <div class="flex justify-between items-end mt-6 mb-3">
           <h3 class="text-[16px] font-semibold text-[#111111]">Select Time Slot</h3>
           <span class="text-[12px] text-[#6B7280]"
-            >Store closes at <span class="font-bold text-[#FF6A00]">{{ closingTime() }}</span></span
+            >Store closes at <span class="font-bold text-brand-orange">{{ closingTime() }}</span></span
           >
         </div>
         <div class="grid grid-cols-3 gap-3">
@@ -92,13 +92,13 @@
               class="h-[52px] rounded-[12px] flex flex-col items-center justify-center transition-colors border"
               [ngClass]="
                 selectedTime() === t.time
-                  ? 'border-[#FF6A00] bg-[#FFF7F2] border-[1.5px]'
+                  ? 'border-brand-orange bg-brand-orange-light border-[1.5px]'
                   : 'border-[#E5E7EB] bg-white hover:border-gray-300'
               "
             >
               <span
                 class="text-[14px] font-medium"
-                [ngClass]="selectedTime() === t.time ? 'text-[#FF6A00]' : 'text-[#111111]'"
+                [ngClass]="selectedTime() === t.time ? 'text-brand-orange' : 'text-[#111111]'"
                 >{{ t.time }}</span
               >
             </button>
@@ -113,7 +113,7 @@
     <button
       (click)="onConfirm()"
       [disabled]="!selectedTime()"
-      class="w-full h-[56px] rounded-[12px] bg-[#FF6A00] text-white font-semibold text-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+      class="w-full h-[56px] rounded-[12px] bg-brand-orange text-white font-semibold text-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
     >
       Confirm Collection Time
     </button>

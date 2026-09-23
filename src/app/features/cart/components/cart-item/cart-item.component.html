@@ -8,7 +8,7 @@
     />
     <div
       class="flex h-5 w-5 items-center justify-center rounded border transition-colors"
-      [ngClass]="isSelected() ? 'border-[#FF6A00] bg-[#FF6A00]' : 'border-[#CBD5E1] bg-white'"
+      [ngClass]="isSelected() ? 'border-brand-orange bg-brand-orange' : 'border-[#CBD5E1] bg-white'"
     >
       @if (isSelected()) {
         <svg
@@ -85,7 +85,7 @@
         <button
           type="button"
           (click)="increment()"
-          class="flex h-8 w-8 items-center justify-center text-[#FF6A00] transition-colors hover:bg-[#FFF4EC]"
+          class="flex h-8 w-8 items-center justify-center text-brand-orange transition-colors hover:bg-brand-orange-light"
           aria-label="Increase quantity"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

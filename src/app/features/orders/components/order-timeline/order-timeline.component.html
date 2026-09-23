@@ -13,7 +13,7 @@
                    'border-red-500': isError(step.state),
                    'border-gray-300': isPending(step.state)
                  }"
-                 [style.borderColor]="isCurrent(step.state) ? '#ff5b22' : null">
+                 [style.borderColor]="isCurrent(step.state) ? 'var(--color-brand-orange)' : null">
               @if (isCompleted(step.state)) {
                 <ng-icon name="lucideCheck" size="14" strokeWidth="3"></ng-icon>
               }

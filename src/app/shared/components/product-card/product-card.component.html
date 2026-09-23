@@ -19,7 +19,7 @@
             Out of Stock
           </div>
         } @else if (discountPercentage()) {
-          <div class="absolute left-2 top-2 z-10 flex items-center justify-center rounded-[4px] bg-[#FF6A00] px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm lg:px-2 lg:py-1 lg:text-[12px]">
+          <div class="absolute left-2 top-2 z-10 flex items-center justify-center rounded-[4px] bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm lg:px-2 lg:py-1 lg:text-[12px]">
             -{{ discountPercentage() }}%
           </div>
         }
@@ -27,7 +27,7 @@
         <button
           type="button"
           class="absolute right-0 top-0 z-20 flex h-[44px] w-[44px] items-center justify-center transition-colors"
-          [class]="isInWishlist() ? 'text-[#FF6A00]' : 'text-[#666666] hover:text-[#FF6A00]'"
+          [class]="isInWishlist() ? 'text-brand-orange' : 'text-[#666666] hover:text-brand-orange'"
           (click)="toggleWishlist($event)"
           aria-label="Toggle wishlist"
         >
@@ -37,7 +37,7 @@
 
       <div class="flex flex-1 flex-col p-3">
         <!-- 1. Name -->
-        <h4 class="line-clamp-2 text-[14px] font-bold leading-snug text-[#111111] transition-colors group-hover:text-[#FF6A00] lg:text-[18px] lg:font-semibold lg:leading-[26px]">
+        <h4 class="line-clamp-2 text-[14px] font-bold leading-snug text-[#111111] transition-colors group-hover:text-brand-orange lg:text-[18px] lg:font-semibold lg:leading-[26px]">
           {{ product.name }}
         </h4>
 
@@ -82,7 +82,7 @@
             Out of Stock
           </div>
         } @else if (discountPercentage()) {
-          <div class="absolute left-1.5 top-1.5 z-10 flex items-center justify-center rounded-[4px] bg-[#FF6A00] px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
+          <div class="absolute left-1.5 top-1.5 z-10 flex items-center justify-center rounded-[4px] bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
             -{{ discountPercentage() }}%
           </div>
         }
@@ -92,14 +92,14 @@
         <button
           type="button"
           class="absolute right-0 top-0 z-20 flex h-[44px] w-[44px] items-center justify-center transition-colors"
-          [class]="isInWishlist() ? 'text-[#FF6A00]' : 'text-[#666666] hover:text-[#FF6A00]'"
+          [class]="isInWishlist() ? 'text-brand-orange' : 'text-[#666666] hover:text-brand-orange'"
           (click)="toggleWishlist($event)"
           aria-label="Toggle wishlist"
         >
           <ng-icon name="lucideHeart" class="text-[20px]" [class.fill-current]="isInWishlist()"></ng-icon>
         </button>
 
-        <h4 class="pr-8 line-clamp-2 text-[14px] font-bold leading-snug text-[#111111] transition-colors group-hover:text-[#FF6A00]">
+        <h4 class="pr-8 line-clamp-2 text-[14px] font-bold leading-snug text-[#111111] transition-colors group-hover:text-brand-orange">
           {{ product.name }}
         </h4>
 

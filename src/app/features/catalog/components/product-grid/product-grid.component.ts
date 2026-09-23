@@ -18,7 +18,7 @@ import { Product } from '../../../../features/catalog/models/product.model';
         </h3>
         <a
           routerLink="/search"
-          class="shrink-0 text-[14px] font-bold text-[#FF6A00] hover:underline"
+          class="shrink-0 text-[14px] font-bold text-brand-orange hover:underline"
         >
           <span class="lg:hidden">View all</span>
           <span class="hidden lg:inline">View all products →</span>

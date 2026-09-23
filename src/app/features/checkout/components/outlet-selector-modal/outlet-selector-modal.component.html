@@ -58,7 +58,7 @@
             @if (store.imageUrl) {
               <img [src]="store.imageUrl" [alt]="store.name" class="w-full h-full object-cover">
             } @else {
-              <ng-icon name="lucideStore" class="text-3xl text-brand-orange" style="color: #FF5A00;"></ng-icon>
+              <ng-icon name="lucideStore" class="text-3xl text-brand-orange"></ng-icon>
             }
           </div>
 
@@ -69,7 +69,7 @@
               <!-- Radio/Check Icon -->
               <div class="shrink-0 mt-0.5">
                 @if (selectedStoreIdState() === store.id) {
-                  <ng-icon name="lucideCheckCircle2" class="text-brand-orange text-xl" style="color: #FF5A00;"></ng-icon>
+                  <ng-icon name="lucideCheckCircle2" class="text-brand-orange text-xl"></ng-icon>
                 } @else {
                   <ng-icon name="lucideCircle" class="text-gray-300 text-xl"></ng-icon>
                 }

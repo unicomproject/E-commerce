@@ -11,7 +11,7 @@
   </div>
   @if (isLoading()) {
     <div class="flex justify-center items-center py-20">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#ff5b22]"></div>
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-orange"></div>
     </div>
   }
 
@@ -227,7 +227,7 @@
         <div class="flex flex-col gap-3">
           <a
             routerLink="/account/orders"
-            class="w-full py-3.5 bg-white border border-[#ff5b22] text-brand-orange hover:bg-orange-50 rounded-xl font-bold text-base transition-colors flex items-center justify-center gap-2 active:scale-[0.98] shadow-sm"
+            class="w-full py-3.5 bg-white border border-brand-orange text-brand-orange hover:bg-brand-orange-light rounded-xl font-bold text-base transition-colors flex items-center justify-center gap-2 active:scale-[0.98] shadow-sm"
           >
             <ng-icon name="lucideArrowLeft" class="text-xl"></ng-icon> Back to Orders
           </a>
