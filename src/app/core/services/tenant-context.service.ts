@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { darkenHexColor, isValidHexColor, lightenHexColor } from '../utils/color.util';
 
 @Injectable({
   providedIn: 'root'
@@ -45,5 +46,43 @@ export class TenantContextService {
 
   set logoUrl(url: string | null) {
     this._logoUrl = url;
+  }
+
+  private _primaryColor: string | null = null;
+  private _secondaryColor: string | null = null;
+
+  get primaryColor(): string | null {
+    return this._primaryColor;
+  }
+
+  get secondaryColor(): string | null {
+    return this._secondaryColor;
+  }
+
+  /**
+   * Applies a tenant's configured brand colors as CSS custom properties on
+   * the document root. The whole app's Tailwind utilities (bg-brand-orange,
+   * text-brand-orange, etc.) are defined in styles.css as @theme variables
+   * that resolve to var(--color-brand-orange) etc. at runtime, so overriding
+   * those variables here recolors the entire app with no rebuild needed.
+   * Falls back silently (keeps the default theme) for missing/invalid hex
+   * values, e.g. a tenant that hasn't customized their branding yet.
+   */
+  applyBrandColors(primaryColor?: string | null, secondaryColor?: string | null): void {
+    const root = document.documentElement.style;
+
+    if (isValidHexColor(primaryColor)) {
+      this._primaryColor = primaryColor;
+      root.setProperty('--color-brand-orange', primaryColor);
+      const light = lightenHexColor(primaryColor);
+      const dark = darkenHexColor(primaryColor);
+      if (light) root.setProperty('--color-brand-orange-light', light);
+      if (dark) root.setProperty('--color-brand-orange-dark', dark);
+    }
+
+    if (isValidHexColor(secondaryColor)) {
+      this._secondaryColor = secondaryColor;
+      root.setProperty('--color-brand-black', secondaryColor);
+    }
   }
 }

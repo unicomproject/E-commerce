@@ -47,14 +47,28 @@ export function initializeTenant(http: HttpClient, tenantCtx: TenantContextServi
           if (res.logoUrl) {
             tenantCtx.logoUrl = res.logoUrl;
           }
-          if (!authService.hasSessionHint) {
-            resolve(true);
-            return;
-          }
 
-          firstValueFrom(authService.refreshSession()).then(
-            () => resolve(true),
-            () => resolve(true)
+          const proceed = () => {
+            if (!authService.hasSessionHint) {
+              resolve(true);
+              return;
+            }
+
+            firstValueFrom(authService.refreshSession()).then(
+              () => resolve(true),
+              () => resolve(true)
+            );
+          };
+
+          // Applied before the app renders, so tenants never see a flash of
+          // the default orange theme before their own colors kick in.
+          const brandingUrl = `${environment.apiUrl}/ecommerce/storefront/branding`;
+          firstValueFrom(http.get<any>(brandingUrl)).then(
+            (branding) => {
+              tenantCtx.applyBrandColors(branding?.primaryColor, branding?.secondaryColor);
+              proceed();
+            },
+            () => proceed(),
           );
         },
         (err) => {
