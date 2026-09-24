@@ -184,7 +184,7 @@ import { ToastService } from '../../../../core/services/toast.service';
                 </div>
               }
               <div class="flex justify-between text-gray-500 text-[13px]">
-                  <span>VAT</span>
+                  <span>Tax</span>
                 <span><app-price [value]="checkoutService.checkoutSession()!.taxTotal"></app-price></span>
               </div>
             </div>
